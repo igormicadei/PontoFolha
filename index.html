@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d3f39">
+<meta name="theme-color" content="#1e293b">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,32 +16,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Spline+Sans+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#10201d; --ink-soft:#48605b; --bg:#eef2f0; --card:#ffffff;
-  --teal:#17635a; --teal-deep:#0d3f39; --teal-tint:#dcebe8; --teal-head:#0d3f39; --head-tx:#f2f7f5; --head-sub:#bcd6d0;
-  --amber:#e8a13d; --amber-tint:#f7ecd6; --amber-deep:#8a6d1f;
-  --red:#c4453c; --red-tint:#f7e3e1;
-  --green:#2c7a4b; --green-tint:#e2f0e6; --line:#d7e0dd;
-  --chip-fer-bg:#efe4f5; --chip-fer-tx:#6c3a8f; --chip-vac-bg:#dcebf7; --chip-vac-tx:#1e5e8f;
+  --ink:#1e293b; --ink-soft:#64748b; --bg:#eef1f5; --card:#ffffff;
+  --teal:#475569; --teal-deep:#1e293b; --teal-tint:#e2e8f0; --teal-head:#1e293b; --head-tx:#f1f5f9; --head-sub:#94a3b8;
+  --amber:#e8a13d; --amber-tint:#f6eeda; --amber-deep:#8a6d1f;
+  --red:#c4453c; --red-tint:#f8e5e3;
+  --green:#2c7a4b; --green-tint:#e3efe7; --line:#d8dee8;
+  --chip-fer-bg:#ece7f6; --chip-fer-tx:#5b4a9e; --chip-vac-bg:#e0eaf6; --chip-vac-tx:#33608f;
   --mono:'Spline Sans Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   --disp:'Archivo',system-ui,sans-serif;
   --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
 }
 html[data-theme=dark]{
-  --ink:#e5eeeb; --ink-soft:#94aaa4; --bg:#0e1614; --card:#16211e;
-  --teal:#1e7c70; --teal-deep:#2aa392; --teal-tint:#123028; --teal-head:#0a1f1c; --head-tx:#e5eeeb; --head-sub:#7fa79f;
-  --amber-tint:#332a12; --amber-deep:#d9b25e;
-  --red:#e07a72; --red-tint:#3a1f1c;
-  --green:#6cc394; --green-tint:#16302a; --line:#283833;
-  --chip-fer-bg:#2c2136; --chip-fer-tx:#c7a3e0; --chip-vac-bg:#16293a; --chip-vac-tx:#8fc0e8;
+  --ink:#e2e8f0; --ink-soft:#94a3b8; --bg:#0f172a; --card:#1c2739;
+  --teal:#475569; --teal-deep:#a8b8cf; --teal-tint:#263449; --teal-head:#0b1322; --head-tx:#e2e8f0; --head-sub:#7d8ba1;
+  --amber-tint:#33290f; --amber-deep:#dcb668;
+  --red:#e07a72; --red-tint:#3a2220;
+  --green:#6cc394; --green-tint:#1b2f28; --line:#2e3b52;
+  --chip-fer-bg:#2b2440; --chip-fer-tx:#c0aee8; --chip-vac-bg:#1b2c42; --chip-vac-tx:#8fb6e0;
 }
 @media (prefers-color-scheme:dark){
   html[data-theme=sys]{
-    --ink:#e5eeeb; --ink-soft:#94aaa4; --bg:#0e1614; --card:#16211e;
-    --teal:#1e7c70; --teal-deep:#2aa392; --teal-tint:#123028; --teal-head:#0a1f1c; --head-tx:#e5eeeb; --head-sub:#7fa79f;
-    --amber-tint:#332a12; --amber-deep:#d9b25e;
-    --red:#e07a72; --red-tint:#3a1f1c;
-    --green:#6cc394; --green-tint:#16302a; --line:#283833;
-    --chip-fer-bg:#2c2136; --chip-fer-tx:#c7a3e0; --chip-vac-bg:#16293a; --chip-vac-tx:#8fc0e8;
+    --ink:#e2e8f0; --ink-soft:#94a3b8; --bg:#0f172a; --card:#1c2739;
+    --teal:#475569; --teal-deep:#a8b8cf; --teal-tint:#263449; --teal-head:#0b1322; --head-tx:#e2e8f0; --head-sub:#7d8ba1;
+    --amber-tint:#33290f; --amber-deep:#dcb668;
+    --red:#e07a72; --red-tint:#3a2220;
+    --green:#6cc394; --green-tint:#1b2f28; --line:#2e3b52;
+    --chip-fer-bg:#2b2440; --chip-fer-tx:#c0aee8; --chip-vac-bg:#1b2c42; --chip-vac-tx:#8fb6e0;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -82,15 +82,15 @@ label.f input,label.f select{margin-top:4px;font-weight:500;color:var(--ink)}
 .chip.rec{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
 /* botão de ponto */
 .punch-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 4px}
-#btnPunch{--p:0;position:relative;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#1e7c70,#17635a 55%,#0d3f39);color:#fff;
-  box-shadow:0 10px 0 #082b26,0 14px 24px rgba(13,63,57,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+#btnPunch{--p:0;position:relative;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5b6b82,#475569 55%,#1e293b);color:#fff;
+  box-shadow:0 10px 0 #0b1220,0 14px 24px rgba(15,23,42,.38);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   transition:transform .08s,box-shadow .08s;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 #btnPunch::before{content:'';position:absolute;inset:-8px;border-radius:50%;z-index:-1;
   background:conic-gradient(#e8a13d calc(var(--p)*360deg),transparent 0)}
-#btnPunch:active{transform:translateY(8px);box-shadow:0 2px 0 #082b26,0 4px 10px rgba(13,63,57,.35)}
+#btnPunch:active{transform:translateY(8px);box-shadow:0 2px 0 #0b1220,0 4px 10px rgba(15,23,42,.38)}
 #btnPunch .big{font-size:16px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
-#btnPunch .sub{font-family:var(--mono);font-size:12px;color:#cfe6e1;font-weight:500}
-#btnPunch .wkd{font-family:var(--mono);font-size:11px;color:#9dc4bc}
+#btnPunch .sub{font-family:var(--mono);font-size:12px;color:#cbd5e1;font-weight:500}
+#btnPunch .wkd{font-family:var(--mono);font-size:11px;color:#94a3b8}
 .punch-hint{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-top:10px}
 body.onboarding nav{display:none}
 .stamp{margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);min-height:30px;display:flex;gap:10px;align-items:center}
@@ -133,14 +133,12 @@ details.done-sec summary{font-family:var(--disp);font-weight:700;font-size:13px;
 .hol .tot{font-weight:700;font-size:15px}
 .hol .tot span{color:var(--ink)!important}
 .hol .neg2{color:var(--red)}
-/* conferência */
-.confitem{padding:8px 0;border-bottom:1px solid var(--line)}
-.confitem:last-child{border-bottom:none}
-.confitem .c1{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-soft)}
-.confitem .c2{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:5px}
-.confitem .app{font-family:var(--mono);font-size:13px;color:var(--ink)}
-.confitem .app small{color:var(--ink-soft);font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.04em;margin-right:4px}
-.confitem input{width:132px;flex:none;text-align:right;font-family:var(--mono);padding:7px 8px;font-size:13px}
+/* folha: verbas tocáveis + conferência embutida */
+.hline{display:block;width:100%;background:none;border:none;border-radius:8px;padding:4px 4px;margin:0 -4px;text-align:left;font-family:var(--mono);font-size:13.5px;font-weight:400;color:var(--ink)}
+.hline:active{background:var(--teal-tint)}
+.hline .l{padding:0}
+.hline .hv{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink-soft);padding:1px 0 3px}
+.hline .hv b{font-weight:600}
 .conf-diff{font-family:var(--mono);font-size:12px;font-weight:700}
 /* nav */
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;max-width:520px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);z-index:10}
@@ -184,18 +182,21 @@ details.cfgsec .inner{padding:0 14px 14px}
   <!-- ================= ONBOARDING ================= -->
   <section id="view-onboard" class="hidden">
     <div class="punch-wrap" style="padding-bottom:0">
-      <div style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#1e7c70,#17635a 55%,#0d3f39);display:flex;align-items:center;justify-content:center;font-size:44px">⏱</div>
+      <div style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5b6b82,#475569 55%,#1e293b);display:flex;align-items:center;justify-content:center;font-size:44px">⏱</div>
     </div>
     <h2 style="text-align:center;font-size:20px;margin-top:14px">Bem-vinda ao Ponto &amp; Folha</h2>
     <p class="muted" style="text-align:center;margin-bottom:16px">Controle de jornada, agenda e conferência de folha — tudo neste aparelho. Comece com o básico; o resto (escala, tabelas de impostos, benefícios) já vem preenchido e pode ser ajustado depois em Config.</p>
     <div class="card">
+      <label class="f">Nome e sobrenome<input id="obNome" placeholder="Como aparece no holerite"></label>
       <label class="f">Data de admissão<input type="date" id="obAdm"></label>
       <label class="f">Salário mensal (R$)<input type="number" step="0.01" inputmode="decimal" id="obSalario" placeholder="1878,14 (piso CCT 2026)"></label>
-      <div class="grid2">
-        <label class="f">Dependentes (IRPF)<input type="number" step="1" inputmode="numeric" id="obDepIR" value="0"></label>
-        <label class="f">Filhos até 14 anos<input type="number" step="1" inputmode="numeric" id="obFilhos" value="0"></label>
+      <label class="f" style="margin-bottom:4px">Filhos (data de nascimento)</label>
+      <div id="obFilhosList"></div>
+      <div class="row" style="margin-bottom:8px">
+        <input type="date" id="obFilhoData">
+        <button class="btn sec small" style="flex:none" id="obFilhoAdd">+ Adicionar filho</button>
       </div>
-      <p class="muted">Filhos até 14 anos contam para o salário-família (cota de R$ 67,54 quando a remuneração do mês fica até R$ 1.980,38).</p>
+      <p class="muted">Pela data de nascimento o app calcula sozinho, mês a mês, quem conta para o salário-família (até 14 anos) e para a dedução de IRPF (até 21 anos).</p>
     </div>
     <button class="btn" style="width:100%" id="obStart">Começar</button>
     <button class="btn ghost" style="width:100%;margin-top:8px" id="obImport">Já tenho um backup — importar JSON</button>
@@ -282,12 +283,10 @@ details.cfgsec .inner{padding:0 14px 14px}
     </div>
     <div id="mFeriasCard"></div>
     <div id="m13Card"></div>
-    <div class="card"><h2>Folha de pagamento</h2><div class="hol" id="mFolha"></div></div>
-    <div class="card">
-      <h2>Conferência com holerite oficial</h2>
-      <p class="muted" style="margin-bottom:6px">Digite os valores do holerite da clínica. Divergências acima de R$ 0,05 ficam destacadas e entram no relatório.</p>
-      <div id="mConf"></div>
-      <div id="mConfSummary"></div>
+    <div class="card"><h2>Folha de pagamento</h2>
+      <p class="muted" style="margin-bottom:8px">Toque numa verba para registrar o valor do holerite oficial — divergências acima de R$ 0,05 ficam destacadas e entram no relatório.</p>
+      <div class="hol" id="mFolha"></div>
+      <div id="mConfSummary" style="margin-top:8px"></div>
     </div>
     <div class="row" style="margin-bottom:8px">
       <button class="btn" id="btnFechar"></button>
@@ -310,6 +309,7 @@ details.cfgsec .inner{padding:0 14px 14px}
     </div>
 
     <details class="cfgsec" open><summary>Contrato <span class="chip task">global</span></summary><div class="inner">
+      <label class="f">Nome e sobrenome<input id="cNome" placeholder="Aparece no relatório"></label>
       <label class="f">Data de admissão<input type="date" id="cAdm"></label>
       <p class="muted">Usada para calcular os avos do 13º e o período aquisitivo de férias. Sem ela, o app assume ano completo.</p>
     </div></details>
@@ -335,8 +335,14 @@ details.cfgsec .inner{padding:0 14px 14px}
     </div></details>
 
     <details class="cfgsec"><summary>Família e benefícios</summary><div class="inner">
-      <label class="f">Dependentes para IRPF (dedução R$ <span id="lblDedDep"></span>/mês cada)<input id="cDepIR" type="number" step="1" inputmode="numeric"></label>
-      <label class="f">Filhos até 14 anos (salário-família)<input id="cFilhos" type="number" step="1" inputmode="numeric"></label>
+      <label class="f" style="margin-bottom:4px">Filhos <span class="chip task">global</span></label>
+      <div id="cFilhosList"></div>
+      <div class="row" style="margin-bottom:10px">
+        <input type="date" id="cFilhoData">
+        <button class="btn sec small" style="flex:none" id="cFilhoAdd">+ Adicionar</button>
+      </div>
+      <p class="muted" style="margin-bottom:10px">Contagem automática por idade: até 14 anos → salário-família; até 21 → dependente de IRPF (dedução R$ <span id="lblDedDep"></span>/mês). Universitário de 21–24 pode ser deduzido: use o campo abaixo.</p>
+      <label class="f">Outros dependentes de IRPF (cônjuge, universitário 21–24 etc.)<input id="cDepExtra" type="number" step="1" inputmode="numeric"></label>
       <div class="grid2">
         <label class="f">Cota salário-família (R$)<input id="cSfCota" type="number" step="0.01"></label>
         <label class="f">Limite de renda (R$)<input id="cSfLim" type="number" step="0.01"></label>
@@ -487,6 +493,7 @@ const DEFCFG={
   irrf:[{ate:2259.20,aliq:0,ded:0},{ate:2826.65,aliq:7.5,ded:169.44},{ate:3751.05,aliq:15,ded:381.44},{ate:4664.68,aliq:22.5,ded:662.77},{ate:999999999,aliq:27.5,ded:896.00}],
   dedDep:189.59, redIsen:5000, redGrad:7350, redA:978.62, redB:0.133145
 };
+function num2(v){v=Number(v);return isFinite(v)?v:0}
 let S=load();
 function load(){
   let o=null;
@@ -495,7 +502,8 @@ function load(){
   o.months=o.months||{}; o.holidays=o.holidays||{};
   o.ferias=o.ferias||[]; o.rec=o.rec||[];
   o.c13=o.c13||{modo:'2',d1:'30/11',d2:'20/12',dU:'20/12'};
-  o.ui=o.ui||{theme:'sys'}; o.adm=o.adm||'';
+  o.ui=o.ui||{theme:'sys'}; o.adm=o.adm||''; o.nome=o.nome||'';
+  o.filhos=o.filhos||[]; o.depExtra=num2(o.depExtra);
   if(!o.vig||!o.vig.length){
     const base=Object.assign({},structuredClone(DEFCFG),o.cfg||{});
     o.vig=[{desde:'1900-01',cfg:base}];
@@ -540,6 +548,16 @@ function holidayName(dk,cfg){
 }
 function feriasFor(dk){return S.ferias.find(f=>dk>=f.ini&&dk<=f.fim)||null}
 function parseDM(s){const m=/^(\d{1,2})\/(\d{1,2})$/.exec((s||'').trim());return m?{d:+m[1],m:+m[2]}:null}
+/* filhos: contagem automática por idade no mês (fallback: contadores antigos da vigência) */
+function childCount14(mk,cfg){
+  if(S.filhos.length)return S.filhos.filter(f=>yAdd(f.n,14)>`${mk}-01`).length;
+  return num(cfg.filhos);
+}
+function depIRCount(mk,cfg){
+  const extra=num(S.depExtra);
+  if(S.filhos.length)return S.filhos.filter(f=>yAdd(f.n,21)>`${mk}-01`).length+extra;
+  return num(cfg.depIR)+extra;
+}
 
 /* ================= toast + diálogos ================= */
 let toastT=null;
@@ -764,7 +782,7 @@ function feriasCalc(f,cfg){
   const abono=vd*num(f.vendidos||0), abonoTerco=abono/3;
   const baseTrib=brutoGozo+terco;
   const inss=calcINSS(baseTrib,cfg.inss);
-  const ir=calcIRRF(baseTrib,Math.max(0,baseTrib-inss-num(cfg.depIR)*num(cfg.dedDep)),cfg);
+  const ir=calcIRRF(baseTrib,Math.max(0,baseTrib-inss-depIRCount(f.ini.slice(0,7),cfg)*num(cfg.dedDep)),cfg);
   const liq=baseTrib-inss-ir.tax+abono+abonoTerco;
   return{dias,vd,brutoGozo,terco,abono,abonoTerco,baseTrib,inss,irpf:ir.tax,liq,prazo:dAdd(f.ini,-2)};
 }
@@ -782,7 +800,7 @@ function calc13(y){
   const avos=avos13(y,12);
   const base=(num(cfg.salario)+extrasMediaAno(y))*avos/12;
   const inss=calcINSS(base,cfg.inss);
-  const ir=calcIRRF(base,Math.max(0,base-inss-num(cfg.depIR)*num(cfg.dedDep)),cfg);
+  const ir=calcIRRF(base,Math.max(0,base-inss-depIRCount(`${y}-12`,cfg)*num(cfg.dedDep)),cfg);
   const p1=base/2, p2=base-inss-ir.tax-p1;
   return{base,avos,inss,irpf:ir.tax,p1,p2,liq:base-inss-ir.tax};
 }
@@ -813,29 +831,32 @@ function computeMonth(mk){
   const pagsN=(m.pags||[]).filter(p=>!p.t).reduce((a,p)=>a+num(p.v),0);
   const bruto=Math.max(0,num(cfg.salario)+vExtras+vDsr+pagsT-vFaltas-vFerias);
   const inss=calcINSS(bruto,cfg.inss);
-  const baseIR=Math.max(0,bruto-inss-num(cfg.depIR)*num(cfg.dedDep));
+  const nDep=depIRCount(mk,cfg), nF14=childCount14(mk,cfg);
+  const baseIR=Math.max(0,bruto-inss-nDep*num(cfg.dedDep));
   const ir=calcIRRF(bruto,baseIR,cfg);
-  const temFilhos=num(cfg.filhos)>0;
-  const salFam=(temFilhos&&bruto<=num(cfg.sfLim))?num(cfg.filhos)*num(cfg.sfCota):0;
+  const temFilhos=nF14>0;
+  const salFam=(temFilhos&&bruto<=num(cfg.sfLim))?nF14*num(cfg.sfCota):0;
   const liquido=bruto-inss-ir.tax+salFam+pagsN;
   return{worked,expected,extraMin,faltaMin,pend,diasUteis,repousos,extrasFeriado,diasFerias,
     vh,vhe,pagar,vExtras,vDsr,vFaltas,vFerias,pagsT,pagsN,bruto,inss,baseIR,irpf:ir.tax,irRed:ir.red,salFam,temFilhos,liquido,
-    cesta:num(cfg.cesta),sfLim:num(cfg.sfLim),sfCotaTot:num(cfg.filhos)*num(cfg.sfCota),
+    cesta:num(cfg.cesta),sfLim:num(cfg.sfLim),sfCotaTot:childCount14(mk,cfg)*num(cfg.sfCota),nDep,nF14,
     salario:num(cfg.salario),pctExtra:num(cfg.pctExtra),jornada:num(cfg.jornada),
     saldoBanco:cfg.modoExtras==='banco'?extraMin:0};
 }
 function holLines(mk){
   const c=computeMonth(mk),m=getMonth(mk);
-  const l=[];
-  l.push({k:'base',d:'Salário base',ref:`${c.jornada}h`,cr:c.salario});
-  if(c.pagar&&c.vExtras>0)l.push({k:'extras',d:`Horas extras ${c.pctExtra}%`,ref:min2hm(c.extraMin),cr:c.vExtras});
-  if(c.vDsr>0)l.push({k:'dsr',d:'DSR sobre horas extras',ref:`${c.repousos} rep./${c.diasUteis} úteis`,cr:c.vDsr});
-  (m.pags||[]).forEach((p,i)=>l.push({k:'pag'+i,d:p.d+(p.t?'':' *'),ref:p.t?'':'não tributável',cr:num(p.v)}));
-  if(c.salFam>0)l.push({k:'salfam',d:'Salário-família',ref:'',cr:c.salFam});
-  if(c.vFerias>0)l.push({k:'ferias',d:'Dias de férias (pagos antecipadamente)',ref:`${c.diasFerias} dias`,db:c.vFerias});
-  if(c.vFaltas>0)l.push({k:'faltas',d:'Faltas / atrasos',ref:min2hm(c.faltaMin),db:c.vFaltas});
-  if(c.inss>0)l.push({k:'inss',d:'INSS',ref:'tab. progressiva',db:c.inss});
-  if(c.irpf>0)l.push({k:'irpf',d:'IRPF',ref:c.irRed?`redutor ${brl(c.irRed)}`:'',db:c.irpf});
+  const pagDesc=(m.pags||[]).map(p=>p.d).join(', ');
+  const l=[
+    {k:'base',d:'Salário base',ref:`${c.jornada}h`,cr:c.salario},
+    {k:'extras',d:`Horas extras ${c.pctExtra}% + DSR`,ref:c.extraMin?min2hm(c.extraMin):'',cr:c.vExtras+c.vDsr},
+    {k:'adic',d:'Adicionais',ref:pagDesc,cr:c.pagsT+c.pagsN},
+    {k:'salfam',d:'Salário-família',ref:c.nF14?`${c.nF14} filho(s)`:'',cr:c.salFam},
+  ];
+  if(c.vFerias>0)l.push({k:'_ferias',d:'Dias de férias (pagos antecipadamente)',ref:`${c.diasFerias} dias`,db:c.vFerias});
+  l.push({k:'faltas',d:'Faltas / atrasos',ref:c.faltaMin?min2hm(c.faltaMin):'',db:c.vFaltas});
+  l.push({k:'inss',d:'INSS',ref:'tab. progressiva',db:c.inss});
+  l.push({k:'irpf',d:'IRPF',ref:c.irRed?`redutor ${brl(c.irRed)}`:'',db:c.irpf});
+  if(!c.pagar&&c.extraMin)l.push({k:'_banco',d:'Extras → banco de horas',ref:min2hm(c.extraMin,true),cr:0});
   return{c,lines:l,totCr:l.reduce((a,x)=>a+(x.cr||0),0),totDb:l.reduce((a,x)=>a+(x.db||0),0)};
 }
 const CONF_FIELDS=[
@@ -871,16 +892,7 @@ function go(v,mk){curView=v;if(mk)curMK=mk;
 }
 
 /* ================= INÍCIO ================= */
-function punchState(){
-  const cfg=cfgFor(curMonthKey());
-  const rec=getMonth(curMonthKey()).days[todayKey()];
-  const n=((rec&&rec.p)||[]).length;
-  const L4=['Entrada','Saída p/ almoço','Volta do almoço','Saída'];
-  const L2=['Entrada','Saída'];
-  if(cfg.batidas==='4')return n<4?L4[n]:'Batida extra';
-  if(cfg.batidas==='2')return n<2?L2[n]:'Batida extra';
-  return 'Bater ponto';
-}
+function punchState(){return 'Bater ponto'}
 function workedNowMin(){
   const rec=getMonth(curMonthKey()).days[todayKey()];
   const cfg=cfgFor(curMonthKey());
@@ -1135,33 +1147,47 @@ function renderMonth(){
   $('m13Card').innerHTML=c13html?`<div class="card"><h2>13º salário previsto neste mês</h2><div class="hol">
     <div class="l"><span>Base (${t13.avos}/12 avos × salário + média de extras)</span><b>${brl(t13.base)}</b></div>${c13html}
     </div><p class="muted" style="margin-top:8px">O 13º é pago à parte da folha mensal, com tributação exclusiva — não entra no líquido do mês acima.</p></div>`:'';
-  $('mFolha').innerHTML=H.lines.map(l=>`<div class="l"><span>${l.d}${l.ref?` <span style="font-size:11px">· ${l.ref}</span>`:''}</span>
-    <b class="${l.db!=null?'neg2':''}">${l.db!=null?'− '+brl(l.db):brl(l.cr)}</b></div>`).join('')+`
+  const conf=m.conf||{};
+  $('mFolha').innerHTML=H.lines.map(l=>{
+    const val=l.db!=null?'− '+brl(l.db):brl(l.cr!=null?l.cr:0);
+    const confable=!l.k.startsWith('_');
+    let sub='';
+    if(confable&&conf[l.k]!=null&&conf[l.k]!==''){
+      const appV=l.db!=null?l.db:(l.cr||0);
+      const dd=num(parseFloat(conf[l.k]))-appV;
+      sub=`<div class="hv"><b>Holerite: ${brl(num(parseFloat(conf[l.k])))}</b>${Math.abs(dd)<=0.05?'<span class="conf-diff pos">✓ confere</span>':`<span class="conf-diff neg">${dd>0?'+':''}${brl(dd)}</span>`}</div>`;
+    }
+    const inner=`<div class="l"><span>${l.d}${l.ref?` <span style="font-size:11px">· ${l.ref}</span>`:''}</span><b class="${l.db!=null?'neg2':''}">${val}</b></div>${sub}`;
+    return confable?`<button class="hline" onclick="openConf('${mk}','${l.k}')">${inner}</button>`:`<div class="hline">${inner}</div>`;
+  }).join('')+`
     <div class="sep"></div>
     <div class="l"><span>Total de créditos</span><b>${brl(H.totCr)}</b></div>
     <div class="l"><span>Total de débitos</span><b class="neg2">− ${brl(H.totDb)}</b></div>
     <div class="l tot"><span>Líquido</span><b>${brl(c.liquido)}</b></div>
     ${c.cesta?`<div class="l"><span>+ Vale cesta (benefício)</span><b>${brl(c.cesta)}</b></div>`:''}
     <div class="l muted" style="font-size:11.5px"><span>Bruto tributável ${brl(c.bruto)} · base IRPF ${brl(c.baseIR)} · valor-hora ${brl(c.vh)}</span></div>`;
-  const conf=m.conf||{};
-  $('mConf').innerHTML=CONF_FIELDS.map(f=>{
-    const a=f.app(c),v=conf[f.k]!=null?conf[f.k]:'';
-    let diffH='';
-    if(v!==''&&v!=null){const dd=num(parseFloat(v))-a;diffH=Math.abs(dd)<=0.05?'<span class="conf-diff pos">✓ confere</span>':`<span class="conf-diff neg">${dd>0?'+':''}${brl(dd)}</span>`}
-    return `<div class="confitem">
-      <div class="c1"><span>${f.lb}</span>${diffH}</div>
-      <div class="c2"><span class="app"><small>APP</small>${brl(a)}</span>
-      <input type="number" step="0.01" inputmode="decimal" placeholder="holerite" data-k="${f.k}" value="${v}" ${m.closed?'disabled':''} onchange="setConf('${mk}',this)"></div>
-    </div>`;
-  }).join('');
   const dv=confDiffs(mk),bad=dv.filter(x=>!x.ok);
-  $('mConfSummary').innerHTML=dv.length?(bad.length?`<div class="msg err" style="margin-top:8px"><b>${bad.length} divergência(s):</b> ${bad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Holerite confere com o app em todas as verbas preenchidas.</div>'):'';
+  $('mConfSummary').innerHTML=`<button class="btn ghost small" onclick="openConf('${mk}','liquido')">Conferir líquido do holerite${conf.liquido?` (${brl(num(parseFloat(conf.liquido)))})`:''}</button>`
+    +(dv.length?(bad.length?`<div class="msg err" style="margin-top:8px"><b>${bad.length} divergência(s):</b> ${bad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Holerite confere com o app em todas as verbas preenchidas.</div>'):'');
   $('btnFechar').textContent=m.closed?'Reabrir mês':'Fechar mês';
   $('pagDesc').disabled=$('pagVal').disabled=$('btnAddPag').disabled=m.closed;
 }
-function setConf(mk,el){
+async function openConf(mk,k){
   const m=getMonth(mk);
-  m.conf[el.dataset.k]=el.value===''?null:el.value;
+  if(m.closed){toast('Mês fechado — reabra para conferir.');return}
+  const f=CONF_FIELDS.find(x=>x.k===k);if(!f)return;
+  const c=computeMonth(mk);
+  const cur=m.conf[k]!=null?m.conf[k]:'';
+  const v=await ask(`Holerite — ${f.lb}`,
+    `Valor do app: <b class="mono">${brl(f.app(c))}</b>. Digite o valor que consta no holerite:`+
+    `<input type="number" step="0.01" inputmode="decimal" id="confInp" value="${cur}" style="margin-top:8px;font-family:var(--mono);text-align:right">`,
+    [{lb:'Salvar',val:'save'},{lb:'Limpar valor',cls:'warn',val:'clear'}]);
+  if(v===null)return;
+  if(v==='clear')m.conf[k]=null;
+  else{
+    const n=parseFloat(document.getElementById('confInp').value);
+    m.conf[k]=isFinite(n)?String(n):null;
+  }
   save();renderMonth();
 }
 $('mPrev').onclick=()=>{curMK=mAdd(curMK,-1);renderMonth()};
@@ -1288,9 +1314,9 @@ $('btnRelatorio').onclick=async()=>{
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Spline+Sans+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     @page{size:A4;margin:13mm}
-    :root{--teal:#0d3f39;--line:#c9d4d1;--soft:#5a6d68}
+    :root{--teal:#334155;--line:#cbd5e1;--soft:#64748b}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Spline Sans Mono',ui-monospace,monospace;font-size:11.5px;color:#141f1d;background:#fff}
+    body{font-family:'Spline Sans Mono',ui-monospace,monospace;font-size:11.5px;color:#1e293b;background:#fff}
     .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--teal);padding-bottom:8px;margin-bottom:14px}
     .head h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:19px;color:var(--teal);letter-spacing:-.02em}
     .head .sub{color:var(--soft);font-size:10.5px;text-align:right;line-height:1.5}
@@ -1304,15 +1330,15 @@ $('btnRelatorio').onclick=async()=>{
     .pos{color:#2c7a4b}.neg{color:#b23a31}
     .ref,.atv{color:var(--soft);font-size:10px}
     tr.tot td{border-top:2px solid var(--teal);border-bottom:none;font-weight:700;font-size:12px;padding-top:6px}
-    tr.liq td{border:none;background:#e9f1ef;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;padding:8px 6px}
+    tr.liq td{border:none;background:#e8edf5;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;padding:8px 6px}
     tr.divg td{background:#fbeae8}
     .alert{background:#fbeae8;color:#b23a31;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:600}
-    .okmsg{background:#e9f1ef;color:#2c7a4b;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:600}
+    .okmsg{background:#e8f1ea;color:#2c7a4b;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:600}
     .note{color:var(--soft);font-size:9.5px;margin-top:14px;border-top:1px solid var(--line);padding-top:6px;line-height:1.5}
     .basecalc td{border-bottom:1px dashed var(--line)}
   </style></head><body>
   <div class="head">
-    <h1>Relatório de ponto e folha<br><span style="font-weight:600;font-size:14px;text-transform:capitalize">${MESES[mm-1]} / ${y}</span></h1>
+    <h1>Relatório de ponto e folha<br><span style="font-weight:600;font-size:14px;text-transform:capitalize">${MESES[mm-1]} / ${y}</span>${S.nome?`<br><span style="font-weight:600;font-size:12px;color:#64748b;text-transform:none">${esc(S.nome)}${S.adm?' · admissão '+fmtDK(S.adm):''}</span>`:''}</h1>
     <div class="sub">Gerado em ${new Date().toLocaleString('pt-BR')}<br>${m.closed?'<b>MÊS FECHADO</b> — valores congelados':'Mês em aberto — valores estimados'}</div>
   </div>
   <h2>1 · Registro de ponto${incAtv?' e atividades':''}</h2>
@@ -1345,16 +1371,37 @@ $('btnRelatorio').onclick=async()=>{
 /* ================= CONFIG ================= */
 let vigIdx=null;
 function vigLabel(v){return v.desde==='1900-01'?'Inicial (desde o começo)':`Desde ${MESES[Number(v.desde.slice(5,7))-1]}/${v.desde.slice(0,4)}`}
+function idade(n){const t=todayKey();let a=Number(t.slice(0,4))-Number(n.slice(0,4));if(t.slice(5)<n.slice(5))a--;return a}
+function renderFilhosList(elId){
+  const el=$(elId);
+  el.innerHTML=S.filhos.map((f,i)=>`<div class="pagitem"><span>Nascido(a) em ${fmtDK(f.n)} · ${idade(f.n)} anos
+    ${idade(f.n)<14?'<span class="chip abonado">sal.-família</span>':''}${idade(f.n)<21?' <span class="chip task">dep. IRPF</span>':''}</span>
+    <button class="btn warn small" onclick="delFilho(${i},'${elId}')">×</button></div>`).join('')||'<p class="muted">Nenhum filho cadastrado.</p>';
+}
+async function delFilho(i,elId){
+  if(!await confirmS('Remover este filho?',''))return;
+  S.filhos.splice(i,1);save();renderFilhosList(elId);toast('Removido');
+}
+function addFilho(dateId,listId){
+  const n=$(dateId).value;
+  if(!n){toast('Escolha a data de nascimento.');return}
+  if(n>todayKey()){toast('Data no futuro.');return}
+  S.filhos.push({n});S.filhos.sort((a,b)=>a.n<b.n?-1:1);
+  $(dateId).value='';save();renderFilhosList(listId);toast('Filho adicionado');
+}
 function renderConfig(){
   if(vigIdx==null||vigIdx>=S.vig.length)vigIdx=S.vig.length-1;
   $('vigSel').innerHTML=S.vig.map((v,i)=>`<option value="${i}" ${i===vigIdx?'selected':''}>${vigLabel(v)}</option>`).join('');
   $('vigNewMonth').value=curMonthKey();
   const c=S.vig[vigIdx].cfg;
+  $('cNome').value=S.nome||'';
   $('cAdm').value=S.adm||'';
   $('cSalario').value=c.salario;$('cJornada').value=c.jornada;
   $('cBatidas').value=c.batidas;$('cAutoAlmoco').value=c.autoAlmoco;$('cAlmocoMin').value=c.almocoMin;
   $('cModoExtras').value=c.modoExtras;$('cPctExtra').value=c.pctExtra;$('cDsr').value=c.dsr;
-  $('cDepIR').value=c.depIR;$('cFilhos').value=c.filhos;$('cSfCota').value=c.sfCota;$('cSfLim').value=c.sfLim;$('cCesta').value=c.cesta;$('cFerCat').value=c.ferCat;
+  renderFilhosList('cFilhosList',true);
+  $('cDepExtra').value=S.depExtra||0;
+  $('cSfCota').value=c.sfCota;$('cSfLim').value=c.sfLim;$('cCesta').value=c.cesta;$('cFerCat').value=c.ferCat;
   $('cDedDep').value=c.dedDep;$('cRedIsen').value=c.redIsen;$('cRedGrad').value=c.redGrad;$('cRedA').value=c.redA;$('cRedB').value=c.redB;
   $('lblDedDep').textContent=num(c.dedDep).toFixed(2).replace('.',',');
   $('cEscala').innerHTML=[1,2,3,4,5,6,0].map(w=>`<div><label>${DSEM[w]}</label><input data-w="${w}" type="number" step="0.5" inputmode="decimal" value="${(num(c.escala[w])/60)}"></div>`).join('');
@@ -1419,11 +1466,12 @@ $('ferAdd').onclick=async()=>{
 async function delFerias(i){if(await confirmS('Remover período de férias?','')){S.ferias.splice(i,1);save();renderConfig();toast('Removido')}}
 $('btnSaveCfg').onclick=()=>{
   const c=S.vig[vigIdx].cfg;
+  S.nome=$('cNome').value.trim();
   S.adm=$('cAdm').value||'';
+  S.depExtra=parseInt($('cDepExtra').value)||0;
   c.salario=parseFloat($('cSalario').value)||0;c.jornada=parseFloat($('cJornada').value)||220;
   c.batidas=$('cBatidas').value;c.autoAlmoco=Number($('cAutoAlmoco').value);c.almocoMin=parseFloat($('cAlmocoMin').value)||0;
   c.modoExtras=$('cModoExtras').value;c.pctExtra=parseFloat($('cPctExtra').value)||0;c.dsr=Number($('cDsr').value);
-  c.depIR=parseInt($('cDepIR').value)||0;c.filhos=parseInt($('cFilhos').value)||0;
   c.sfCota=parseFloat($('cSfCota').value)||0;c.sfLim=parseFloat($('cSfLim').value)||0;c.cesta=parseFloat($('cCesta').value)||0;c.ferCat=Number($('cFerCat').value);
   c.dedDep=parseFloat($('cDedDep').value)||0;c.redIsen=parseFloat($('cRedIsen').value)||0;c.redGrad=parseFloat($('cRedGrad').value)||0;
   c.redA=parseFloat($('cRedA').value)||0;c.redB=parseFloat($('cRedB').value)||0;
@@ -1486,7 +1534,7 @@ function tick(){const d=new Date();
   if(curView==='home'){
     $('punchLabel').textContent=punchState();
     const w=workedNowMin();
-    $('punchWorked').textContent=w.n?`hoje: ${min2hm(w.w)}${w.open?' ⏱':''}`:'';
+    $('punchWorked').textContent=w.n?`hoje: ${min2hm(w.w)}${w.open?' ⏱':''} · ${w.n} batida${w.n>1?'s':''}`:'';
   }
 }
 setInterval(tick,1000);tick();
@@ -1535,16 +1583,18 @@ function isFresh(){
 }
 $('obStart').onclick=()=>{
   const adm=$('obAdm').value, sal=parseFloat($('obSalario').value);
-  const dep=parseInt($('obDepIR').value)||0, fil=parseInt($('obFilhos').value)||0;
+  S.nome=$('obNome').value.trim();
   if(adm)S.adm=adm;
   const c=S.vig[S.vig.length-1].cfg;
   if(isFinite(sal)&&sal>0)c.salario=sal;
-  c.depIR=dep;c.filhos=fil;
   S.onboarded=true;save();
-  toast('Tudo pronto — bom trabalho!');
+  toast(S.nome?`Tudo pronto, ${S.nome.split(' ')[0]}!`:'Tudo pronto!');
   go('home');
 };
+$('obFilhoAdd').onclick=()=>addFilho('obFilhoData','obFilhosList');
 $('obImport').onclick=()=>$('fileImport').click();
+renderFilhosList('obFilhosList');
+$('cFilhoAdd').onclick=()=>addFilho('cFilhoData','cFilhosList');
 
 applyTheme();
 if(!Object.keys(S.holidays).length&&navigator.onLine)fetchFeriados().catch(()=>{});
