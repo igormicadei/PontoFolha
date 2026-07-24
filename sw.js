@@ -1,5 +1,5 @@
 /* Ponto & Folha — service worker: app offline após a 1ª visita */
-const CACHE='pontofolha-v7';
+const CACHE='pontofolha-v9';
 const CORE=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));

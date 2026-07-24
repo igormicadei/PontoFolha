@@ -82,12 +82,16 @@ label.f input,label.f select{margin-top:4px;font-weight:500;color:var(--ink)}
 .chip.rec{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
 /* botão de ponto */
 .punch-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 4px}
-#btnPunch{--p:0;position:relative;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5b6b82,#475569 55%,#1e293b);color:#fff;
+.punch-outer{--p:0;padding:8px;border-radius:50%;
+  background:conic-gradient(#e8a13d calc(var(--p)*360deg),transparent 0);
+  transition:transform .08s}
+.punch-outer:active{transform:translateY(8px)}
+#btnPunch{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5b6b82,#475569 55%,#1e293b);color:#fff;
   box-shadow:0 10px 0 #0b1220,0 14px 24px rgba(15,23,42,.38);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  transition:transform .08s,box-shadow .08s;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
-#btnPunch::before{content:'';position:absolute;inset:-8px;border-radius:50%;z-index:-1;
-  background:conic-gradient(#e8a13d calc(var(--p)*360deg),transparent 0)}
-#btnPunch:active{transform:translateY(8px);box-shadow:0 2px 0 #0b1220,0 4px 10px rgba(15,23,42,.38)}
+  transition:box-shadow .08s;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent}
+#btnPunch:focus:not(:focus-visible){outline:none}
+#btnPunch:active{box-shadow:0 2px 0 #0b1220,0 4px 10px rgba(15,23,42,.38)}
 #btnPunch .big{font-size:16px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
 #btnPunch .sub{font-family:var(--mono);font-size:12px;color:#cbd5e1;font-weight:500}
 #btnPunch .wkd{font-family:var(--mono);font-size:11px;color:#94a3b8}
@@ -95,7 +99,7 @@ label.f input,label.f select{margin-top:4px;font-weight:500;color:var(--ink)}
 body.onboarding nav{display:none}
 .stamp{margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);min-height:30px;display:flex;gap:10px;align-items:center}
 .stamp button{background:var(--amber-tint);color:var(--amber-deep);padding:5px 12px;font-size:12px}
-@media (prefers-reduced-motion:reduce){#btnPunch{transition:none}}
+@media (prefers-reduced-motion:reduce){#btnPunch,.punch-outer{transition:none}}
 .punches-today{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
 .punches-today span{font-family:var(--mono);font-weight:600;background:var(--teal-tint);color:var(--teal-deep);border-radius:8px;padding:4px 9px;font-size:13px}
 /* tarefas */
@@ -207,11 +211,13 @@ details.cfgsec .inner{padding:0 14px 14px}
   <section id="view-home">
     <div id="homeBackup"></div>
     <div class="punch-wrap">
-      <button id="btnPunch" aria-label="Bater ponto agora">
+      <div class="punch-outer" id="punchOuter">
+      <button id="btnPunch" aria-label="Segure para bater o ponto">
         <span class="big" id="punchLabel">Bater ponto</span>
         <span class="sub" id="punchClock">--:--</span>
         <span class="wkd" id="punchWorked"></span>
       </button>
+      </div>
       <div class="punch-hint">segure 2s para registrar</div>
       <div class="stamp" id="stampMsg"></div>
       <div class="punches-today" id="todayPunches"></div>
@@ -251,6 +257,12 @@ details.cfgsec .inner{padding:0 14px 14px}
     <div class="card">
       <h2>Provisões</h2>
       <div class="hol" id="jProv"></div>
+    </div>
+    <div class="card">
+      <h2>Férias</h2>
+      <div id="jFerias"></div>
+      <button class="btn sec small" style="margin-top:10px" id="btnNovaFerias">+ Programar férias</button>
+      <p class="muted" style="margin-top:8px">As férias podem ser divididas em até 3 períodos no ano, sendo um deles de pelo menos 14 dias. O app marca os dias, calcula o valor (pagamento até 2 dias antes do início) e o impacto na folha do mês.</p>
     </div>
     <h2>Meses</h2>
     <div id="monthList"></div>
@@ -380,19 +392,6 @@ details.cfgsec .inner{padding:0 14px 14px}
       </div>
       <label class="f hidden" id="c13Unica">Pagamento até (dia/mês)<input id="c13DU" placeholder="20/12"></label>
       <p class="muted">Padrão legal: 1ª parcela (adiantamento, sem descontos) até 30/11; 2ª até 20/12, com INSS e IRPF sobre o 13º integral.</p>
-    </div></details>
-
-    <details class="cfgsec"><summary>Férias <span class="chip task">global</span></summary><div class="inner">
-      <p class="muted" style="margin-bottom:8px">Cadastre o período: o app marca os dias, calcula o valor (pagamento até 2 dias antes) e o impacto na folha do mês.</p>
-      <div id="feriasList"></div>
-      <div class="grid2" style="margin-top:8px">
-        <label class="f">Início<input type="date" id="ferIni"></label>
-        <label class="f">Fim (último dia)<input type="date" id="ferFim"></label>
-      </div>
-      <div class="row">
-        <label class="f" style="flex:2;margin-bottom:0">Dias vendidos (abono, máx. 10)<input type="number" id="ferVend" value="0" min="0" max="10"></label>
-        <button class="btn small" style="flex:none;align-self:flex-end" id="ferAdd">Adicionar</button>
-      </div>
     </div></details>
 
     <details class="cfgsec"><summary>Aparência <span class="chip task">global</span></summary><div class="inner">
@@ -562,6 +561,19 @@ function depIRCount(mk,cfg){
 /* ================= toast + diálogos ================= */
 let toastT=null;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2800)}
+/* overlays integrados ao histórico: botão voltar fecha o sheet aberto */
+const modalStack=[];
+let ignorePop=0;
+function openOverlay(elId,onBackCancel){
+  $(elId).classList.remove('hidden');
+  modalStack.push({elId,onBackCancel});
+  try{history.pushState({modal:1},'')}catch(e){}
+}
+function closeOverlay(){ // fechamento via UI (botões)
+  const m=modalStack.pop();if(!m)return;
+  $(m.elId).classList.add('hidden');
+  ignorePop++;try{history.back()}catch(e){}
+}
 function ask(title,body,btns){ // btns: [{lb, cls, val}] → Promise<val|null>
   return new Promise(res=>{
     $('askTitle').textContent=title;
@@ -570,10 +582,10 @@ function ask(title,body,btns){ // btns: [{lb, cls, val}] → Promise<val|null>
     btns.concat([{lb:'Cancelar',cls:'ghost',val:null}]).forEach(b=>{
       const el=document.createElement('button');
       el.className='btn '+(b.cls||'');el.textContent=b.lb;
-      el.onclick=()=>{$('askModal').classList.add('hidden');res(b.val)};
+      el.onclick=()=>{closeOverlay();res(b.val)};
       box.appendChild(el);
     });
-    $('askModal').classList.remove('hidden');
+    openOverlay('askModal',()=>res(null));
   });
 }
 function confirmS(title,body){return ask(title,body,[{lb:'Confirmar',cls:'warn',val:true}]).then(v=>v===true)}
@@ -696,7 +708,7 @@ function taskSheet(cur,dk,isRec){
     $('tkTxt').value=cur||'';
     $('tkDate').value=dk||todayKey();
     $('tkRecHint').classList.toggle('hidden',!isRec);
-    $('taskModal').classList.remove('hidden');
+    openOverlay('taskModal',()=>{if(taskSheetRes){taskSheetRes(null);taskSheetRes=null}});
     setTimeout(()=>$('tkTxt').focus(),50);
   });
 }
@@ -879,7 +891,10 @@ function confDiffs(mk){
 
 /* ================= navegação ================= */
 let curView='home',curMK=curMonthKey();
-function go(v,mk){curView=v;if(mk)curMK=mk;
+function go(v,mk,fromPop){
+  const changed=v!==curView||(mk&&mk!==curMK);
+  curView=v;if(mk)curMK=mk;
+  if(!fromPop&&changed){try{history.pushState({v,mk:curMK},'')}catch(e){}}
   ['onboard','home','tasks','jornada','month','config'].forEach(x=>$('view-'+x).classList.toggle('hidden',x!==v));
   document.querySelector('nav').classList.toggle('hidden',v==='onboard');
   $('navHome').classList.toggle('on',v==='home');
@@ -1015,11 +1030,11 @@ $('ntAdd').onclick=()=>{
 };
 $('tkSave').onclick=()=>{
   const t=$('tkTxt').value.trim(),date=$('tkDate').value;
-  $('taskModal').classList.add('hidden');
+  closeOverlay();
   if(taskSheetRes){taskSheetRes(t&&date?{t,date}:null);taskSheetRes=null}
 };
 $('tkCancel').onclick=()=>{
-  $('taskModal').classList.add('hidden');
+  closeOverlay();
   if(taskSheetRes){taskSheetRes(null);taskSheetRes=null}
 };
 
@@ -1044,6 +1059,17 @@ function renderJornada(){
   }
   prov+=`<div class="l muted" style="font-size:11.5px"><span>Base: salário vigente + média de extras do ano (${brl(baseMensal)})</span></div>`;
   $('jProv').innerHTML=prov;
+  // férias
+  const tkNow=todayKey();
+  $('jFerias').innerHTML=S.ferias.map((f,i)=>{
+    const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
+    const st=f.fim<tkNow?['fechado','concluídas']:(f.ini<=tkNow?['abonado','em curso']:['ferias','agendadas']);
+    const warn=(S.adm&&f.ini<yAdd(S.adm,1))?' <span class="chip pend">antes do 1º aquisitivo</span>':'';
+    return `<button class="mcard" style="margin-bottom:8px" onclick="openFerias(${i})">
+      <div><div class="t" style="text-transform:none">${fmtDK(f.ini)} → ${fmtDK(f.fim)} <span class="chip ${st[0]}">${st[1]}</span>${warn}</div>
+      <div class="v">${fc.dias} dias de gozo${f.vendidos?` + ${f.vendidos} vendidos`:''} · pagto até ${fmtDK(fc.prazo)}</div></div>
+      <div class="liq">${brl(fc.liq)}</div></button>`;
+  }).join('')||'<p class="muted">Nenhum período programado. Toque no botão para agendar.</p>';
   const keys=new Set(Object.keys(S.months));keys.add(curMonthKey());
   const list=[...keys].sort().reverse();
   $('monthList').innerHTML=list.map(k=>{
@@ -1226,7 +1252,7 @@ function openDay(dk){
   $('dmPunches').innerHTML='';
   (rec.p||[]).forEach(p=>addPunchRow(p));
   renderDmTasks(dk);
-  $('dayModal').classList.remove('hidden');
+  openOverlay('dayModal',null);
 }
 function renderDmTasks(dk){
   const recs=recOccur(dk);
@@ -1252,11 +1278,11 @@ $('dmTaskAdd').onclick=()=>{
   const t=$('dmTaskTxt').value.trim();if(!t)return;
   editTasks.push({t,ok:false});$('dmTaskTxt').value='';renderDmTasks(editDK);
 };
-$('dmCancel').onclick=()=>$('dayModal').classList.add('hidden');
+$('dmCancel').onclick=()=>closeOverlay();
 $('dmClear').onclick=async()=>{
   if(!await confirmS('Limpar o dia?','Remove batidas, tipo, observação e tarefas pontuais deste dia.'))return;
   delete getMonth(editDK.slice(0,7)).days[editDK];save();
-  $('dayModal').classList.add('hidden');rerenderAll();toast('Dia limpo');
+  closeOverlay();rerenderAll();toast('Dia limpo');
 };
 $('dmSave').onclick=()=>{
   const ps=[...$('dmPunches').querySelectorAll('input')].map(i=>i.value).filter(Boolean).sort();
@@ -1265,7 +1291,7 @@ $('dmSave').onclick=()=>{
   if(ps.length||type!=='auto'||note||editTasks.length){
     m.days[editDK]={p:ps,type:type==='auto'?undefined:type,note:note||undefined,tasks:editTasks.length?editTasks:undefined};
   }else delete m.days[editDK];
-  save();$('dayModal').classList.add('hidden');rerenderAll();
+  save();closeOverlay();rerenderAll();
 };
 function rerenderAll(){renderMonth();renderHome()}
 
@@ -1412,13 +1438,6 @@ function renderConfig(){
   $('c13Modo').value=S.c13.modo;$('c13D1').value=S.c13.d1;$('c13D2').value=S.c13.d2;$('c13DU').value=S.c13.dU;
   toggle13();
   $('cTheme').value=S.ui.theme;
-  const aq=aquisitivo();
-  $('feriasList').innerHTML=S.ferias.map((f,i)=>{
-    const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
-    const warn=(S.adm&&f.ini<yAdd(S.adm,1))?' <span class="chip pend">antes do 1º aquisitivo</span>':'';
-    return `<div class="pagitem"><span>${fmtDK(f.ini)} → ${fmtDK(f.fim)} (${fc.dias}d${f.vendidos?` + ${f.vendidos} vendidos`:''})${warn}</span>
-      <span class="mono">${brl(fc.liq)} <button class="btn warn small" onclick="delFerias(${i})">×</button></span></div>`;
-  }).join('')||'<p class="muted">Nenhum período cadastrado.</p>';
   $('lblFeriados').textContent=Object.keys(S.holidays).join(', ')||'nenhum';
 }
 function toggle13(){const duas=$('c13Modo').value==='2';$('c13Duas').classList.toggle('hidden',!duas);$('c13Unica').classList.toggle('hidden',duas)}
@@ -1450,20 +1469,35 @@ function irrfRow(ate,aliq,ded){const tr=document.createElement('tr');
   tr.innerHTML=`<td><input type="number" step="0.01" value="${ate>=999999999?'':ate}" placeholder="∞"></td><td><input type="number" step="0.5" value="${aliq}"></td><td><input type="number" step="0.01" value="${ded}"></td><td><button class="btn warn small" onclick="this.closest('tr').remove()">×</button></td>`;
   $('tIrrf').appendChild(tr)}
 function addIrrfRow(){irrfRow('','','')}
-$('ferAdd').onclick=async()=>{
-  const ini=$('ferIni').value,fim=$('ferFim').value,vend=parseInt($('ferVend').value)||0;
+async function openFerias(i){
+  const edit=i!=null&&i>=0, f=edit?S.ferias[i]:{ini:'',fim:'',vendidos:0};
+  const btns=[{lb:edit?'Salvar':'Programar',val:'save'}];
+  if(edit)btns.push({lb:'Excluir período',cls:'warn',val:'del'});
+  const v=await ask(edit?'Editar férias':'Programar férias',
+    `<label class="f">Início<input type="date" id="fsIni" value="${f.ini}"></label>
+     <label class="f">Fim (último dia de descanso)<input type="date" id="fsFim" value="${f.fim}"></label>
+     <label class="f">Dias vendidos (abono, máx. 10)<input type="number" id="fsVend" min="0" max="10" inputmode="numeric" value="${f.vendidos||0}"></label>`,
+    btns);
+  if(v===null)return;
+  if(v==='del'){
+    if(await confirmS('Excluir este período de férias?','Os dias voltam a contar como dias normais de trabalho.')){
+      S.ferias.splice(i,1);save();rerender();toast('Período excluído');
+    }
+    return;
+  }
+  const ini=$('fsIni').value,fim=$('fsFim').value,vend=parseInt($('fsVend').value)||0;
   if(!ini||!fim||fim<ini){toast('Preencha início e fim válidos.');return}
   if(vend<0||vend>10){toast('Abono: no máximo 10 dias.');return}
-  if(S.ferias.some(f=>ini<=f.fim&&fim>=f.ini)){toast('Período cruza com férias já cadastradas.');return}
+  if(S.ferias.some((x,k)=>k!==i&&ini<=x.fim&&fim>=x.ini)){toast('Período cruza com férias já cadastradas.');return}
   if(S.adm&&ini<yAdd(S.adm,1)){
-    if(!await confirmS('Antes do 1º período aquisitivo','O direito ao gozo de férias só se completa em '+fmtDK(yAdd(S.adm,1))+'. Cadastrar mesmo assim?'))return;
+    if(!await confirmS('Antes do 1º período aquisitivo','O direito ao gozo de férias só se completa em '+fmtDK(yAdd(S.adm,1))+'. Programar mesmo assim?'))return;
   }
-  S.ferias.push({ini,fim,vendidos:vend});
+  if(edit)S.ferias[i]={ini,fim,vendidos:vend};
+  else S.ferias.push({ini,fim,vendidos:vend});
   S.ferias.sort((a,b)=>a.ini<b.ini?-1:1);
-  $('ferIni').value='';$('ferFim').value='';$('ferVend').value='0';
-  save();renderConfig();toast('Férias cadastradas');
-};
-async function delFerias(i){if(await confirmS('Remover período de férias?','')){S.ferias.splice(i,1);save();renderConfig();toast('Removido')}}
+  save();rerender();toast(edit?'Férias atualizadas':'Férias programadas');
+}
+$('btnNovaFerias').onclick=()=>openFerias(-1);
 $('btnSaveCfg').onclick=()=>{
   const c=S.vig[vigIdx].cfg;
   S.nome=$('cNome').value.trim();
@@ -1541,7 +1575,7 @@ setInterval(tick,1000);tick();
 /* ---- segurar para bater o ponto (2s) ---- */
 const HOLD_MS=2000;
 let holdStart=null,holdRAF=null,holdFired=false;
-function setRing(p){$('btnPunch').style.setProperty('--p',String(Math.min(1,Math.max(0,p))))}
+function setRing(p){$('punchOuter').style.setProperty('--p',String(Math.min(1,Math.max(0,p))))}
 function holdStep(ts){
   if(holdStart==null)return;
   const p=(performance.now()-holdStart)/HOLD_MS;
@@ -1567,6 +1601,7 @@ function holdEnd(){
 {
   const b=$('btnPunch');
   b.onclick=null;
+  b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
   b.addEventListener('pointerdown',holdBegin);
   b.addEventListener('pointerup',holdEnd);
   b.addEventListener('pointercancel',holdEnd);
@@ -1600,7 +1635,21 @@ applyTheme();
 if(!Object.keys(S.holidays).length&&navigator.onLine)fetchFeriados().catch(()=>{});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
-go(isFresh()?'onboard':'home');
+window.addEventListener('popstate',e=>{
+  if(ignorePop>0){ignorePop--;return}
+  if(modalStack.length){
+    const m=modalStack.pop();
+    $(m.elId).classList.add('hidden');
+    if(m.onBackCancel)m.onBackCancel();
+    return;
+  }
+  const s=(e&&e.state)||{v:'home',mk:curMonthKey()};
+  if(s.modal)return;
+  go(s.v||'home',s.mk,true);
+});
+const _v0=isFresh()?'onboard':'home';
+try{history.replaceState({v:_v0,mk:curMK},'')}catch(e){}
+go(_v0,null,true);
 
 </script>
 </body>
