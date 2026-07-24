@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1e293b">
+<meta name="theme-color" content="#f3f2f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#201e1d" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,117 +14,124 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Spline+Sans+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1e293b; --ink-soft:#64748b; --bg:#eef1f5; --card:#ffffff;
-  --teal:#475569; --teal-deep:#1e293b; --teal-tint:#e2e8f0; --teal-head:#1e293b; --head-tx:#f1f5f9; --head-sub:#94a3b8;
-  --amber:#e8a13d; --amber-tint:#f6eeda; --amber-deep:#8a6d1f;
-  --red:#c4453c; --red-tint:#f8e5e3;
-  --green:#2c7a4b; --green-tint:#e3efe7; --line:#d8dee8;
-  --chip-fer-bg:#ece7f6; --chip-fer-tx:#5b4a9e; --chip-vac-bg:#e0eaf6; --chip-vac-tx:#33608f;
-  --mono:'Spline Sans Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ink:#201e1d; --ink-soft:#7d7979; --bg:#f3f2f2; --card:#eae9e9;
+  --teal:#ec3013; --teal-deep:#ae1800; --teal-tint:#eae7e7; --teal-head:#f3f2f2; --head-tx:#201e1d; --head-sub:#7d7979;
+  --amber:#b8791f; --amber-tint:#f5ecd8; --amber-deep:#7a4f11;
+  --red:#ae1800; --red-tint:#fff2ef;
+  --green:#2f7a4a; --green-tint:#e6efe4; --line:#9b9797;
+  --chip-fer-bg:#fff2ef; --chip-fer-tx:#7c1405; --chip-vac-bg:#eae7e7; --chip-vac-tx:#444141;
+  --punch-fill:#ec3013; --red-solid:#ae1800;
+  --mono:'Archivo',system-ui,sans-serif;
   --disp:'Archivo',system-ui,sans-serif;
-  --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --body:'Archivo',system-ui,sans-serif;
 }
 html[data-theme=dark]{
-  --ink:#e2e8f0; --ink-soft:#94a3b8; --bg:#0f172a; --card:#1c2739;
-  --teal:#475569; --teal-deep:#a8b8cf; --teal-tint:#263449; --teal-head:#0b1322; --head-tx:#e2e8f0; --head-sub:#7d8ba1;
-  --amber-tint:#33290f; --amber-deep:#dcb668;
-  --red:#e07a72; --red-tint:#3a2220;
-  --green:#6cc394; --green-tint:#1b2f28; --line:#2e3b52;
-  --chip-fer-bg:#2b2440; --chip-fer-tx:#c0aee8; --chip-vac-bg:#1b2c42; --chip-vac-tx:#8fb6e0;
+  --ink:#f8f4f4; --ink-soft:#9b9797; --bg:#2d2b2b; --card:#444141;
+  --teal:#ff9783; --teal-deep:#ffc4b8; --teal-tint:#605d5d; --teal-head:#2d2b2b; --head-tx:#f8f4f4; --head-sub:#9b9797;
+  --amber-tint:#3a2f18; --amber-deep:#e0ab5c;
+  --red:#ff9783; --red-tint:#3a2420;
+  --green:#7fc79c; --green-tint:#1f3126; --line:#605d5d;
+  --chip-fer-bg:#4d170e; --chip-fer-tx:#ffe0d9; --chip-vac-bg:#605d5d; --chip-vac-tx:#f8f4f4;
 }
 @media (prefers-color-scheme:dark){
   html[data-theme=sys]{
-    --ink:#e2e8f0; --ink-soft:#94a3b8; --bg:#0f172a; --card:#1c2739;
-    --teal:#475569; --teal-deep:#a8b8cf; --teal-tint:#263449; --teal-head:#0b1322; --head-tx:#e2e8f0; --head-sub:#7d8ba1;
-    --amber-tint:#33290f; --amber-deep:#dcb668;
-    --red:#e07a72; --red-tint:#3a2220;
-    --green:#6cc394; --green-tint:#1b2f28; --line:#2e3b52;
-    --chip-fer-bg:#2b2440; --chip-fer-tx:#c0aee8; --chip-vac-bg:#1b2c42; --chip-vac-tx:#8fb6e0;
+    --ink:#f8f4f4; --ink-soft:#9b9797; --bg:#2d2b2b; --card:#444141;
+    --teal:#ff9783; --teal-deep:#ffc4b8; --teal-tint:#605d5d; --teal-head:#2d2b2b; --head-tx:#f8f4f4; --head-sub:#9b9797;
+    --amber-tint:#3a2f18; --amber-deep:#e0ab5c;
+    --red:#ff9783; --red-tint:#3a2420;
+    --green:#7fc79c; --green-tint:#1f3126; --line:#605d5d;
+    --chip-fer-bg:#4d170e; --chip-fer-tx:#ffe0d9; --chip-vac-bg:#605d5d; --chip-vac-tx:#f8f4f4;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
-body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.45}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.45;font-variant-numeric:tabular-nums}
 .app{max-width:520px;margin:0 auto;padding:0 14px calc(84px + env(safe-area-inset-bottom))}
-header.top{background:var(--teal-head);color:var(--head-tx);margin:0 -14px 16px;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;display:flex;justify-content:space-between;align-items:baseline}
+header.top{background:var(--teal-head);color:var(--head-tx);margin:0 -14px 16px;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink)}
 header.top h1{font-family:var(--disp);font-weight:800;font-size:19px;letter-spacing:-.02em}
+header.top h1 .amp{color:var(--teal)}
 header.top .clock{font-family:var(--mono);font-size:14px;color:var(--head-sub)}
-h2{font-family:var(--disp);font-weight:700;font-size:16px;margin:20px 0 10px;letter-spacing:-.01em}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-family:var(--disp);font-weight:800;font-size:15px;margin:20px 0 10px;letter-spacing:.01em;text-transform:uppercase}
+.card{background:var(--card);border:2px solid var(--line);border-radius:0;padding:14px;margin-bottom:12px}
 .card h2:first-child{margin-top:0}
 .muted{color:var(--ink-soft);font-size:13px}
-.mono{font-family:var(--mono)}
-button{font-family:var(--disp);font-weight:700;border:none;border-radius:10px;cursor:pointer;font-size:14px;color:var(--ink)}
-.btn{background:var(--teal);color:#fff;padding:11px 16px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font-family:var(--disp);font-weight:800;border:none;border-radius:0;cursor:pointer;font-size:14px;color:var(--ink)}
+.btn{background:var(--teal);color:var(--bg);padding:11px 16px}
 .btn.sec{background:var(--teal-tint);color:var(--teal-deep)}
-.btn.ghost{background:transparent;color:var(--teal-deep);border:1.5px solid var(--line)}
+.btn.ghost{background:transparent;color:var(--teal-deep);border:2px solid var(--line)}
 .btn.warn{background:var(--red-tint);color:var(--red)}
 .btn.small{padding:7px 12px;font-size:13px}
 .btn:disabled{opacity:.45;cursor:default}
-input,select{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:9px;padding:9px 10px;width:100%}
-input:focus,select:focus,button:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:0;padding:9px 10px;width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
 input[type=checkbox]{width:19px;height:19px;accent-color:var(--teal);flex:none}
-label.f{display:block;margin-bottom:10px;font-size:13px;font-weight:600;color:var(--ink-soft)}
-label.f input,label.f select{margin-top:4px;font-weight:500;color:var(--ink)}
+label.f{display:block;margin-bottom:10px;font-size:11.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em}
+label.f input,label.f select{margin-top:5px;font-weight:500;color:var(--ink);text-transform:none;letter-spacing:normal}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{flex:1}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chip{display:inline-block;font-size:11px;font-weight:700;font-family:var(--disp);padding:2.5px 8px;border-radius:99px;letter-spacing:.02em}
+.chip{display:inline-block;font-size:10.5px;font-weight:800;font-family:var(--disp);padding:3px 8px;border-radius:0;letter-spacing:.03em;text-transform:uppercase}
 .chip.feriado{background:var(--chip-fer-bg);color:var(--chip-fer-tx)}
 .chip.ferias{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
 .chip.abonado{background:var(--green-tint);color:var(--green)}
-.chip.falta{background:var(--red-tint);color:var(--red)}
+.chip.falta{background:var(--red-solid);color:#fff}
 .chip.fechado{background:var(--ink);color:var(--bg)}
 .chip.pend{background:var(--amber-tint);color:var(--amber-deep)}
 .chip.task{background:var(--teal-tint);color:var(--teal-deep)}
 .chip.rec{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
-/* botão de ponto */
-.punch-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 4px}
-.punch-outer{--p:0;padding:8px;border-radius:50%;
-  background:conic-gradient(#e8a13d calc(var(--p)*360deg),transparent 0);
-  transition:transform .08s}
-.punch-outer:active{transform:translateY(8px)}
-#btnPunch{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5b6b82,#475569 55%,#1e293b);color:#fff;
-  box-shadow:0 10px 0 #0b1220,0 14px 24px rgba(15,23,42,.38);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  transition:box-shadow .08s;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent}
+/* botão de ponto — cartão de jornada com alavanca, estilo relógio de ponto mecânico */
+.tcard{text-align:center}
+.tcard-kicker{font-family:var(--disp);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);opacity:.75;margin-bottom:14px}
+.pf-punchcard-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.pf-punchcard-clock{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);opacity:.7}
+.punchcard2{display:flex;gap:16px;align-items:flex-start;text-align:left}
+.punch-slots{flex:1;min-width:0;display:flex;flex-direction:column}
+.pf-slot-row{padding:8px 2px;border-bottom:1px dashed var(--line)}
+.pf-slot-row:last-child{border-bottom:none}
+.pf-slot-time{font-family:var(--mono);font-weight:800;font-variant-numeric:tabular-nums;font-size:13px;color:#ae1800;background:#fff2ef;border:1.5px solid #ae1800;padding:2px 8px;display:inline-block;transform:rotate(-3deg)}
+.pf-slot-empty{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;color:var(--ink-soft);opacity:.4}
+.punch-outer{--p:0;flex:none;display:flex;flex-direction:column;align-items:center;gap:8px}
+.lever-label{font-family:var(--disp);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);text-align:center}
+#btnPunch{position:relative;width:46px;height:168px;background:#f3f2f2;border:2px solid #201e1d;padding:0;overflow:hidden;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+.lever-ticks{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;color:#201e1d;opacity:.25;font-size:11px;pointer-events:none}
 #btnPunch:focus:not(:focus-visible){outline:none}
-#btnPunch:active{box-shadow:0 2px 0 #0b1220,0 4px 10px rgba(15,23,42,.38)}
-#btnPunch .big{font-size:16px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
-#btnPunch .sub{font-family:var(--mono);font-size:12px;color:#cbd5e1;font-weight:500}
-#btnPunch .wkd{font-family:var(--mono);font-size:11px;color:#94a3b8}
-.punch-hint{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-top:10px}
+.lever-grip{position:absolute;left:-2px;right:-2px;top:calc(var(--p,0) * 122px);height:40px;background:var(--punch-fill);
+  border-top:2px solid #201e1d;border-bottom:2px solid #201e1d;transition:top .05s linear;z-index:1}
+.lever-grip::before{content:'';position:absolute;top:50%;left:50%;width:18px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 -6px 0 #fff;transform:translate(-50%,-50%)}
+.lever-caption{font-family:var(--disp);font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);opacity:.55}
+.pf-punchcard-worked{text-align:center;font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-top:14px;min-height:1px}
 body.onboarding nav{display:none}
-.stamp{margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);min-height:30px;display:flex;gap:10px;align-items:center}
+.stamp{margin-top:10px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);min-height:30px;display:flex;gap:10px;align-items:center;justify-content:center}
 .stamp button{background:var(--amber-tint);color:var(--amber-deep);padding:5px 12px;font-size:12px}
-@media (prefers-reduced-motion:reduce){#btnPunch,.punch-outer{transition:none}}
-.punches-today{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
-.punches-today span{font-family:var(--mono);font-weight:600;background:var(--teal-tint);color:var(--teal-deep);border-radius:8px;padding:4px 9px;font-size:13px}
+@media (prefers-reduced-motion:reduce){.lever-grip{transition:none}}
+.theme-btn{background:none;border:1.5px solid var(--line);width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--head-tx);padding:0}
 /* tarefas */
-.task-item{display:flex;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.task-item{display:flex;gap:9px;align-items:center;padding:8px 0;border-bottom:1.5px solid var(--line);font-size:14px}
 .task-item:last-child{border-bottom:none}
 .task-item.done span.t{text-decoration:line-through;color:var(--ink-soft)}
 .task-item span.t{flex:1;min-width:0;overflow-wrap:anywhere}
 .task-item .icon{background:none;color:var(--ink-soft);font-size:14px;padding:3px 6px;flex:none}
 .task-item .icon.del{color:var(--red)}
-.tgroup{font-family:var(--disp);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:16px 0 4px}
+.tgroup{font-family:var(--disp);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:16px 0 4px}
 .tgroup.over{color:var(--red)}
 .tdate{font-family:var(--mono);font-size:11px;color:var(--ink-soft);flex:none;width:74px}
-details.done-sec summary{font-family:var(--disp);font-weight:700;font-size:13px;color:var(--ink-soft);cursor:pointer;padding:8px 0}
+details.done-sec summary{font-family:var(--disp);font-weight:800;font-size:12.5px;color:var(--ink-soft);cursor:pointer;padding:8px 0;text-transform:uppercase;letter-spacing:.03em}
 /* meses */
-.mcard{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:9px;font-family:var(--body);font-weight:500}
-.mcard .t{font-family:var(--disp);font-weight:700;font-size:15px;text-transform:capitalize}
+.mcard{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:0;padding:13px 14px;margin-bottom:9px;font-family:var(--body);font-weight:500}
+.mcard .t{font-family:var(--disp);font-weight:800;font-size:15px;text-transform:capitalize}
 .mcard .v{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
-.mcard .liq{font-family:var(--mono);font-weight:700;color:var(--teal-deep)}
+.mcard .liq{font-family:var(--mono);font-weight:800;color:var(--teal-deep)}
 /* dias */
-.day{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:9px 2px;font-family:var(--body);font-weight:400;border-radius:0;color:var(--ink)}
+.day{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:none;border-bottom:1.5px solid var(--line);padding:9px 2px;font-family:var(--body);font-weight:400;border-radius:0;color:var(--ink)}
 .day:last-child{border-bottom:none}
-.day.today{background:var(--teal-tint);border-radius:10px;padding:9px 8px;margin:2px -6px}
-.day .dn{font-family:var(--mono);font-weight:700;font-size:14px;width:44px;flex-shrink:0;color:var(--teal-deep)}
-.day .dn small{display:block;font-size:10px;font-weight:500;color:var(--ink-soft);text-transform:uppercase}
+.day.today{background:var(--teal-tint);border-radius:0;padding:9px 8px;margin:2px -6px}
+.day .dn{font-family:var(--mono);font-weight:800;font-size:14px;width:44px;flex-shrink:0;color:var(--teal-deep)}
+.day .dn small{display:block;font-size:10px;font-weight:600;color:var(--ink-soft);text-transform:uppercase}
 .day .mid{flex:1;min-width:0}
 .day .pts{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);overflow-wrap:anywhere}
 .day .hrs{font-family:var(--mono);font-size:13px;font-weight:600;flex-shrink:0;text-align:right}
@@ -133,60 +141,68 @@ details.done-sec summary{font-family:var(--disp);font-weight:700;font-size:13px;
 .hol{font-family:var(--mono);font-size:13.5px}
 .hol .l{display:flex;justify-content:space-between;padding:3.5px 0;gap:8px}
 .hol .l span:first-child{color:var(--ink-soft)}
-.hol .sep{border-top:1.5px dashed var(--line);margin:7px 0}
-.hol .tot{font-weight:700;font-size:15px}
+.hol .sep{border-top:2px dashed var(--line);margin:7px 0}
+.hol .tot{font-weight:800;font-size:15px}
 .hol .tot span{color:var(--ink)!important}
 .hol .neg2{color:var(--red)}
 /* folha: verbas tocáveis + conferência embutida */
-.hline{display:block;width:100%;background:none;border:none;border-radius:8px;padding:4px 4px;margin:0 -4px;text-align:left;font-family:var(--mono);font-size:13.5px;font-weight:400;color:var(--ink)}
+.hline{display:block;width:100%;background:none;border:none;border-radius:0;padding:4px 4px;margin:0 -4px;text-align:left;font-family:var(--mono);font-size:13.5px;font-weight:400;color:var(--ink)}
 .hline:active{background:var(--teal-tint)}
 .hline .l{padding:0}
 .hline .hv{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink-soft);padding:1px 0 3px}
-.hline .hv b{font-weight:600}
-.conf-diff{font-family:var(--mono);font-size:12px;font-weight:700}
+.hline .hv b{font-weight:700}
+.conf-diff{font-family:var(--mono);font-size:12px;font-weight:800}
 /* nav */
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;max-width:520px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);z-index:10}
-nav button{flex:1;background:none;color:var(--ink-soft);padding:10px 0 8px;font-size:11.5px;font-weight:600;border-radius:0;display:flex;flex-direction:column;gap:2px;align-items:center}
-nav button.on{color:var(--teal-deep)}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:2px solid var(--ink);display:flex;max-width:520px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);z-index:10}
+nav button{flex:1;background:none;color:var(--ink-soft);padding:10px 0 8px;font-size:10.5px;font-weight:800;border-radius:0;display:flex;flex-direction:column;gap:3px;align-items:center;text-transform:uppercase;letter-spacing:.03em}
+nav button.on{color:var(--teal)}
 nav button svg{width:21px;height:21px}
 /* modais */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.sheet{background:var(--bg);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.overlay{position:fixed;inset:0;background:rgba(32,30,29,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--bg);width:100%;max-width:520px;border-radius:0;border-top:2px solid var(--ink);padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
 .sheet h3{font-family:var(--disp);font-weight:800;font-size:16px;margin-bottom:12px}
 .prow{display:flex;gap:8px;margin-bottom:8px;align-items:center}
 .prow input[type=time]{flex:1;font-family:var(--mono)}
-.prow .del{background:var(--red-tint);color:var(--red);width:38px;height:38px;flex:none;border-radius:9px;font-size:16px}
+.prow .del{background:var(--red-tint);color:var(--red);width:38px;height:38px;flex:none;border-radius:0;font-size:16px}
 table.tx{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
 table.tx td{padding:3px 3px}
 table.tx input{padding:6px 7px;font-size:12.5px;font-family:var(--mono)}
 .hidden{display:none!important}
 .escala{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
-.escala label{font-size:10.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase}
+.escala label{font-size:10px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em}
 .escala input{padding:7px 2px;text-align:center;font-family:var(--mono);margin-top:3px}
-.pagitem{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px;gap:8px}
-.msg{background:var(--teal-tint);color:var(--teal-deep);border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:10px}
+.pagitem{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1.5px solid var(--line);font-size:13.5px;gap:8px}
+.msg{background:var(--teal-tint);color:var(--teal-deep);border-radius:0;padding:9px 12px;font-size:13px;margin-bottom:10px}
 .msg.warn{background:var(--amber-tint);color:var(--amber-deep)}
 .msg.err{background:var(--red-tint);color:var(--red)}
 /* config acordeão */
-details.cfgsec{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
-details.cfgsec summary{font-family:var(--disp);font-weight:700;font-size:15px;padding:13px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.cfgsec{background:var(--card);border:2px solid var(--line);border-radius:0;margin-bottom:10px;overflow:hidden}
+details.cfgsec summary{font-family:var(--disp);font-weight:800;font-size:14px;padding:13px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.03em}
 details.cfgsec summary::-webkit-details-marker{display:none}
-details.cfgsec summary::after{content:'▾';color:var(--ink-soft);transition:transform .15s}
-details.cfgsec[open] summary::after{transform:rotate(180deg)}
+details.cfgsec summary::after{content:'+';color:var(--ink-soft);font-size:18px;font-weight:400}
+details.cfgsec[open] summary::after{content:'–'}
 details.cfgsec .inner{padding:0 14px 14px}
 /* toast */
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);font-family:var(--disp);font-weight:600;font-size:13.5px;padding:10px 16px;border-radius:99px;z-index:40;max-width:88%;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);font-family:var(--disp);font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:0;z-index:40;max-width:88%;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top"><h1 id="hTitle">Ponto &amp; Folha</h1><div class="clock" id="clock"></div></header>
+  <header class="top"><h1 id="hTitle">Ponto<span class="amp">&amp;</span>Folha</h1>
+    <div class="row" style="flex:none;width:auto;gap:10px">
+      <div class="clock" id="clock"></div>
+      <button id="themeToggle" class="theme-btn" aria-label="Alternar tema">
+        <svg id="iconMoon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+        <svg id="iconSun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+      </button>
+    </div>
+  </header>
 
   <!-- ================= ONBOARDING ================= -->
   <section id="view-onboard" class="hidden">
     <div class="punch-wrap" style="padding-bottom:0">
-      <div style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5b6b82,#475569 55%,#1e293b);display:flex;align-items:center;justify-content:center;font-size:44px">⏱</div>
+      <div style="width:100px;height:100px;background:var(--ink);color:var(--bg);box-shadow:5px 5px 0 var(--line);display:flex;align-items:center;justify-content:center;font-size:40px">⏱</div>
     </div>
     <h2 style="text-align:center;font-size:20px;margin-top:14px">Bem-vinda ao Ponto &amp; Folha</h2>
     <p class="muted" style="text-align:center;margin-bottom:16px">Controle de jornada, agenda e conferência de folha — tudo neste aparelho. Comece com o básico; o resto (escala, tabelas de impostos, benefícios) já vem preenchido e pode ser ajustado depois em Config.</p>
@@ -210,17 +226,24 @@ details.cfgsec .inner{padding:0 14px 14px}
   <!-- ================= INÍCIO ================= -->
   <section id="view-home">
     <div id="homeBackup"></div>
-    <div class="punch-wrap">
-      <div class="punch-outer" id="punchOuter">
-      <button id="btnPunch" aria-label="Segure para bater o ponto">
-        <span class="big" id="punchLabel">Bater ponto</span>
-        <span class="sub" id="punchClock">--:--</span>
-        <span class="wkd" id="punchWorked"></span>
-      </button>
+    <div class="card tcard">
+      <div class="pf-punchcard-head">
+        <span class="tcard-kicker" id="punchKicker" style="margin-bottom:0">Cartão de ponto</span>
+        <span class="pf-punchcard-clock" id="punchClock">--:--</span>
       </div>
-      <div class="punch-hint">segure 2s para registrar</div>
+      <div class="punchcard2">
+        <div class="punch-slots" id="todayPunches"></div>
+        <div class="punch-outer" id="punchOuter">
+          <span class="lever-label" id="punchLabel">Carimbar</span>
+          <button id="btnPunch" aria-label="Puxe a alavanca para bater o ponto">
+            <span class="lever-ticks"><span>▾</span><span>▾</span><span>▾</span><span>▾</span></span>
+            <span class="lever-grip"></span>
+          </button>
+          <span class="lever-caption">puxe</span>
+        </div>
+      </div>
+      <div class="pf-punchcard-worked" id="punchWorked"></div>
       <div class="stamp" id="stampMsg"></div>
-      <div class="punches-today" id="todayPunches"></div>
     </div>
     <div class="card">
       <h2>Hoje — agenda &amp; atividades</h2>
@@ -794,9 +817,11 @@ function feriasCalc(f,cfg){
   const abono=vd*num(f.vendidos||0), abonoTerco=abono/3;
   const baseTrib=brutoGozo+terco;
   const inss=calcINSS(baseTrib,cfg.inss);
-  const ir=calcIRRF(baseTrib,Math.max(0,baseTrib-inss-depIRCount(f.ini.slice(0,7),cfg)*num(cfg.dedDep)),cfg);
+  const nDep=depIRCount(f.ini.slice(0,7),cfg);
+  const baseIR=Math.max(0,baseTrib-inss-nDep*num(cfg.dedDep));
+  const ir=calcIRRF(baseTrib,baseIR,cfg);
   const liq=baseTrib-inss-ir.tax+abono+abonoTerco;
-  return{dias,vd,brutoGozo,terco,abono,abonoTerco,baseTrib,inss,irpf:ir.tax,liq,prazo:dAdd(f.ini,-2)};
+  return{dias,vd,brutoGozo,terco,abono,abonoTerco,baseTrib,inss,irpf:ir.tax,irRed:ir.red,liq,prazo:dAdd(f.ini,-2),nDep,baseIR};
 }
 function extrasMediaAno(y){
   let tot=0,n=0;
@@ -924,7 +949,7 @@ function go(v,mk,fromPop){
 }
 
 /* ================= INÍCIO ================= */
-function punchState(){return 'Bater ponto'}
+function punchState(){return 'Carimbar'}
 function workedNowMin(){
   const rec=getMonth(curMonthKey()).days[todayKey()];
   const cfg=cfgFor(curMonthKey());
@@ -945,8 +970,12 @@ function taskItemHTML(dk,t,i){
     <button class="icon del" title="excluir" onclick="delT('${dk}','${t.kind}',${ref})">×</button></div>`;
 }
 function renderHome(){
-  const tk=todayKey(),mk=curMonthKey(),m=getMonth(mk),rec=m.days[tk];
-  $('todayPunches').innerHTML=((rec&&rec.p)||[]).map(p=>`<span>${p}</span>`).join('')||'<span class="muted" style="background:none">nenhuma batida hoje</span>';
+  const tk=todayKey(),mk=curMonthKey(),m=getMonth(mk),rec=m.days[tk],cfg=cfgFor(mk);
+  const ps=(rec&&rec.p)||[],dstr=fmtDKs(tk),totalSlots=Number(cfg.batidas)||0;
+  $('punchKicker').textContent=`Cartão de ponto · ${dstr}`;
+  let slotsHTML=ps.map(p=>`<div class="pf-slot-row"><span class="pf-slot-time">${dstr} · ${p}</span></div>`).join('');
+  for(let i=ps.length;i<totalSlots;i++)slotsHTML+='<div class="pf-slot-row"><span class="pf-slot-empty">– – / – – · – – : – –</span></div>';
+  $('todayPunches').innerHTML=slotsHTML||'<div class="pf-slot-row"><span class="pf-slot-empty">nenhuma batida hoje</span></div>';
   const tks=dayTasks(tk);
   $('homeTasks').innerHTML=tks.map((t,i)=>taskItemHTML(tk,t,i)).join('')||'<p class="muted">Nada agendado para hoje.</p>';
   const c=computeMonth(mk);
@@ -1174,8 +1203,14 @@ function renderMonth(){
       return `<button class="hline" onclick="openFerConf(${fi},'${k}','${mk}')"><div class="l${tot?' tot':''}"><span>${lb}${ref?` <span style="font-size:11px">· ${ref}</span>`:''}</span><b class="${isDb?'neg2':''}">${isDb?'− ':''}${brl(val)}</b></div>${sub}</button>`;
     };
     const fdv=ferConfDiffs(f),fbad=fdv.filter(x=>!x.ok);
+    const fAnyFilled=FER_FIELDS.some(x=>fconf[x.k]!=null&&fconf[x.k]!=='');
+    const fAllFilled=FER_FIELDS.every(x=>fconf[x.k]!=null&&fconf[x.k]!=='');
     return `<div class="card"><h2>Férias · ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
     <p class="muted" style="margin-bottom:6px">Toque numa verba para registrar o valor do recibo de férias.</p>
+    <div class="row" style="margin-bottom:8px">
+      ${!fAllFilled?`<button class="btn ghost small" onclick="gerarConferenciaFerias(${fi})">Gerar conferência com recibo</button>`:''}
+      ${fAnyFilled?`<button class="btn ghost small" onclick="gerarConferenciaFerias(${fi},true)">Regenerar</button>`:''}
+    </div>
     <div class="hol">
       <div class="l"><span>Dias de gozo</span><b>${fc.dias}</b></div>
       ${f.vendidos?`<div class="l"><span>Dias vendidos (abono)</span><b>${f.vendidos}</b></div>`:''}
@@ -1226,13 +1261,47 @@ function renderMonth(){
     <div class="l muted" style="font-size:11.5px"><span>Bruto tributável ${brl(c.bruto)} · base IRPF ${brl(c.baseIR)} · valor-hora ${brl(c.vh)}</span></div>`;
   const dv=confDiffs(mk),bad=dv.filter(x=>!x.ok);
   const xRows=(m.confX||[]).map((x,i)=>`<button class="hline" onclick="openConfX('${mk}',${i})"><div class="l"><span>${esc(x.d)} <span class="chip pend">só no holerite</span></span><b class="${x.t==='d'?'neg2':''}">${x.t==='d'?'− ':''}${brl(num(x.v))}</b></div></button>`).join('');
+  const cfAnyFilled=CONF_FIELDS.some(f=>conf[f.k]!=null&&conf[f.k]!=='');
+  const cfAllFilled=CONF_FIELDS.every(f=>conf[f.k]!=null&&conf[f.k]!=='');
   $('mConfSummary').innerHTML=xRows
     +`<div class="row" style="margin-top:8px">
+      ${!cfAllFilled?`<button class="btn ghost small" onclick="gerarConferencia('${mk}')" ${m.closed?'disabled':''}>Gerar conferência com holerite</button>`:''}
+      ${cfAnyFilled?`<button class="btn ghost small" onclick="gerarConferencia('${mk}',true)" ${m.closed?'disabled':''}>Regenerar</button>`:''}
       <button class="btn ghost small" onclick="openConf('${mk}','liquido')">Conferir líquido${conf.liquido?` (${brl(num(parseFloat(conf.liquido)))})`:''}</button>
       <button class="btn ghost small" onclick="openConfX('${mk}',-1)" ${m.closed?'disabled':''}>+ Verba do holerite</button></div>`
     +(dv.length?(bad.length?`<div class="msg err" style="margin-top:8px"><b>${bad.length} divergência(s):</b> ${bad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Holerite confere com o app em todas as verbas preenchidas.</div>'):'');
   $('btnFechar').textContent=m.closed?'Reabrir mês':'Fechar mês';
   $('pagDesc').disabled=$('pagVal').disabled=$('btnAddPag').disabled=m.closed;
+}
+async function gerarConferencia(mk,force){
+  const m=getMonth(mk);
+  if(m.closed){toast('Mês fechado — reabra para conferir.');return}
+  if(force){
+    const v=await ask('Regenerar conferência','Isso vai sobrescrever os valores do holerite já informados com os valores atuais do app. Continuar?',
+      [{lb:'Regenerar',cls:'warn',val:true},{lb:'Cancelar',cls:'sec',val:false}]);
+    if(!v)return;
+  }
+  const c=computeMonth(mk);
+  CONF_FIELDS.forEach(f=>{
+    if(force||m.conf[f.k]==null||m.conf[f.k]==='')m.conf[f.k]=String(f.app(c));
+  });
+  save();renderMonth();toast(force?'Conferência regenerada':'Conferência gerada — toque numa verba pra corrigir divergências');
+}
+async function gerarConferenciaFerias(fi,force){
+  const f=S.ferias[fi];if(!f)return;
+  const mk=f.ini.slice(0,7);
+  if(getMonth(mk).closed){toast('Mês fechado — reabra para conferir.');return}
+  if(force){
+    const v=await ask('Regenerar conferência','Isso vai sobrescrever os valores do recibo já informados com os valores atuais do app. Continuar?',
+      [{lb:'Regenerar',cls:'warn',val:true},{lb:'Cancelar',cls:'sec',val:false}]);
+    if(!v)return;
+  }
+  f.conf=f.conf||{};
+  const fc=feriasCalc(f,cfgFor(mk));
+  FER_FIELDS.forEach(x=>{
+    if(force||f.conf[x.k]==null||f.conf[x.k]==='')f.conf[x.k]=String(x.app(fc));
+  });
+  save();renderMonth();toast(force?'Conferência regenerada':'Conferência gerada — toque numa verba pra corrigir divergências');
 }
 async function openConf(mk,k){
   const m=getMonth(mk);
@@ -1397,11 +1466,24 @@ $('btnRelatorio').onclick=async()=>{
     ${c.pend?`<tr><td>Dias pendentes (fora do cálculo)</td><td class="r">${c.pend}</td></tr>`:''}`;
   const holRows=H.lines.map(l=>`<tr><td>${l.d}</td><td class="ref">${l.ref||''}</td>
     <td class="r">${l.cr!=null?brl(l.cr):''}</td><td class="r neg">${l.db!=null?brl(l.db):''}</td></tr>`).join('');
+  const dv=confDiffs(mk);
+  const baseCalcSec=`<h2>3.2 · Bases de cálculo</h2>
+  <table class="basecalc" style="max-width:420px">
+    <tr><td>Bruto tributável</td><td class="r">${brl(c.bruto)}</td></tr>
+    <tr><td>Base IRPF (bruto − INSS − dependentes)</td><td class="r">${brl(c.baseIR)}</td></tr>
+    ${c.irRed?`<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(c.irRed)}</td></tr>`:''}
+    <tr><td>Valor-hora</td><td class="r">${brl(c.vh)}</td></tr>
+    <tr><td>Valor hora extra (+${c.pctExtra}%)</td><td class="r">${brl(c.vhe)}</td></tr>
+  </table>`;
+  const confSec=`<h2>3.3 · Conferência com holerite</h2>
+    ${dv.length?`<table><tr><th>Verba</th><th class="r">App</th><th class="r">Holerite</th><th class="r">Diferença</th></tr>
+    ${dv.map(x=>`<tr${x.ok?'':' class="divg"'}><td>${x.lb}</td><td class="r">${brl(x.app)}</td><td class="r">${brl(x.hol)}</td>
+      <td class="r">${x.ok?'✓ confere':(x.diff>0?'+':'')+brl(x.diff)}</td></tr>`).join('')}</table>
+    ${dv.some(x=>!x.ok)?`<p class="alert">⚠ ${dv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o holerite informado. Vale conferir com o RH / contabilidade da clínica.</p>`:'<p class="okmsg">✓ Todos os valores informados do holerite conferem com o cálculo do app.</p>'}`:'<p class="note">Conferência com holerite ainda não gerada no app.</p>'}`;
   const fersRep=S.ferias.filter(f=>f.ini.slice(0,7)<=mk&&f.fim.slice(0,7)>=mk);
-  const feriasSec=fersRep.map(f=>{
-    const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
-    const fdv=ferConfDiffs(f);
-    return `<h2>3b · Férias — ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
+  const fersData=fersRep.map(f=>({f,fc:feriasCalc(f,cfgFor(f.ini.slice(0,7))),fdv:ferConfDiffs(f)}));
+  const feriasSec=fersData.map(({f,fc,fdv})=>`<h2>4 · Férias — ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
+    <h2>4.1 · Férias (pagamento)</h2>
     <table>
       <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
       <tr><td>Férias</td><td class="ref">${fc.dias} dias × ${brl(fc.vd)}</td><td class="r">${brl(fc.brutoGozo)}</td><td></td></tr>
@@ -1411,55 +1493,71 @@ $('btnRelatorio').onclick=async()=>{
       <tr><td>IRPF sobre férias</td><td class="ref"></td><td></td><td class="r neg">${brl(fc.irpf)}</td></tr>
       <tr class="liq"><td colspan="3">Líquido de férias (estimado) · pagamento até ${fmtDK(fc.prazo)}</td><td class="r">${brl(fc.liq)}</td></tr>
     </table>
-    ${fdv.length?`<table style="margin-top:2mm"><tr><th>Conferência do recibo de férias</th><th class="r">App</th><th class="r">Recibo</th><th class="r">Diferença</th></tr>
+    <h2>4.2 · Bases de cálculo das férias</h2>
+    <table class="basecalc" style="max-width:420px">
+      <tr><td>Valor do dia de férias (salário ÷ 30)</td><td class="r">${brl(fc.vd)}</td></tr>
+      <tr><td>Base de cálculo (gozo + 1/3, usada para INSS/IRPF)</td><td class="r">${brl(fc.baseTrib)}</td></tr>
+      <tr><td>Base IRPF (base − INSS − dependentes)</td><td class="r">${brl(fc.baseIR)}</td></tr>
+      ${fc.irRed?`<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(fc.irRed)}</td></tr>`:''}
+      <tr><td>Dependentes considerados no IRPF</td><td class="r">${fc.nDep}</td></tr>
+    </table>
+    <h2>4.3 · Conferência com holerite (férias)</h2>
+    ${fdv.length?`<table><tr><th>Verba</th><th class="r">App</th><th class="r">Recibo</th><th class="r">Diferença</th></tr>
       ${fdv.map(x=>`<tr${x.ok?'':' class="divg"'}><td>${x.lb}</td><td class="r">${brl(x.app)}</td><td class="r">${brl(x.hol)}</td><td class="r">${x.ok?'✓ confere':(x.diff>0?'+':'')+brl(x.diff)}</td></tr>`).join('')}</table>
-      ${fdv.some(x=>!x.ok)?`<p class="alert">⚠ ${fdv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o recibo de férias informado.</p>`:'<p class="okmsg">✓ Recibo de férias confere com o cálculo do app.</p>'}`:''}`;
-  }).join('');
-  const dv=confDiffs(mk);
-  const confSec=dv.length?`<h2>4 · Conferência com holerite oficial</h2>
-    <table><tr><th>Verba</th><th class="r">App</th><th class="r">Holerite</th><th class="r">Diferença</th></tr>
-    ${dv.map(x=>`<tr${x.ok?'':' class="divg"'}><td>${x.lb}</td><td class="r">${brl(x.app)}</td><td class="r">${brl(x.hol)}</td>
-      <td class="r">${x.ok?'✓ confere':(x.diff>0?'+':'')+brl(x.diff)}</td></tr>`).join('')}</table>
-    ${dv.some(x=>!x.ok)?`<p class="alert">⚠ ${dv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o holerite informado. Vale conferir com o RH / contabilidade da clínica.</p>`:'<p class="okmsg">✓ Todos os valores informados do holerite conferem com o cálculo do app.</p>'}`:'';
+      ${fdv.some(x=>!x.ok)?`<p class="alert">⚠ ${fdv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o recibo de férias informado.</p>`:'<p class="okmsg">✓ Recibo de férias confere com o cálculo do app.</p>'}`:'<p class="note">Conferência com o recibo de férias ainda não gerada no app.</p>'}`).join('');
+  const resumoGeralSec=fersData.length?(()=>{
+    const ferCr=fersData.reduce((a,{fc})=>a+fc.brutoGozo+fc.terco+fc.abono+fc.abonoTerco,0);
+    const ferDb=fersData.reduce((a,{fc})=>a+fc.inss+fc.irpf,0);
+    const ferLiq=fersData.reduce((a,{fc})=>a+fc.liq,0);
+    const totDivg=dv.filter(x=>!x.ok).length+fersData.reduce((a,{fdv})=>a+fdv.filter(x=>!x.ok).length,0);
+    return `<h2>5 · Resumo geral</h2>
+    <table style="max-width:420px">
+      <tr><td>Total de créditos (folha + férias)</td><td class="r">${brl(H.totCr+ferCr)}</td></tr>
+      <tr><td>Total de débitos (folha + férias)</td><td class="r neg">${brl(H.totDb+ferDb)}</td></tr>
+      <tr class="liq"><td>Líquido total do mês</td><td class="r">${brl(c.liquido+ferLiq)}</td></tr>
+    </table>
+    ${totDivg?`<p class="alert">⚠ ${totDivg} divergência(s) no total entre app e holerite/recibo neste mês.</p>`:'<p class="okmsg">✓ Nenhuma divergência entre app e holerite/recibo neste mês.</p>'}`;
+  })():'';
   const w=window.open('','_blank');
   if(!w){toast('Pop-up bloqueado — permita pop-ups para gerar o relatório.');return}
   w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
   <title>Relatório ${MESES[mm-1]} ${y}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Spline+Sans+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     @page{size:A4;margin:13mm}
-    :root{--teal:#334155;--line:#cbd5e1;--soft:#64748b}
+    :root{--ink:#201e1d;--teal:#ae1800;--accent:#ec3013;--line:#9b9797;--soft:#7d7979}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Spline Sans Mono',ui-monospace,monospace;font-size:11.5px;color:#1e293b;background:#fff}
-    .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--teal);padding-bottom:8px;margin-bottom:14px}
-    .head h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:19px;color:var(--teal);letter-spacing:-.02em}
+    body{font-family:'Archivo',system-ui,sans-serif;font-size:11.5px;color:var(--ink);background:#fff;font-variant-numeric:tabular-nums}
+    .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--ink);padding-bottom:8px;margin-bottom:14px}
+    .head h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-.02em;text-transform:uppercase}
     .head .sub{color:var(--soft);font-size:10.5px;text-align:right;line-height:1.5}
-    h2{font-family:'Archivo',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin:16px 0 6px}
+    h2{font-family:'Archivo',sans-serif;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin:16px 0 6px}
     table{width:100%;border-collapse:collapse}
     tr{page-break-inside:avoid}
-    th{font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--soft);text-align:left;border-bottom:1.5px solid var(--teal);padding:4px 6px}
+    th{font-family:'Archivo',sans-serif;font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--soft);text-align:left;border-bottom:2px solid var(--ink);padding:4px 6px}
     td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
     .r{text-align:right;white-space:nowrap}
     th.r{text-align:right}
-    .pos{color:#2c7a4b}.neg{color:#b23a31}
+    .pos{color:#2f7a4a}.neg{color:var(--teal)}
     .ref,.atv{color:var(--soft);font-size:10px}
-    tr.tot td{border-top:2px solid var(--teal);border-bottom:none;font-weight:700;font-size:12px;padding-top:6px}
-    tr.liq td{border:none;background:#e8edf5;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;padding:8px 6px}
-    tr.divg td{background:#fbeae8}
-    .alert{background:#fbeae8;color:#b23a31;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:600}
-    .okmsg{background:#e8f1ea;color:#2c7a4b;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:600}
+    tr.tot td{border-top:2px solid var(--ink);border-bottom:none;font-weight:800;font-size:12px;padding-top:6px}
+    tr.liq td{border:none;background:#fff2ef;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;padding:8px 6px;color:var(--teal)}
+    tr.divg td{background:#fff2ef}
+    .alert{background:#fff2ef;color:var(--teal);padding:6px 8px;font-size:11px;margin-top:6px;font-weight:700;border:1.5px solid var(--teal)}
+    .okmsg{background:#e6efe4;color:#2f7a4a;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:700}
     .note{color:var(--soft);font-size:9.5px;margin-top:14px;border-top:1px solid var(--line);padding-top:6px;line-height:1.5}
     .basecalc td{border-bottom:1px dashed var(--line)}
   </style></head><body>
   <div class="head">
-    <h1>Relatório de ponto e folha<br><span style="font-weight:600;font-size:14px;text-transform:capitalize">${MESES[mm-1]} / ${y}</span>${S.nome?`<br><span style="font-weight:600;font-size:12px;color:#64748b;text-transform:none">${esc(S.nome)}${S.adm?' · admissão '+fmtDK(S.adm):''}</span>`:''}</h1>
+    <h1>Relatório de ponto e folha<br><span style="font-weight:600;font-size:14px;text-transform:none">${MESES[mm-1]} / ${y}</span>${S.nome?`<br><span style="font-weight:600;font-size:12px;color:#7d7979;text-transform:none">${esc(S.nome)}${S.adm?' · admissão '+fmtDK(S.adm):''}</span>`:''}</h1>
     <div class="sub">Gerado em ${new Date().toLocaleString('pt-BR')}<br>${m.closed?'<b>MÊS FECHADO</b> — valores congelados':'Mês em aberto — valores estimados'}</div>
   </div>
   <h2>1 · Registro de ponto${incAtv?' e atividades':''}</h2>
   <table><tr><th>Dia</th><th>Batidas</th><th>Tipo / observações${incAtv?' / atividades':''}</th><th class="r">Trabalhado</th><th class="r">Saldo</th></tr>${rows||'<tr><td colspan="5">Nenhum dia lançado.</td></tr>'}</table>
   <h2>2 · Resumo de horas</h2>
   <table style="max-width:340px">${resumo}</table>
-  <h2>3 · Folha de pagamento</h2>
+  <h2>3 · Folha de pagamento do mês</h2>
+  <h2>3.1 · Folha de pagamento</h2>
   <table>
     <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
     ${holRows}
@@ -1467,16 +1565,10 @@ $('btnRelatorio').onclick=async()=>{
     <tr class="liq"><td colspan="3">Líquido a receber</td><td class="r">${brl(c.liquido)}</td></tr>
     ${c.cesta?`<tr><td colspan="3">Vale cesta básica (benefício, pago à parte)</td><td class="r">${brl(c.cesta)}</td></tr>`:''}
   </table>
-  ${feriasSec}
+  ${baseCalcSec}
   ${confSec}
-  <h2>Bases de cálculo</h2>
-  <table class="basecalc" style="max-width:420px">
-    <tr><td>Bruto tributável</td><td class="r">${brl(c.bruto)}</td></tr>
-    <tr><td>Base IRPF (bruto − INSS − dependentes)</td><td class="r">${brl(c.baseIR)}</td></tr>
-    ${c.irRed?`<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(c.irRed)}</td></tr>`:''}
-    <tr><td>Valor-hora</td><td class="r">${brl(c.vh)}</td></tr>
-    <tr><td>Valor hora extra (+${c.pctExtra}%)</td><td class="r">${brl(c.vhe)}</td></tr>
-  </table>
+  ${feriasSec}
+  ${resumoGeralSec}
   <p class="note">* verba não tributável.${incAtv?' ↻ tarefa recorrente.':''} Cálculos estimativos gerados pelo app Ponto &amp; Folha — confira sempre com o holerite oficial. Regras conforme a vigência aplicável ao mês${m.closed?' (congeladas no fechamento)':''}.</p>
   <scr`+`ipt>window.onload=function(){setTimeout(function(){window.print()},350)}</scr`+`ipt>
   </body></html>`);
@@ -1606,7 +1698,16 @@ $('btnSaveCfg').onclick=()=>{
 };
 
 /* ================= tema ================= */
-function applyTheme(){document.documentElement.dataset.theme=S.ui.theme}
+function applyTheme(){document.documentElement.dataset.theme=S.ui.theme;syncThemeIcon()}
+function isDarkNow(){const t=document.documentElement.dataset.theme;return t==='dark'||(t==='sys'&&matchMedia('(prefers-color-scheme:dark)').matches)}
+function syncThemeIcon(){const dark=isDarkNow();$('iconSun').classList.toggle('hidden',!dark);$('iconMoon').classList.toggle('hidden',dark)}
+function toggleTheme(){
+  S.ui.theme=isDarkNow()?'light':'dark';
+  applyTheme();save();
+  if(document.getElementById('cTheme'))$('cTheme').value=S.ui.theme;
+}
+$('themeToggle').onclick=toggleTheme;
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(S.ui.theme==='sys')syncThemeIcon()});
 
 /* ================= feriados ================= */
 async function fetchFeriados(){
@@ -1651,50 +1752,50 @@ $('fileImport').onchange=e=>{
 };
 
 /* ================= relógio + init ================= */
+let leverDragging=false,leverStartY=0,leverFired=false;
 function tick(){const d=new Date();
   $('clock').textContent=`${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   $('punchClock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   if(curView==='home'){
-    $('punchLabel').textContent=punchState();
+    if(!leverDragging)$('punchLabel').textContent=punchState();
     const w=workedNowMin();
     $('punchWorked').textContent=w.n?`hoje: ${min2hm(w.w)}${w.open?' ⏱':''} · ${w.n} batida${w.n>1?'s':''}`:'';
   }
 }
 setInterval(tick,1000);tick();
-/* ---- segurar para bater o ponto (2s) ---- */
-const HOLD_MS=2000;
-let holdStart=null,holdRAF=null,holdFired=false;
+/* ---- puxar a alavanca para bater o ponto ---- */
+const LEVER_TRAVEL=122;
 function setRing(p){$('punchOuter').style.setProperty('--p',String(Math.min(1,Math.max(0,p))))}
-function holdStep(ts){
-  if(holdStart==null)return;
-  const p=(performance.now()-holdStart)/HOLD_MS;
-  setRing(p);
-  const lbl=$('punchLabel');
-  if(p<1){lbl.textContent='Segure…';holdRAF=requestAnimationFrame(holdStep)}
-  else{holdFired=true;holdEnd();punch()}
-}
-function holdBegin(e){
+function leverDown(e){
   if(e.button!=null&&e.button!==0)return;
   e.preventDefault();
-  holdFired=false;holdStart=performance.now();
-  holdRAF=requestAnimationFrame(holdStep);
+  if(e.target.setPointerCapture)try{e.target.setPointerCapture(e.pointerId)}catch(err){}
+  leverDragging=true;leverFired=false;leverStartY=e.clientY;
+  $('punchLabel').textContent='Carimbar';
 }
-function holdEnd(){
-  const early=holdStart!=null&&!holdFired&&(performance.now()-holdStart)>150;
-  holdStart=null;
-  if(holdRAF){cancelAnimationFrame(holdRAF);holdRAF=null}
-  setRing(0);
-  if(curView==='home')$('punchLabel').textContent=punchState();
-  if(early&&!holdFired)$('stampMsg').textContent='Segure por 2 segundos para registrar';
+function leverMove(e){
+  if(!leverDragging||leverFired)return;
+  const p=(e.clientY-leverStartY)/LEVER_TRAVEL;
+  setRing(p);
+  if(p>=1){
+    leverFired=true;leverDragging=false;
+    punch();
+    setTimeout(()=>{setRing(0);if(curView==='home')$('punchLabel').textContent=punchState()},260);
+  }
+}
+function leverUp(){
+  if(!leverDragging)return;
+  leverDragging=false;
+  if(!leverFired){setRing(0);if(curView==='home')$('punchLabel').textContent=punchState()}
 }
 {
   const b=$('btnPunch');
   b.onclick=null;
   b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
-  b.addEventListener('pointerdown',holdBegin);
-  b.addEventListener('pointerup',holdEnd);
-  b.addEventListener('pointercancel',holdEnd);
-  b.addEventListener('pointerleave',holdEnd);
+  b.addEventListener('pointerdown',leverDown);
+  b.addEventListener('pointermove',leverMove);
+  b.addEventListener('pointerup',leverUp);
+  b.addEventListener('pointercancel',leverUp);
   b.addEventListener('contextmenu',e=>e.preventDefault());
 }
 
