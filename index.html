@@ -1125,10 +1125,11 @@ function renderJornada(){
   $('monthList').innerHTML=list.map(k=>{
     const c=computeMonth(k),[yy,mm]=k.split('-');
     const closed=getMonth(k).closed;
+    const ferLiq=S.ferias.filter(f=>f.ini.slice(0,7)<=k&&f.fim.slice(0,7)>=k).reduce((a,f)=>a+feriasCalc(f,cfgFor(f.ini.slice(0,7))).liq,0);
     return `<button class="mcard" onclick="go('month','${k}')">
       <div><div class="t">${MESES[mm-1]} ${yy} ${closed?'<span class="chip fechado">fechado</span>':''}</div>
       <div class="v">${min2hm(c.worked)} trab · saldo ${min2hm(c.worked-c.expected,true)}${c.pend?` · <span style="color:var(--amber-deep)">${c.pend} pendente(s)</span>`:''}</div></div>
-      <div class="liq">${brl(c.liquido)}</div></button>`;
+      <div class="liq">${brl(c.liquido+ferLiq)}</div></button>`;
   }).join('');
 }
 
