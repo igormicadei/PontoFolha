@@ -537,7 +537,7 @@ function fmtDK(dk){const[y,m,d]=dk.split('-');return `${d}/${m}/${y}`}
 function fmtDKs(dk){const[y,m,d]=dk.split('-');return `${d}/${m}`}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-function getMonth(mk){if(!S.months[mk])S.months[mk]={days:{},pags:[],closed:false,snap:null,conf:{}};const m=S.months[mk];m.conf=m.conf||{};return m}
+function getMonth(mk){if(!S.months[mk])S.months[mk]={days:{},pags:[],closed:false,snap:null,conf:{},confX:[]};const m=S.months[mk];m.conf=m.conf||{};m.confX=m.confX||[];return m}
 function holidayName(dk,cfg){
   const y=dk.slice(0,4);
   const nat=(S.holidays[y]||{})[dk];
@@ -871,6 +871,21 @@ function holLines(mk){
   if(!c.pagar&&c.extraMin)l.push({k:'_banco',d:'Extras → banco de horas',ref:min2hm(c.extraMin,true),cr:0});
   return{c,lines:l,totCr:l.reduce((a,x)=>a+(x.cr||0),0),totDb:l.reduce((a,x)=>a+(x.db||0),0)};
 }
+const FER_FIELDS=[
+  {k:'gozo',lb:'Férias (dias de gozo)',app:fc=>fc.brutoGozo},
+  {k:'terco',lb:'1/3 constitucional',app:fc=>fc.terco},
+  {k:'abono',lb:'Abono + 1/3',app:fc=>fc.abono+fc.abonoTerco},
+  {k:'inss',lb:'INSS de férias',app:fc=>fc.inss},
+  {k:'irpf',lb:'IRPF de férias',app:fc=>fc.irpf},
+  {k:'liq',lb:'Líquido de férias',app:fc=>fc.liq},
+];
+function ferConfDiffs(f){
+  const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7))),conf=f.conf||{};
+  return FER_FIELDS.filter(x=>conf[x.k]!=null&&conf[x.k]!=='').map(x=>{
+    const a=x.app(fc),hh=num(parseFloat(conf[x.k]));
+    return{lb:x.lb,app:a,hol:hh,diff:hh-a,ok:Math.abs(hh-a)<=0.05};
+  });
+}
 const CONF_FIELDS=[
   {k:'base',lb:'Salário base',app:c=>c.salario},
   {k:'extras',lb:'Extras + DSR',app:c=>c.vExtras+c.vDsr},
@@ -882,11 +897,13 @@ const CONF_FIELDS=[
   {k:'liquido',lb:'LÍQUIDO',app:c=>c.liquido},
 ];
 function confDiffs(mk){
-  const c=computeMonth(mk),conf=getMonth(mk).conf||{};
-  return CONF_FIELDS.filter(f=>conf[f.k]!=null&&conf[f.k]!=='').map(f=>{
+  const m=getMonth(mk),c=computeMonth(mk),conf=m.conf||{};
+  const out=CONF_FIELDS.filter(f=>conf[f.k]!=null&&conf[f.k]!=='').map(f=>{
     const a=f.app(c),h=num(parseFloat(conf[f.k]));
     return{lb:f.lb,app:a,hol:h,diff:h-a,ok:Math.abs(h-a)<=0.05};
   });
+  (m.confX||[]).forEach(x=>out.push({lb:`${x.d} (${x.t==='d'?'débito':'crédito'} só no holerite)`,app:0,hol:num(x.v),diff:num(x.v)*(x.t==='d'?-1:1),ok:false,extra:true}));
+  return out;
 }
 
 /* ================= navegação ================= */
@@ -1144,19 +1161,34 @@ function renderMonth(){
     <span class="mono">${brl(num(p.v))} <button class="btn warn small" onclick="delPag(${i})" ${m.closed?'disabled':''}>×</button></span></div>`).join('')||'<p class="muted">Nenhum lançamento.</p>';
   const fers=S.ferias.filter(f=>f.ini.slice(0,7)<=mk&&f.fim.slice(0,7)>=mk);
   $('mFeriasCard').innerHTML=fers.map(f=>{
+    const fi=S.ferias.indexOf(f);
     const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
-    return `<div class="card"><h2>Férias · ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2><div class="hol">
+    const fconf=f.conf||{};
+    const fl=(k,lb,ref,val,isDb,tot)=>{
+      let sub='';
+      if(fconf[k]!=null&&fconf[k]!==''){
+        const fd=FER_FIELDS.find(x=>x.k===k);
+        const dd=num(parseFloat(fconf[k]))-fd.app(fc);
+        sub=`<div class="hv"><b>Holerite: ${brl(num(parseFloat(fconf[k])))}</b>${Math.abs(dd)<=0.05?'<span class="conf-diff pos">✓ confere</span>':`<span class="conf-diff neg">${dd>0?'+':''}${brl(dd)}</span>`}</div>`;
+      }
+      return `<button class="hline" onclick="openFerConf(${fi},'${k}','${mk}')"><div class="l${tot?' tot':''}"><span>${lb}${ref?` <span style="font-size:11px">· ${ref}</span>`:''}</span><b class="${isDb?'neg2':''}">${isDb?'− ':''}${brl(val)}</b></div>${sub}</button>`;
+    };
+    const fdv=ferConfDiffs(f),fbad=fdv.filter(x=>!x.ok);
+    return `<div class="card"><h2>Férias · ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
+    <p class="muted" style="margin-bottom:6px">Toque numa verba para registrar o valor do recibo de férias.</p>
+    <div class="hol">
       <div class="l"><span>Dias de gozo</span><b>${fc.dias}</b></div>
       ${f.vendidos?`<div class="l"><span>Dias vendidos (abono)</span><b>${f.vendidos}</b></div>`:''}
-      <div class="l"><span>Férias (${fc.dias} × ${brl(fc.vd)})</span><b>${brl(fc.brutoGozo)}</b></div>
-      <div class="l"><span>1/3 constitucional</span><b>${brl(fc.terco)}</b></div>
-      ${fc.abono?`<div class="l"><span>Abono + 1/3 (isentos)</span><b>${brl(fc.abono+fc.abonoTerco)}</b></div>`:''}
-      <div class="l"><span>INSS sobre férias</span><b class="neg2">− ${brl(fc.inss)}</b></div>
-      <div class="l"><span>IRPF sobre férias</span><b class="neg2">− ${brl(fc.irpf)}</b></div>
+      ${fl('gozo',`Férias (${fc.dias} × ${brl(fc.vd)})`,'',fc.brutoGozo,false)}
+      ${fl('terco','1/3 constitucional','',fc.terco,false)}
+      ${f.vendidos?fl('abono','Abono + 1/3','isentos',fc.abono+fc.abonoTerco,false):''}
+      ${fl('inss','INSS sobre férias','',fc.inss,true)}
+      ${fl('irpf','IRPF sobre férias','',fc.irpf,true)}
       <div class="sep"></div>
-      <div class="l tot"><span>Líquido de férias (estimado)</span><b>${brl(fc.liq)}</b></div>
+      ${fl('liq','Líquido de férias (estimado)','',fc.liq,false,true)}
       <div class="l"><span>Pagamento até</span><b>${fmtDK(fc.prazo)}</b></div>
     </div>
+    ${fdv.length?(fbad.length?`<div class="msg err" style="margin-top:8px"><b>${fbad.length} divergência(s) no recibo de férias:</b> ${fbad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Recibo de férias confere com o app.</div>'):''}
     <p class="muted" style="margin-top:8px">Como as férias são pagas antes do descanso, os dias de férias deste mês são descontados da folha mensal — por isso o salário do pagamento seguinte vem menor. O valor não some: veio adiantado no recibo de férias.</p></div>`;
   }).join('');
   let c13html='';
@@ -1193,7 +1225,11 @@ function renderMonth(){
     ${c.cesta?`<div class="l"><span>+ Vale cesta (benefício)</span><b>${brl(c.cesta)}</b></div>`:''}
     <div class="l muted" style="font-size:11.5px"><span>Bruto tributável ${brl(c.bruto)} · base IRPF ${brl(c.baseIR)} · valor-hora ${brl(c.vh)}</span></div>`;
   const dv=confDiffs(mk),bad=dv.filter(x=>!x.ok);
-  $('mConfSummary').innerHTML=`<button class="btn ghost small" onclick="openConf('${mk}','liquido')">Conferir líquido do holerite${conf.liquido?` (${brl(num(parseFloat(conf.liquido)))})`:''}</button>`
+  const xRows=(m.confX||[]).map((x,i)=>`<button class="hline" onclick="openConfX('${mk}',${i})"><div class="l"><span>${esc(x.d)} <span class="chip pend">só no holerite</span></span><b class="${x.t==='d'?'neg2':''}">${x.t==='d'?'− ':''}${brl(num(x.v))}</b></div></button>`).join('');
+  $('mConfSummary').innerHTML=xRows
+    +`<div class="row" style="margin-top:8px">
+      <button class="btn ghost small" onclick="openConf('${mk}','liquido')">Conferir líquido${conf.liquido?` (${brl(num(parseFloat(conf.liquido)))})`:''}</button>
+      <button class="btn ghost small" onclick="openConfX('${mk}',-1)" ${m.closed?'disabled':''}>+ Verba do holerite</button></div>`
     +(dv.length?(bad.length?`<div class="msg err" style="margin-top:8px"><b>${bad.length} divergência(s):</b> ${bad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Holerite confere com o app em todas as verbas preenchidas.</div>'):'');
   $('btnFechar').textContent=m.closed?'Reabrir mês':'Fechar mês';
   $('pagDesc').disabled=$('pagVal').disabled=$('btnAddPag').disabled=m.closed;
@@ -1215,6 +1251,40 @@ async function openConf(mk,k){
     m.conf[k]=isFinite(n)?String(n):null;
   }
   save();renderMonth();
+}
+async function openFerConf(fi,k,mk){
+  if(getMonth(mk).closed){toast('Mês fechado — reabra para conferir.');return}
+  const f=S.ferias[fi];if(!f)return;
+  const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
+  const fd=FER_FIELDS.find(x=>x.k===k);if(!fd)return;
+  const cur=(f.conf&&f.conf[k]!=null)?f.conf[k]:'';
+  const v=await ask(`Recibo de férias — ${fd.lb}`,
+    `Valor do app: <b class="mono">${brl(fd.app(fc))}</b>. Digite o valor do recibo:`+
+    `<input type="number" step="0.01" inputmode="decimal" id="confInp" value="${cur}" style="margin-top:8px;font-family:var(--mono);text-align:right">`,
+    [{lb:'Salvar',val:'save'},{lb:'Limpar valor',cls:'warn',val:'clear'}]);
+  if(v===null)return;
+  f.conf=f.conf||{};
+  if(v==='clear')f.conf[k]=null;
+  else{const n=parseFloat(document.getElementById('confInp').value);f.conf[k]=isFinite(n)?String(n):null}
+  save();renderMonth();
+}
+async function openConfX(mk,idx){
+  const m=getMonth(mk);
+  if(m.closed){toast('Mês fechado — reabra para conferir.');return}
+  const edit=idx!=null&&idx>=0, x=edit?m.confX[idx]:{d:'',v:'',t:'c'};
+  const btns=[{lb:'Salvar',val:'save'}];
+  if(edit)btns.push({lb:'Excluir verba',cls:'warn',val:'del'});
+  const v=await ask(edit?'Editar verba do holerite':'Verba do holerite não prevista',
+    `<label class="f">Descrição (como está no holerite)<input id="cxD" value="${esc(x.d)}"></label>
+     <label class="f">Valor (R$)<input type="number" step="0.01" inputmode="decimal" id="cxV" value="${x.v}" style="font-family:var(--mono);text-align:right"></label>
+     <label class="f">Tipo<select id="cxT"><option value="c" ${x.t!=='d'?'selected':''}>Crédito (provento)</option><option value="d" ${x.t==='d'?'selected':''}>Débito (desconto)</option></select></label>`,
+    btns);
+  if(v===null)return;
+  if(v==='del'){m.confX.splice(idx,1);save();renderMonth();toast('Verba removida');return}
+  const d=document.getElementById('cxD').value.trim(),val=parseFloat(document.getElementById('cxV').value),t=document.getElementById('cxT').value;
+  if(!d||!isFinite(val)){toast('Preencha descrição e valor.');return}
+  if(edit)m.confX[idx]={d,v:val,t};else m.confX.push({d,v:val,t});
+  save();renderMonth();toast('Verba do holerite registrada');
 }
 $('mPrev').onclick=()=>{curMK=mAdd(curMK,-1);renderMonth()};
 $('mNext').onclick=()=>{curMK=mAdd(curMK,1);renderMonth()};
@@ -1327,6 +1397,24 @@ $('btnRelatorio').onclick=async()=>{
     ${c.pend?`<tr><td>Dias pendentes (fora do cálculo)</td><td class="r">${c.pend}</td></tr>`:''}`;
   const holRows=H.lines.map(l=>`<tr><td>${l.d}</td><td class="ref">${l.ref||''}</td>
     <td class="r">${l.cr!=null?brl(l.cr):''}</td><td class="r neg">${l.db!=null?brl(l.db):''}</td></tr>`).join('');
+  const fersRep=S.ferias.filter(f=>f.ini.slice(0,7)<=mk&&f.fim.slice(0,7)>=mk);
+  const feriasSec=fersRep.map(f=>{
+    const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
+    const fdv=ferConfDiffs(f);
+    return `<h2>3b · Férias — ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
+    <table>
+      <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
+      <tr><td>Férias</td><td class="ref">${fc.dias} dias × ${brl(fc.vd)}</td><td class="r">${brl(fc.brutoGozo)}</td><td></td></tr>
+      <tr><td>1/3 constitucional</td><td class="ref"></td><td class="r">${brl(fc.terco)}</td><td></td></tr>
+      ${f.vendidos?`<tr><td>Abono pecuniário + 1/3</td><td class="ref">${f.vendidos} dias vendidos, isentos</td><td class="r">${brl(fc.abono+fc.abonoTerco)}</td><td></td></tr>`:''}
+      <tr><td>INSS sobre férias</td><td class="ref"></td><td></td><td class="r neg">${brl(fc.inss)}</td></tr>
+      <tr><td>IRPF sobre férias</td><td class="ref"></td><td></td><td class="r neg">${brl(fc.irpf)}</td></tr>
+      <tr class="liq"><td colspan="3">Líquido de férias (estimado) · pagamento até ${fmtDK(fc.prazo)}</td><td class="r">${brl(fc.liq)}</td></tr>
+    </table>
+    ${fdv.length?`<table style="margin-top:2mm"><tr><th>Conferência do recibo de férias</th><th class="r">App</th><th class="r">Recibo</th><th class="r">Diferença</th></tr>
+      ${fdv.map(x=>`<tr${x.ok?'':' class="divg"'}><td>${x.lb}</td><td class="r">${brl(x.app)}</td><td class="r">${brl(x.hol)}</td><td class="r">${x.ok?'✓ confere':(x.diff>0?'+':'')+brl(x.diff)}</td></tr>`).join('')}</table>
+      ${fdv.some(x=>!x.ok)?`<p class="alert">⚠ ${fdv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o recibo de férias informado.</p>`:'<p class="okmsg">✓ Recibo de férias confere com o cálculo do app.</p>'}`:''}`;
+  }).join('');
   const dv=confDiffs(mk);
   const confSec=dv.length?`<h2>4 · Conferência com holerite oficial</h2>
     <table><tr><th>Verba</th><th class="r">App</th><th class="r">Holerite</th><th class="r">Diferença</th></tr>
@@ -1379,6 +1467,7 @@ $('btnRelatorio').onclick=async()=>{
     <tr class="liq"><td colspan="3">Líquido a receber</td><td class="r">${brl(c.liquido)}</td></tr>
     ${c.cesta?`<tr><td colspan="3">Vale cesta básica (benefício, pago à parte)</td><td class="r">${brl(c.cesta)}</td></tr>`:''}
   </table>
+  ${feriasSec}
   ${confSec}
   <h2>Bases de cálculo</h2>
   <table class="basecalc" style="max-width:420px">
