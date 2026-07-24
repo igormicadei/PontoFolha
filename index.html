@@ -82,13 +82,17 @@ label.f input,label.f select{margin-top:4px;font-weight:500;color:var(--ink)}
 .chip.rec{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
 /* botão de ponto */
 .punch-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 4px}
-#btnPunch{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#1e7c70,#17635a 55%,#0d3f39);color:#fff;
+#btnPunch{--p:0;position:relative;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#1e7c70,#17635a 55%,#0d3f39);color:#fff;
   box-shadow:0 10px 0 #082b26,0 14px 24px rgba(13,63,57,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  transition:transform .08s,box-shadow .08s}
+  transition:transform .08s,box-shadow .08s;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+#btnPunch::before{content:'';position:absolute;inset:-8px;border-radius:50%;z-index:-1;
+  background:conic-gradient(#e8a13d calc(var(--p)*360deg),transparent 0)}
 #btnPunch:active{transform:translateY(8px);box-shadow:0 2px 0 #082b26,0 4px 10px rgba(13,63,57,.35)}
 #btnPunch .big{font-size:16px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
 #btnPunch .sub{font-family:var(--mono);font-size:12px;color:#cfe6e1;font-weight:500}
 #btnPunch .wkd{font-family:var(--mono);font-size:11px;color:#9dc4bc}
+.punch-hint{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-top:10px}
+body.onboarding nav{display:none}
 .stamp{margin-top:12px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);min-height:30px;display:flex;gap:10px;align-items:center}
 .stamp button{background:var(--amber-tint);color:var(--amber-deep);padding:5px 12px;font-size:12px}
 @media (prefers-reduced-motion:reduce){#btnPunch{transition:none}}
@@ -177,6 +181,27 @@ details.cfgsec .inner{padding:0 14px 14px}
 <div class="app">
   <header class="top"><h1 id="hTitle">Ponto &amp; Folha</h1><div class="clock" id="clock"></div></header>
 
+  <!-- ================= ONBOARDING ================= -->
+  <section id="view-onboard" class="hidden">
+    <div class="punch-wrap" style="padding-bottom:0">
+      <div style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#1e7c70,#17635a 55%,#0d3f39);display:flex;align-items:center;justify-content:center;font-size:44px">⏱</div>
+    </div>
+    <h2 style="text-align:center;font-size:20px;margin-top:14px">Bem-vinda ao Ponto &amp; Folha</h2>
+    <p class="muted" style="text-align:center;margin-bottom:16px">Controle de jornada, agenda e conferência de folha — tudo neste aparelho. Comece com o básico; o resto (escala, tabelas de impostos, benefícios) já vem preenchido e pode ser ajustado depois em Config.</p>
+    <div class="card">
+      <label class="f">Data de admissão<input type="date" id="obAdm"></label>
+      <label class="f">Salário mensal (R$)<input type="number" step="0.01" inputmode="decimal" id="obSalario" placeholder="1878,14 (piso CCT 2026)"></label>
+      <div class="grid2">
+        <label class="f">Dependentes (IRPF)<input type="number" step="1" inputmode="numeric" id="obDepIR" value="0"></label>
+        <label class="f">Filhos até 14 anos<input type="number" step="1" inputmode="numeric" id="obFilhos" value="0"></label>
+      </div>
+      <p class="muted">Filhos até 14 anos contam para o salário-família (cota de R$ 67,54 quando a remuneração do mês fica até R$ 1.980,38).</p>
+    </div>
+    <button class="btn" style="width:100%" id="obStart">Começar</button>
+    <button class="btn ghost" style="width:100%;margin-top:8px" id="obImport">Já tenho um backup — importar JSON</button>
+    <p class="muted" style="text-align:center;margin:12px 0 20px">Os dados ficam somente neste aparelho. Nada é enviado a servidores.</p>
+  </section>
+
   <!-- ================= INÍCIO ================= -->
   <section id="view-home">
     <div id="homeBackup"></div>
@@ -186,6 +211,7 @@ details.cfgsec .inner{padding:0 14px 14px}
         <span class="sub" id="punchClock">--:--</span>
         <span class="wkd" id="punchWorked"></span>
       </button>
+      <div class="punch-hint">segure 2s para registrar</div>
       <div class="stamp" id="stampMsg"></div>
       <div class="punches-today" id="todayPunches"></div>
     </div>
@@ -833,7 +859,8 @@ function confDiffs(mk){
 /* ================= navegação ================= */
 let curView='home',curMK=curMonthKey();
 function go(v,mk){curView=v;if(mk)curMK=mk;
-  ['home','tasks','jornada','month','config'].forEach(x=>$('view-'+x).classList.toggle('hidden',x!==v));
+  ['onboard','home','tasks','jornada','month','config'].forEach(x=>$('view-'+x).classList.toggle('hidden',x!==v));
+  document.querySelector('nav').classList.toggle('hidden',v==='onboard');
   $('navHome').classList.toggle('on',v==='home');
   $('navTasks').classList.toggle('on',v==='tasks');
   $('navJornada').classList.toggle('on',v==='jornada'||v==='month');
@@ -1447,7 +1474,7 @@ $('fileImport').onchange=e=>{
   const rd=new FileReader();
   rd.onload=async()=>{try{const o=JSON.parse(rd.result);if(!o.months&&!o.vig&&!o.cfg)throw new Error('formato inválido');
     if(await confirmS('Importar backup?','Os dados atuais serão substituídos.')){
-      localStorage.setItem(LSKEY,JSON.stringify(o));S=load();applyTheme();save();go('home');toast('Backup importado')}}
+      localStorage.setItem(LSKEY,JSON.stringify(o));S=load();S.onboarded=true;applyTheme();save();go('home');toast('Backup importado')}}
     catch(err){toast('Arquivo inválido: '+err.message)}};
   rd.readAsText(f);e.target.value='';
 };
@@ -1463,12 +1490,67 @@ function tick(){const d=new Date();
   }
 }
 setInterval(tick,1000);tick();
-$('btnPunch').onclick=punch;
+/* ---- segurar para bater o ponto (2s) ---- */
+const HOLD_MS=2000;
+let holdStart=null,holdRAF=null,holdFired=false;
+function setRing(p){$('btnPunch').style.setProperty('--p',String(Math.min(1,Math.max(0,p))))}
+function holdStep(ts){
+  if(holdStart==null)return;
+  const p=(performance.now()-holdStart)/HOLD_MS;
+  setRing(p);
+  const lbl=$('punchLabel');
+  if(p<1){lbl.textContent='Segure…';holdRAF=requestAnimationFrame(holdStep)}
+  else{holdFired=true;holdEnd();punch()}
+}
+function holdBegin(e){
+  if(e.button!=null&&e.button!==0)return;
+  e.preventDefault();
+  holdFired=false;holdStart=performance.now();
+  holdRAF=requestAnimationFrame(holdStep);
+}
+function holdEnd(){
+  const early=holdStart!=null&&!holdFired&&(performance.now()-holdStart)>150;
+  holdStart=null;
+  if(holdRAF){cancelAnimationFrame(holdRAF);holdRAF=null}
+  setRing(0);
+  if(curView==='home')$('punchLabel').textContent=punchState();
+  if(early&&!holdFired)$('stampMsg').textContent='Segure por 2 segundos para registrar';
+}
+{
+  const b=$('btnPunch');
+  b.onclick=null;
+  b.addEventListener('pointerdown',holdBegin);
+  b.addEventListener('pointerup',holdEnd);
+  b.addEventListener('pointercancel',holdEnd);
+  b.addEventListener('pointerleave',holdEnd);
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+}
+
+/* ---- onboarding ---- */
+function isFresh(){
+  if(S.onboarded)return false;
+  if(S.adm)return false;
+  if(S.rec.length)return false;
+  return !Object.keys(S.months).some(k=>Object.keys(S.months[k].days).length||(S.months[k].pags||[]).length);
+}
+$('obStart').onclick=()=>{
+  const adm=$('obAdm').value, sal=parseFloat($('obSalario').value);
+  const dep=parseInt($('obDepIR').value)||0, fil=parseInt($('obFilhos').value)||0;
+  if(adm)S.adm=adm;
+  const c=S.vig[S.vig.length-1].cfg;
+  if(isFinite(sal)&&sal>0)c.salario=sal;
+  c.depIR=dep;c.filhos=fil;
+  S.onboarded=true;save();
+  toast('Tudo pronto — bom trabalho!');
+  go('home');
+};
+$('obImport').onclick=()=>$('fileImport').click();
+
 applyTheme();
 if(!Object.keys(S.holidays).length&&navigator.onLine)fetchFeriados().catch(()=>{});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
-if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().then(g=>{if(!g)console.log('armazenamento persistente não concedido')}).catch(()=>{})}
-go('home');
+if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+go(isFresh()?'onboard':'home');
 
 </script>
 </body>
