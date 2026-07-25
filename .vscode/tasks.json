@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Deploy to GitHub Pages",
+      "type": "shell",
+      "command": "npm run deploy",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Build the Vue app and force-push dist/ to the orphan gh-pages branch"
+    },
+    {
+      "label": "Preview production build",
+      "type": "shell",
+      "command": "npm run build && npm run preview",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Build and serve the production bundle locally at /PontoFolha/"
+    }
+  ]
+}
