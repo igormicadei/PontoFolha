@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="sys">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ponto &amp; Folha">
+<title>Ponto &amp; Folha</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#000000; --ink-soft:#666666; --bg:#ffffff; --card:#ffffff;
+  --teal:#000000; --teal-deep:#000000; --teal-tint:#f4f4f2; --teal-head:#ffffff; --head-tx:#000000; --head-sub:#666666;
+  --amber:#a66a1f; --amber-tint:#f6ddab; --amber-deep:#7a4f11;
+  --red:#c62828; --red-tint:#fdecea;
+  --green:#1ea64a; --green-tint:#e9f7ee; --line:#e6e6e6;
+  --chip-fer-bg:#efd4d4; --chip-fer-tx:#7c2a1f; --chip-vac-bg:#e3d6f8; --chip-vac-tx:#4a3568;
+  --punch-fill:#ff3d8b; --red-solid:#c62828;
+  --surface-soft:#f7f7f5; --magenta:#ff3d8b;
+  --cream-bg:#f4ecd6; --cream-tx:#2a2013;
+  --lilac-bg:#c5b0f4; --lilac-tx:#241a3d;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --disp:'Inter',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+}
+html[data-theme=dark]{
+  --ink:#f2f2f2; --ink-soft:#9a9a9a; --bg:#121212; --card:#1c1c1c;
+  --teal:#f2f2f2; --teal-deep:#f2f2f2; --teal-tint:#262626; --teal-head:#121212; --head-tx:#f2f2f2; --head-sub:#9a9a9a;
+  --amber-tint:#402711; --amber-deep:#e0ab5c;
+  --red:#ff6b6b; --red-tint:#3a2420;
+  --green:#4fd07a; --green-tint:#1f3126; --line:#333333;
+  --chip-fer-bg:#4d170e; --chip-fer-tx:#ffb4a3; --chip-vac-bg:#332a47; --chip-vac-tx:#e4d9fa;
+  --surface-soft:#1c1c1c;
+}
+@media (prefers-color-scheme:dark){
+  html[data-theme=sys]{
+    --ink:#f2f2f2; --ink-soft:#9a9a9a; --bg:#121212; --card:#1c1c1c;
+    --teal:#f2f2f2; --teal-deep:#f2f2f2; --teal-tint:#262626; --teal-head:#121212; --head-tx:#f2f2f2; --head-sub:#9a9a9a;
+    --amber-tint:#402711; --amber-deep:#e0ab5c;
+    --red:#ff6b6b; --red-tint:#3a2420;
+    --green:#4fd07a; --green-tint:#1f3126; --line:#333333;
+    --chip-fer-bg:#4d170e; --chip-fer-tx:#ffb4a3; --chip-vac-bg:#332a47; --chip-vac-tx:#e4d9fa;
+    --surface-soft:#1c1c1c;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.45;font-variant-numeric:tabular-nums}
+.app{max-width:520px;margin:0 auto;padding:0 14px calc(84px + env(safe-area-inset-bottom))}
+header.top{background:var(--teal-head);color:var(--head-tx);margin:0 -14px 16px;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line)}
+header.top h1{font-family:var(--disp);font-weight:800;font-size:19px;letter-spacing:-.02em}
+header.top h1 .amp{color:var(--magenta)}
+header.top .clock{font-family:var(--mono);font-size:14px;color:var(--head-sub)}
+h2{font-family:var(--mono);font-weight:500;font-size:11px;margin:22px 0 10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:12px}
+.card h2:first-child{margin-top:0}
+.muted{color:var(--ink-soft);font-size:13px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font-family:var(--disp);font-weight:700;border:none;border-radius:0;cursor:pointer;font-size:14px;color:var(--ink)}
+.btn{background:var(--teal);color:var(--bg);padding:11px 20px;border-radius:999px;font-weight:600}
+.btn.sec{background:var(--surface-soft);color:var(--teal-deep);border-radius:999px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--teal-deep);border:1.5px solid var(--line);border-radius:999px;font-weight:600}
+.btn.warn{background:var(--red-tint);color:var(--red);border-radius:999px;font-weight:600}
+.btn.small{padding:7px 14px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:default}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+input[type=checkbox]{width:19px;height:19px;accent-color:var(--teal);flex:none}
+label.f{display:block;margin-bottom:10px;font-size:11.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em}
+label.f input,label.f select{margin-top:5px;font-weight:500;color:var(--ink);text-transform:none;letter-spacing:normal}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chip{display:inline-block;font-size:10.5px;font-weight:700;font-family:var(--disp);padding:3px 10px;border-radius:999px;letter-spacing:.03em;text-transform:uppercase}
+.chip.feriado{background:var(--chip-fer-bg);color:var(--chip-fer-tx)}
+.chip.ferias{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
+.chip.abonado{background:var(--green-tint);color:var(--green)}
+.chip.falta{background:var(--red-solid);color:#fff}
+.chip.fechado{background:var(--ink);color:var(--bg)}
+.chip.pend{background:var(--amber-tint);color:var(--amber-deep)}
+.chip.task{background:var(--teal-tint);color:var(--teal-deep)}
+.chip.rec{background:var(--chip-vac-bg);color:var(--chip-vac-tx)}
+/* botão de ponto — cartão de jornada com alavanca, estilo relógio de ponto mecânico */
+.tcard{text-align:center}
+.card.tcard{background:var(--cream-bg);border:none}
+.tcard-kicker{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--cream-tx);opacity:.7;margin-bottom:14px}
+.pf-punchcard-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.punchcard2{display:flex;gap:16px;align-items:flex-start;text-align:left}
+.punch-slots{flex:1;min-width:0;display:flex;flex-direction:column}
+.pf-slot-row{padding:8px 2px;border-bottom:1px dashed rgba(0,0,0,.15)}
+.pf-slot-row:last-child{border-bottom:none}
+.pf-slot-time{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;font-size:13px;color:#c2185b;background:#ffe3f0;border:1.5px solid #ff3d8b;border-radius:6px;padding:2px 8px;display:inline-block;transform:rotate(-3deg)}
+.pf-slot-empty{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;color:var(--cream-tx);opacity:.4}
+.punch-outer{--p:0;flex:none;display:flex;flex-direction:column;align-items:center;gap:8px}
+.lever-label{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--cream-tx);opacity:.7;text-align:center}
+#btnPunch{position:relative;width:46px;height:168px;background:#ffffff;border:2px solid #000000;padding:0;overflow:hidden;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+.lever-ticks{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;color:#000000;opacity:.25;font-size:11px;pointer-events:none}
+#btnPunch:focus:not(:focus-visible){outline:none}
+.lever-grip{position:absolute;left:-2px;right:-2px;top:calc(var(--p,0) * 122px);height:40px;background:var(--punch-fill);
+  border-top:2px solid #000000;border-bottom:2px solid #000000;transition:top .05s linear;z-index:1}
+.lever-grip::before{content:'';position:absolute;top:50%;left:50%;width:18px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 -6px 0 #fff;transform:translate(-50%,-50%)}
+.lever-caption{font-family:var(--disp);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cream-tx);opacity:.55}
+.pf-punchcard-worked{text-align:center;font-family:var(--mono);font-size:12px;color:var(--cream-tx);opacity:.75;margin-top:14px;min-height:1px}
+body.onboarding nav{display:none}
+.stamp{margin-top:10px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);min-height:30px;display:flex;gap:10px;align-items:center;justify-content:center}
+.stamp button{background:var(--amber-tint);color:var(--amber-deep);padding:5px 12px;font-size:12px;border-radius:999px}
+@media (prefers-reduced-motion:reduce){.lever-grip{transition:none}}
+/* tarefas */
+.task-item{display:flex;gap:9px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.task-item:last-child{border-bottom:none}
+.task-item.done span.t{text-decoration:line-through;color:var(--ink-soft)}
+.task-item span.t{flex:1;min-width:0;overflow-wrap:anywhere}
+.task-item .icon{background:none;color:var(--ink-soft);font-size:14px;padding:3px 6px;border-radius:999px;flex:none}
+.task-item .icon.del{color:var(--red)}
+.tgroup{font-family:var(--mono);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:16px 0 4px}
+.tgroup.over{color:var(--red)}
+.tdate{font-family:var(--mono);font-size:11px;color:var(--ink-soft);flex:none;width:74px}
+details.done-sec summary{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink-soft);cursor:pointer;padding:8px 0;text-transform:uppercase;letter-spacing:.05em}
+/* meses */
+.mcard{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px 16px;margin-bottom:9px;font-family:var(--body);font-weight:500}
+.mcard .t{font-family:var(--disp);font-weight:700;font-size:15px;text-transform:capitalize}
+.mcard .v{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.mcard .liq{font-family:var(--mono);font-weight:700;color:var(--teal-deep)}
+/* dias */
+.day{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:9px 2px;font-family:var(--body);font-weight:400;border-radius:0;color:var(--ink)}
+.day:last-child{border-bottom:none}
+.day.today{background:var(--teal-tint);border-radius:12px;padding:9px 8px;margin:2px -6px}
+.day .dn{font-family:var(--mono);font-weight:700;font-size:14px;width:44px;flex-shrink:0;color:var(--teal-deep)}
+.day .dn small{display:block;font-size:10px;font-weight:600;color:var(--ink-soft);text-transform:uppercase}
+.day .mid{flex:1;min-width:0}
+.day .pts{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);overflow-wrap:anywhere}
+.day .hrs{font-family:var(--mono);font-size:13px;font-weight:600;flex-shrink:0;text-align:right}
+.day .hrs .d{display:block;font-size:11.5px;font-weight:500}
+.pos{color:var(--green)}.neg{color:var(--red)}
+/* holerite */
+.hol{font-family:var(--mono);font-size:13.5px}
+.hol .l{display:flex;justify-content:space-between;padding:3.5px 0;gap:8px}
+.hol .l span:first-child{color:var(--ink-soft)}
+.hol .sep{border-top:1px dashed var(--line);margin:7px 0}
+.hol .tot{font-weight:700;font-size:15px}
+.hol .tot span{color:var(--ink)!important}
+.hol .neg2{color:var(--red)}
+/* folha: verbas tocáveis + conferência embutida */
+.hline{display:block;width:100%;background:none;border:none;border-radius:8px;padding:4px 4px;margin:0 -4px;text-align:left;font-family:var(--mono);font-size:13.5px;font-weight:400;color:var(--ink)}
+.hline:active{background:var(--teal-tint)}
+.hline .l{padding:0}
+.hline .hv{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink-soft);padding:1px 0 3px}
+.hline .hv b{font-weight:700}
+.conf-diff{font-family:var(--mono);font-size:12px;font-weight:700}
+/* nav */
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;max-width:520px;margin:0 auto;padding:6px 6px env(safe-area-inset-bottom);z-index:10}
+nav button{flex:1;background:none;color:var(--ink-soft);padding:8px 0 6px;font-size:10.5px;font-weight:700;border-radius:16px;margin:0 2px;display:flex;flex-direction:column;gap:3px;align-items:center;text-transform:uppercase;letter-spacing:.03em;transition:background .15s,color .15s}
+nav button.on{background:var(--teal);color:var(--bg)}
+nav button svg{width:21px;height:21px}
+/* modais */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--bg);width:100%;max-width:520px;border-radius:20px 20px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.16);padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheet h3{font-family:var(--disp);font-weight:700;font-size:16px;margin-bottom:12px}
+.prow{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.prow input[type=time]{flex:1;font-family:var(--mono)}
+.prow .del{background:var(--red-tint);color:var(--red);width:38px;height:38px;flex:none;border-radius:999px;font-size:16px}
+table.tx{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+table.tx td{padding:3px 3px}
+table.tx input{padding:6px 7px;font-size:12.5px;font-family:var(--mono);border-radius:6px}
+.hidden{display:none!important}
+.escala{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.escala label{font-size:10px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em}
+.escala input{padding:7px 2px;text-align:center;font-family:var(--mono);margin-top:3px}
+.pagitem{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px;gap:8px}
+.msg{background:var(--teal-tint);color:var(--teal-deep);border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:10px}
+.msg.warn{background:var(--amber-tint);color:var(--amber-deep)}
+.msg.err{background:var(--red-tint);color:var(--red)}
+.promo-banner{background:var(--lilac-bg);color:var(--lilac-tx);border-radius:14px;padding:14px 16px;font-size:13px;margin-bottom:10px}
+/* config acordeão */
+details.cfgsec{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;overflow:hidden}
+details.cfgsec summary{font-family:var(--mono);font-weight:600;font-size:12.5px;padding:13px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.04em}
+details.cfgsec summary::-webkit-details-marker{display:none}
+details.cfgsec summary::after{content:'+';color:var(--ink-soft);font-size:18px;font-weight:400;font-family:var(--disp)}
+details.cfgsec[open] summary::after{content:'–'}
+details.cfgsec .inner{padding:0 14px 14px}
+/* toast */
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);font-family:var(--disp);font-weight:600;font-size:13.5px;padding:10px 18px;border-radius:999px;z-index:40;max-width:88%;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+/* seções em bloco de cor (destaque de storytelling, uma por tela) */
+.card.block-lilac{background:var(--lilac-bg);border:none}
+.card.block-lilac h2{color:var(--lilac-tx);opacity:.7}
+.card.block-lilac .muted{color:var(--lilac-tx);opacity:.65}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><h1 id="hTitle">Ponto<span class="amp">&amp;</span>Folha</h1>
+    <div class="row" style="flex:none;width:auto;gap:10px">
+      <div class="clock" id="clock"></div>
+    </div>
+  </header>
+
+  <!-- ================= ONBOARDING ================= -->
+  <section id="view-onboard" class="hidden">
+    <div class="punch-wrap" style="padding-bottom:0">
+      <div style="width:100px;height:100px;border-radius:24px;background:var(--ink);color:var(--bg);box-shadow:0 4px 16px rgba(0,0,0,.10);display:flex;align-items:center;justify-content:center;font-size:40px">⏱</div>
+    </div>
+    <h2 style="text-align:center;font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:-.01em;text-transform:none;color:var(--ink);margin-top:16px">Bem-vinda ao Ponto &amp; Folha</h2>
+    <p class="muted" style="text-align:center;margin-bottom:16px">Controle de jornada, agenda e conferência de folha — tudo neste aparelho. Comece com o básico; o resto (escala, tabelas de impostos, benefícios) já vem preenchido e pode ser ajustado depois em Config.</p>
+    <div class="card">
+      <label class="f">Nome e sobrenome<input id="obNome" placeholder="Como aparece no holerite"></label>
+      <label class="f">Data de admissão<input type="date" id="obAdm"></label>
+      <label class="f">Salário mensal (R$)<input type="number" step="0.01" inputmode="decimal" id="obSalario" placeholder="1878,14 (piso CCT 2026)"></label>
+      <label class="f" style="margin-bottom:4px">Filhos (data de nascimento)</label>
+      <div id="obFilhosList"></div>
+      <div class="row" style="margin-bottom:8px">
+        <input type="date" id="obFilhoData">
+        <button class="btn sec small" style="flex:none" id="obFilhoAdd">+ Adicionar filho</button>
+      </div>
+      <p class="muted">Pela data de nascimento o app calcula sozinho, mês a mês, quem conta para o salário-família (até 14 anos) e para a dedução de IRPF (até 21 anos).</p>
+    </div>
+    <button class="btn" style="width:100%" id="obStart">Começar</button>
+    <button class="btn ghost" style="width:100%;margin-top:8px" id="obImport">Já tenho um backup — importar JSON</button>
+    <p class="muted" style="text-align:center;margin:12px 0 20px">Os dados ficam somente neste aparelho. Nada é enviado a servidores.</p>
+  </section>
+
+  <!-- ================= INÍCIO ================= -->
+  <section id="view-home">
+    <div id="homeBackup"></div>
+    <div class="card tcard">
+      <div class="pf-punchcard-head">
+        <span class="tcard-kicker" id="punchKicker" style="margin-bottom:0">Cartão de ponto</span>
+      </div>
+      <div class="punchcard2">
+        <div class="punch-slots" id="todayPunches"></div>
+        <div class="punch-outer" id="punchOuter">
+          <span class="lever-label" id="punchLabel">Carimbar</span>
+          <button id="btnPunch" aria-label="Puxe a alavanca para bater o ponto">
+            <span class="lever-ticks"><span>▾</span><span>▾</span><span>▾</span><span>▾</span></span>
+            <span class="lever-grip"></span>
+          </button>
+          <span class="lever-caption">puxe</span>
+        </div>
+      </div>
+      <div class="pf-punchcard-worked" id="punchWorked"></div>
+      <div class="stamp" id="stampMsg"></div>
+    </div>
+    <div class="card">
+      <h2>Hoje — agenda &amp; atividades</h2>
+      <div id="homeTasks"></div>
+      <div class="row" style="margin-top:8px">
+        <input id="homeTaskTxt" placeholder="Nova tarefa ou registro do dia">
+        <button class="btn small" style="flex:none" id="homeTaskAdd">Add</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Este mês</h2>
+      <div class="hol" id="homeMonth"></div>
+      <button class="btn sec small" style="margin-top:10px" id="homeGoMonth">Ver mês em detalhe →</button>
+    </div>
+  </section>
+
+  <!-- ================= TAREFAS ================= -->
+  <section id="view-tasks" class="hidden">
+    <div class="card">
+      <h2>Nova tarefa</h2>
+      <input id="ntTxt" placeholder="Descrição" style="margin-bottom:8px">
+      <div class="row">
+        <input type="date" id="ntDate">
+        <select id="ntFreq"><option value="">Única</option><option value="w">Semanal</option><option value="m">Mensal</option></select>
+        <button class="btn small" style="flex:none" id="ntAdd">Criar</button>
+      </div>
+      <p class="muted" style="margin-top:6px" id="ntHint"></p>
+    </div>
+    <div id="tasksList"></div>
+  </section>
+
+  <!-- ================= JORNADA ================= -->
+  <section id="view-jornada">
+    <div class="card">
+      <h2>Provisões</h2>
+      <div class="hol" id="jProv"></div>
+    </div>
+    <div class="card block-lilac">
+      <h2>Férias</h2>
+      <div id="jFerias"></div>
+      <button class="btn sec small" style="margin-top:10px" id="btnNovaFerias">+ Programar férias</button>
+      <p class="muted" style="margin-top:8px">As férias podem ser divididas em até 3 períodos no ano, sendo um deles de pelo menos 14 dias. O app marca os dias, calcula o valor (pagamento até 2 dias antes do início) e o impacto na folha do mês.</p>
+    </div>
+    <h2>Meses</h2>
+    <div id="monthList"></div>
+  </section>
+
+  <!-- ================= MÊS (sub-tela da Jornada) ================= -->
+  <section id="view-month" class="hidden">
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn ghost small" style="flex:none" onclick="go('jornada')">&#8592; Voltar</button>
+      <button class="btn ghost small" style="flex:none" id="mPrev">&#8249;</button>
+      <div style="flex:1;text-align:center;font-family:var(--disp);font-weight:800;font-size:16px;text-transform:capitalize" id="mTitle"></div>
+      <button class="btn ghost small" style="flex:none" id="mNext">&#8250;</button>
+    </div>
+    <div id="mAlerts"></div>
+    <div class="card"><h2>Resumo de horas</h2><div class="hol" id="mResumo"></div></div>
+    <div class="card">
+      <h2>Dias</h2>
+      <div id="mDays"></div>
+      <button class="btn sec small" style="margin-top:10px" id="btnAddDay">+ Lançar dia manualmente</button>
+    </div>
+    <div class="card">
+      <h2>Pagamentos adicionais</h2>
+      <div id="mPags"></div>
+      <div class="row" style="margin-top:8px"><input id="pagDesc" placeholder="Descrição" style="flex:2"></div>
+      <div class="row" style="margin-top:6px">
+        <input id="pagVal" type="number" step="0.01" inputmode="decimal" placeholder="Valor R$">
+        <select id="pagTrib"><option value="1">Tributável</option><option value="0">Não tributável</option></select>
+        <button class="btn small" style="flex:none" id="btnAddPag">Add</button>
+      </div>
+    </div>
+    <div id="mFeriasCard"></div>
+    <div id="m13Card"></div>
+    <div class="card"><h2>Folha de pagamento</h2>
+      <p class="muted" style="margin-bottom:8px">Toque numa verba para registrar o valor do holerite oficial — divergências acima de R$ 0,05 ficam destacadas e entram no relatório.</p>
+      <div class="hol" id="mFolha"></div>
+      <div id="mConfSummary" style="margin-top:8px"></div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn" id="btnFechar"></button>
+      <button class="btn sec" id="btnRelatorio">Gerar relatório</button>
+    </div>
+    <p class="muted" style="margin-bottom:16px">Fechar o mês congela os cálculos com as regras vigentes — mudanças futuras não afetam meses fechados.</p>
+  </section>
+
+  <!-- ================= CONFIG ================= -->
+  <section id="view-config" class="hidden">
+    <div class="card">
+      <h2>Vigência das regras</h2>
+      <p class="muted" style="margin-bottom:8px">Cada vigência guarda salário, escala e tabelas válidos a partir de um mês. Crie uma nova quando houver dissídio ou mudança de tabela — meses anteriores continuam com as regras antigas.</p>
+      <label class="f">Editando a vigência<select id="vigSel"></select></label>
+      <input type="month" id="vigNewMonth" style="margin-bottom:8px">
+      <div class="row">
+        <button class="btn sec small" id="vigNew">Nova vigência</button>
+        <button class="btn warn small" style="flex:none" id="vigDel">Excluir</button>
+      </div>
+    </div>
+
+    <details class="cfgsec" open><summary>Contrato <span class="chip task">global</span></summary><div class="inner">
+      <label class="f">Nome e sobrenome<input id="cNome" placeholder="Aparece no relatório"></label>
+      <label class="f">Data de admissão<input type="date" id="cAdm"></label>
+      <p class="muted">Usada para calcular os avos do 13º e o período aquisitivo de férias. Sem ela, o app assume ano completo.</p>
+    </div></details>
+
+    <details class="cfgsec"><summary>Salário e jornada</summary><div class="inner">
+      <label class="f">Salário mensal (R$)<input id="cSalario" type="number" step="0.01" inputmode="decimal"></label>
+      <label class="f">Jornada mensal (horas) — base do valor-hora<input id="cJornada" type="number" step="1" inputmode="numeric"></label>
+      <label class="f" style="margin-bottom:4px">Escala semanal (horas por dia)</label>
+      <div class="escala" id="cEscala"></div>
+    </div></details>
+
+    <details class="cfgsec"><summary>Ponto</summary><div class="inner">
+      <label class="f">Batidas por dia<select id="cBatidas"><option value="4">4 (entrada, almoço, volta, saída)</option><option value="2">2 (entrada e saída)</option><option value="0">Livre</option></select></label>
+      <label class="f"><span>Desconto automático de almoço (quando houver só 2 batidas no dia)</span>
+        <div class="row" style="margin-top:4px"><select id="cAutoAlmoco"><option value="1">Ativado</option><option value="0">Desativado</option></select><input id="cAlmocoMin" type="number" step="5" inputmode="numeric" title="minutos"></div>
+        <span class="muted">minutos descontados</span></label>
+    </div></details>
+
+    <details class="cfgsec"><summary>Horas extras</summary><div class="inner">
+      <label class="f">Tratamento do saldo<select id="cModoExtras"><option value="pagar">Pagar como extra</option><option value="banco">Banco de horas (não paga)</option></select></label>
+      <label class="f">Adicional de hora extra (%)<input id="cPctExtra" type="number" step="5" inputmode="numeric"></label>
+      <label class="f">DSR sobre horas extras<select id="cDsr"><option value="1">Calcular (reflexo legal)</option><option value="0">Não calcular</option></select></label>
+    </div></details>
+
+    <details class="cfgsec"><summary>Família e benefícios</summary><div class="inner">
+      <label class="f" style="margin-bottom:4px">Filhos <span class="chip task">global</span></label>
+      <div id="cFilhosList"></div>
+      <div class="row" style="margin-bottom:10px">
+        <input type="date" id="cFilhoData">
+        <button class="btn sec small" style="flex:none" id="cFilhoAdd">+ Adicionar</button>
+      </div>
+      <p class="muted" style="margin-bottom:10px">Contagem automática por idade: até 14 anos → salário-família; até 21 → dependente de IRPF (dedução R$ <span id="lblDedDep"></span>/mês). Universitário de 21–24 pode ser deduzido: use o campo abaixo.</p>
+      <label class="f">Outros dependentes de IRPF (cônjuge, universitário 21–24 etc.)<input id="cDepExtra" type="number" step="1" inputmode="numeric"></label>
+      <div class="grid2">
+        <label class="f">Cota salário-família (R$)<input id="cSfCota" type="number" step="0.01"></label>
+        <label class="f">Limite de renda (R$)<input id="cSfLim" type="number" step="0.01"></label>
+      </div>
+      <label class="f">Vale cesta básica (R$) — benefício, fora do salário<input id="cCesta" type="number" step="0.01"></label>
+      <label class="f">Feriado da categoria em 12 de maio (CCT SinSaúde)<select id="cFerCat"><option value="1">Aplicar automaticamente</option><option value="0">Não aplicar</option></select></label>
+    </div></details>
+
+    <details class="cfgsec"><summary>Tabela INSS</summary><div class="inner">
+      <table class="tx" id="tInss"><tr><td class="muted">Até (R$)</td><td class="muted">Alíq. %</td><td></td></tr></table>
+      <button class="btn ghost small" style="margin-top:8px" onclick="addInssRow()">+ faixa</button>
+      <p class="muted" style="margin-top:6px">A última faixa é o teto: acima dela não há desconto adicional.</p>
+    </div></details>
+
+    <details class="cfgsec"><summary>Tabela IRPF</summary><div class="inner">
+      <table class="tx" id="tIrrf"><tr><td class="muted">Até (R$)</td><td class="muted">Alíq. %</td><td class="muted">Deduzir (R$)</td><td></td></tr></table>
+      <button class="btn ghost small" style="margin-top:8px" onclick="addIrrfRow()">+ faixa</button>
+      <label class="f" style="margin-top:10px">Dedução por dependente (R$)<input id="cDedDep" type="number" step="0.01"></label>
+      <div class="grid2">
+        <label class="f">Isenção total até (rend. R$)<input id="cRedIsen" type="number" step="0.01"></label>
+        <label class="f">Redução gradual até (R$)<input id="cRedGrad" type="number" step="0.01"></label>
+      </div>
+      <div class="grid2">
+        <label class="f">Redutor: constante A<input id="cRedA" type="number" step="0.01"></label>
+        <label class="f">Redutor: coeficiente B<input id="cRedB" type="number" step="0.000001"></label>
+      </div>
+      <p class="muted">Lei 15.270/2025: redutor mensal = A − (B × rendimento tributável), limitado ao imposto.</p>
+    </div></details>
+
+    <details class="cfgsec"><summary>13º salário <span class="chip task">global</span></summary><div class="inner">
+      <label class="f">Forma de pagamento<select id="c13Modo"><option value="2">Duas parcelas (padrão legal)</option><option value="1">Parcela única</option></select></label>
+      <div class="grid2" id="c13Duas">
+        <label class="f">1ª parcela até (dia/mês)<input id="c13D1" placeholder="30/11"></label>
+        <label class="f">2ª parcela até (dia/mês)<input id="c13D2" placeholder="20/12"></label>
+      </div>
+      <label class="f hidden" id="c13Unica">Pagamento até (dia/mês)<input id="c13DU" placeholder="20/12"></label>
+      <p class="muted">Padrão legal: 1ª parcela (adiantamento, sem descontos) até 30/11; 2ª até 20/12, com INSS e IRPF sobre o 13º integral.</p>
+    </div></details>
+
+    <details class="cfgsec"><summary>Aparência <span class="chip task">global</span></summary><div class="inner">
+      <label class="f">Tema<select id="cTheme"><option value="sys">Automático (sistema)</option><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+      <p class="muted">Dica: use "Adicionar à tela de início" no menu do navegador para abrir o app em tela cheia, sem a barra de endereço.</p>
+    </div></details>
+
+    <details class="cfgsec"><summary>Feriados <span class="chip task">global</span></summary><div class="inner">
+      <p class="muted" style="margin-bottom:8px">Feriados nacionais via BrasilAPI (precisa de internet). Municipais/estaduais: marque o dia manualmente. Anos carregados: <span class="mono" id="lblFeriados">—</span></p>
+      <button class="btn sec small" id="btnFeriados">Buscar feriados (ano atual e próximo)</button>
+    </div></details>
+
+    <details class="cfgsec"><summary>Backup <span class="chip task">global</span></summary><div class="inner">
+      <p class="muted" style="margin-bottom:8px">Os dados ficam no armazenamento do navegador deste aparelho. Exporte um backup de vez em quando — limpar os dados do navegador apaga tudo.</p>
+      <div class="row">
+        <button class="btn sec small" id="btnExport">Exportar JSON</button>
+        <button class="btn ghost small" id="btnImport">Importar JSON</button>
+      </div>
+      <input type="file" id="fileImport" accept=".json" class="hidden">
+    </div></details>
+
+    <button class="btn" style="width:100%;margin-bottom:20px" id="btnSaveCfg">Salvar configurações</button>
+  </section>
+</div>
+
+<!-- modal edição de dia -->
+<div class="overlay hidden" id="dayModal">
+  <div class="sheet">
+    <h3 id="dmTitle"></h3>
+    <label class="f">Tipo do dia<select id="dmType">
+      <option value="auto">Automático (normal / feriado / férias)</option>
+      <option value="normal">Dia normal de trabalho</option>
+      <option value="feriado">Feriado</option>
+      <option value="ferias">Férias</option>
+      <option value="abonado">Abonado (atestado, ponte etc.)</option>
+      <option value="falta">Falta (descontar)</option>
+    </select></label>
+    <label class="f" style="margin-bottom:6px">Batidas</label>
+    <div id="dmPunches"></div>
+    <button class="btn ghost small" id="dmAdd" style="margin:4px 0 12px">+ batida</button>
+    <label class="f" style="margin-bottom:6px">Agenda / atividades do dia</label>
+    <div id="dmTasks"></div>
+    <div class="row" style="margin:4px 0 12px">
+      <input id="dmTaskTxt" placeholder="Ex.: faturamento convênio X, malote…">
+      <button class="btn ghost small" style="flex:none" id="dmTaskAdd">+ item</button>
+    </div>
+    <label class="f">Observação<input id="dmNote" placeholder="opcional"></label>
+    <div class="row">
+      <button class="btn" id="dmSave">Salvar</button>
+      <button class="btn warn" id="dmClear" style="flex:none">Limpar dia</button>
+      <button class="btn ghost" id="dmCancel" style="flex:none">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal de escolha/confirmação -->
+<div class="overlay hidden" id="askModal">
+  <div class="sheet">
+    <h3 id="askTitle"></h3>
+    <div id="askBody"></div>
+    <div id="askBtns" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- modal edição de tarefa -->
+<div class="overlay hidden" id="taskModal">
+  <div class="sheet">
+    <h3 id="tkTitle">Editar tarefa</h3>
+    <label class="f">Descrição<input id="tkTxt"></label>
+    <label class="f">Data<input type="date" id="tkDate"></label>
+    <p class="muted hidden" id="tkRecHint" style="margin-bottom:10px">Tarefa recorrente: ao mudar a data e escolher "esta e as futuras", as próximas ocorrências passam a ser calculadas a partir da nova data.</p>
+    <div class="row">
+      <button class="btn" id="tkSave">Salvar</button>
+      <button class="btn ghost" id="tkCancel" style="flex:none">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <button id="navHome" class="on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
+  <button id="navTasks" onclick="go('tasks')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tarefas</button>
+  <button id="navJornada" onclick="go('jornada')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Jornada</button>
+  <button id="navConfig" onclick="go('config')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.51 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>Config</button>
+</nav>
+
+<div id="toast" role="status"></div>
+<script>
+'use strict';
+/* ================= estado ================= */
+const LSKEY='pontofolha_v1';
+const DEFCFG={
+  salario:1878.14, jornada:220,
+  escala:{0:0,1:540,2:540,3:540,4:540,5:480,6:0},
+  batidas:'4', autoAlmoco:1, almocoMin:60,
+  modoExtras:'pagar', pctExtra:100, dsr:1,
+  depIR:0, filhos:0, sfCota:67.54, sfLim:1980.38, cesta:240, ferCat:1,
+  inss:[{ate:1621.00,aliq:7.5},{ate:2902.84,aliq:9},{ate:4354.27,aliq:12},{ate:8475.55,aliq:14}],
+  irrf:[{ate:2259.20,aliq:0,ded:0},{ate:2826.65,aliq:7.5,ded:169.44},{ate:3751.05,aliq:15,ded:381.44},{ate:4664.68,aliq:22.5,ded:662.77},{ate:999999999,aliq:27.5,ded:896.00}],
+  dedDep:189.59, redIsen:5000, redGrad:7350, redA:978.62, redB:0.133145
+};
+function num2(v){v=Number(v);return isFinite(v)?v:0}
+let S=load();
+function load(){
+  let o=null;
+  try{const r=localStorage.getItem(LSKEY);if(r)o=JSON.parse(r)}catch(e){}
+  if(!o)o={};
+  o.months=o.months||{}; o.holidays=o.holidays||{};
+  o.ferias=o.ferias||[]; o.rec=o.rec||[];
+  o.c13=o.c13||{modo:'2',d1:'30/11',d2:'20/12',dU:'20/12'};
+  o.ui=o.ui||{theme:'sys'}; o.adm=o.adm||''; o.nome=o.nome||'';
+  o.filhos=o.filhos||[]; o.depExtra=num2(o.depExtra);
+  if(!o.vig||!o.vig.length){
+    const base=Object.assign({},structuredClone(DEFCFG),o.cfg||{});
+    o.vig=[{desde:'1900-01',cfg:base}];
+    delete o.cfg;
+  }
+  o.vig.forEach(v=>{v.cfg=Object.assign({},structuredClone(DEFCFG),v.cfg)});
+  o.vig.sort((a,b)=>a.desde<b.desde?-1:1);
+  return o;
+}
+function save(){try{localStorage.setItem(LSKEY,JSON.stringify(S))}catch(e){toast('Falha ao salvar: '+e.message)}}
+function cfgFor(mk){let sel=S.vig[0];for(const v of S.vig)if(v.desde<=mk)sel=v;return sel.cfg}
+
+/* ================= util ================= */
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const MESES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const DSEM=['dom','seg','ter','qua','qui','sex','sáb'];
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function curMonthKey(){return todayKey().slice(0,7)}
+function nowHM(){const d=new Date();return `${pad(d.getHours())}:${pad(d.getMinutes())}`}
+function hm2min(s){if(!s)return null;const[a,b]=s.split(':').map(Number);return a*60+b}
+function min2hm(m,signed){const neg=m<0;m=Math.abs(Math.round(m));const s=`${Math.floor(m/60)}h${pad(m%60)}`;return (signed?(neg?'-':'+'):(neg?'-':''))+s}
+function brl(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function num(v){return isFinite(v)?Number(v):0}
+function daysInMonth(mk){const[y,m]=mk.split('-').map(Number);return new Date(y,m,0).getDate()}
+function dow(dk){const[y,m,d]=dk.split('-').map(Number);return new Date(y,m-1,d).getDay()}
+function mAdd(mk,delta){const[y,m]=mk.split('-').map(Number);const d=new Date(y,m-1+delta,1);return `${d.getFullYear()}-${pad(d.getMonth()+1)}`}
+function dAdd(dk,delta){const[y,m,d]=dk.split('-').map(Number);const dt=new Date(y,m-1,d+delta);return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`}
+function yAdd(dk,n){const[y,m,d]=dk.split('-').map(Number);const dt=new Date(y+n,m-1,d);return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`}
+function daysDiff(a,b){return Math.round((new Date(b)-new Date(a))/86400000)}
+function fmtDK(dk){const[y,m,d]=dk.split('-');return `${d}/${m}/${y}`}
+function fmtDKs(dk){const[y,m,d]=dk.split('-');return `${d}/${m}`}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function getMonth(mk){if(!S.months[mk])S.months[mk]={days:{},pags:[],closed:false,snap:null,conf:{},confX:[]};const m=S.months[mk];m.conf=m.conf||{};m.confX=m.confX||[];return m}
+function holidayName(dk,cfg){
+  const y=dk.slice(0,4);
+  const nat=(S.holidays[y]||{})[dk];
+  if(nat)return nat;
+  if(cfg&&Number(cfg.ferCat)===1&&dk.slice(5)==='05-12')return 'Feriado da categoria (CCT SinSaúde)';
+  return null;
+}
+function feriasFor(dk){return S.ferias.find(f=>dk>=f.ini&&dk<=f.fim)||null}
+function parseDM(s){const m=/^(\d{1,2})\/(\d{1,2})$/.exec((s||'').trim());return m?{d:+m[1],m:+m[2]}:null}
+/* filhos: contagem automática por idade no mês (fallback: contadores antigos da vigência) */
+function childCount14(mk,cfg){
+  if(S.filhos.length)return S.filhos.filter(f=>yAdd(f.n,14)>`${mk}-01`).length;
+  return num(cfg.filhos);
+}
+function depIRCount(mk,cfg){
+  const extra=num(S.depExtra);
+  if(S.filhos.length)return S.filhos.filter(f=>yAdd(f.n,21)>`${mk}-01`).length+extra;
+  return num(cfg.depIR)+extra;
+}
+
+/* ================= toast + diálogos ================= */
+let toastT=null;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2800)}
+/* overlays integrados ao histórico: botão voltar fecha o sheet aberto */
+const modalStack=[];
+let ignorePop=0;
+function openOverlay(elId,onBackCancel){
+  $(elId).classList.remove('hidden');
+  modalStack.push({elId,onBackCancel});
+  try{history.pushState({modal:1},'')}catch(e){}
+}
+function closeOverlay(){ // fechamento via UI (botões)
+  const m=modalStack.pop();if(!m)return;
+  $(m.elId).classList.add('hidden');
+  ignorePop++;try{history.back()}catch(e){}
+}
+function ask(title,body,btns){ // btns: [{lb, cls, val}] → Promise<val|null>
+  return new Promise(res=>{
+    $('askTitle').textContent=title;
+    $('askBody').innerHTML=body?`<p class="muted" style="margin-bottom:4px">${body}</p>`:'';
+    const box=$('askBtns');box.innerHTML='';
+    btns.concat([{lb:'Cancelar',cls:'ghost',val:null}]).forEach(b=>{
+      const el=document.createElement('button');
+      el.className='btn '+(b.cls||'');el.textContent=b.lb;
+      el.onclick=()=>{closeOverlay();res(b.val)};
+      box.appendChild(el);
+    });
+    openOverlay('askModal',()=>res(null));
+  });
+}
+function confirmS(title,body){return ask(title,body,[{lb:'Confirmar',cls:'warn',val:true}]).then(v=>v===true)}
+
+/* ================= tarefas (pontuais + recorrentes) ================= */
+function occursOn(s,dk){
+  if(dk<s.anchor)return false;
+  if(s.end&&dk>s.end)return false;
+  if((s.skips||[]).includes(dk))return false;
+  if(s.freq==='w')return dow(dk)===dow(s.anchor);
+  const ad=Number(s.anchor.slice(8,10));
+  const dim=daysInMonth(dk.slice(0,7));
+  return Number(dk.slice(8,10))===Math.min(ad,dim);
+}
+function recOccur(dk){
+  return S.rec.filter(s=>occursOn(s,dk)).map(s=>({
+    t:(s.over&&s.over[dk]&&s.over[dk].t)||s.t,
+    ok:!!(s.done&&s.done[dk]), kind:'r', id:s.id, freq:s.freq
+  }));
+}
+function pontualTasks(dk){
+  const mk=dk.slice(0,7);
+  const d=S.months[mk]&&S.months[mk].days[dk];
+  return ((d&&d.tasks)||[]).map((t,i)=>({t:t.t,ok:!!t.ok,kind:'p',idx:i}));
+}
+function dayTasks(dk){return pontualTasks(dk).concat(recOccur(dk))}
+function toggleT(dk,kind,ref){
+  if(kind==='p'){
+    const m=getMonth(dk.slice(0,7));
+    const t=m.days[dk]&&m.days[dk].tasks&&m.days[dk].tasks[ref];
+    if(t)t.ok=!t.ok;
+  }else{
+    const s=S.rec.find(x=>x.id===ref);if(!s)return;
+    s.done=s.done||{};
+    if(s.done[dk])delete s.done[dk];else s.done[dk]=true;
+  }
+  save();rerender();
+}
+async function editT(dk,kind,ref){
+  const cur=kind==='p'?pontualTasks(dk)[ref]:recOccur(dk).find(x=>x.id===ref);
+  if(!cur)return;
+  const r=await taskSheet(cur.t,dk,kind==='r');
+  if(r==null)return;
+  const txtCh=r.t!==cur.t, dateCh=r.date!==dk;
+  if(!txtCh&&!dateCh)return;
+  if(kind==='p'){
+    const mOld=getMonth(dk.slice(0,7));
+    if(dateCh){
+      const mNew=getMonth(r.date.slice(0,7));
+      if(mNew.closed){toast('O mês de destino está fechado.');return}
+      mOld.days[dk].tasks.splice(ref,1);
+      if(!mNew.days[r.date])mNew.days[r.date]={p:[]};
+      mNew.days[r.date].tasks=mNew.days[r.date].tasks||[];
+      mNew.days[r.date].tasks.push({t:r.t,ok:cur.ok});
+      if(!mOld.days[dk].tasks.length&&!(mOld.days[dk].p||[]).length&&!mOld.days[dk].type&&!mOld.days[dk].note)delete mOld.days[dk];
+    }else{
+      mOld.days[dk].tasks[ref].t=r.t;
+    }
+  }else{
+    const sc=await ask('Tarefa recorrente','Aplicar a alteração a:',[
+      {lb:'Somente esta ocorrência',val:'one'},
+      {lb:'Esta e as futuras',cls:'sec',val:'fwd'}]);
+    if(!sc)return;
+    const s=S.rec.find(x=>x.id===ref);if(!s)return;
+    if(sc==='one'){
+      if(dateCh){
+        // destaca a ocorrência da série: some daqui e vira tarefa pontual na nova data
+        s.skips=s.skips||[];s.skips.push(dk);
+        const mNew=getMonth(r.date.slice(0,7));
+        if(!mNew.days[r.date])mNew.days[r.date]={p:[]};
+        mNew.days[r.date].tasks=mNew.days[r.date].tasks||[];
+        mNew.days[r.date].tasks.push({t:r.t,ok:cur.ok});
+      }else{s.over=s.over||{};s.over[dk]={t:r.t}}
+    }else{
+      // encerra a série na véspera e recria a partir da nova data (recalcula as futuras)
+      splitSeries(s,dk,{t:r.t},dateCh?r.date:dk);
+    }
+  }
+  save();rerender();toast('Tarefa atualizada');
+}
+async function delT(dk,kind,ref){
+  if(kind==='p'){
+    if(!await confirmS('Excluir tarefa?',''))return;
+    getMonth(dk.slice(0,7)).days[dk].tasks.splice(ref,1);
+  }else{
+    const sc=await ask('Tarefa recorrente','Excluir:',[
+      {lb:'Somente esta ocorrência',val:'one'},
+      {lb:'Esta e as futuras',cls:'warn',val:'fwd'}]);
+    if(!sc)return;
+    const s=S.rec.find(x=>x.id===ref);if(!s)return;
+    if(sc==='one'){s.skips=s.skips||[];s.skips.push(dk)}
+    else{
+      const end=dAdd(dk,-1);
+      if(end<s.anchor)S.rec=S.rec.filter(x=>x.id!==s.id);
+      else s.end=end;
+    }
+  }
+  save();rerender();toast('Excluída');
+}
+function splitSeries(s,dk,patch,newAnchor){
+  // encerra a série no dia anterior a dk e cria uma nova a partir de newAnchor (padrão: dk)
+  const anchor=newAnchor||dk;
+  const nova={id:uid(),t:patch.t!=null?patch.t:s.t,freq:s.freq,anchor,end:s.end||null,skips:[],done:{},over:{}};
+  if(anchor===dk){ // padrão mantido: preserva conclusões/ajustes futuros
+    for(const k of Object.keys(s.done||{}))if(k>=dk){nova.done[k]=true;delete s.done[k]}
+    for(const k of Object.keys(s.over||{}))if(k>=dk){nova.over[k]=s.over[k];delete s.over[k]}
+  }else{ // reancorada: as datas mudam, estados antigos futuros não se aplicam
+    for(const k of Object.keys(s.done||{}))if(k>=dk)delete s.done[k];
+    for(const k of Object.keys(s.over||{}))if(k>=dk)delete s.over[k];
+  }
+  s.skips=(s.skips||[]).filter(k=>k<dk);
+  const end=dAdd(dk,-1);
+  if(end<s.anchor)S.rec=S.rec.filter(x=>x.id!==s.id);else s.end=end;
+  S.rec.push(nova);
+}
+let taskSheetRes=null;
+function taskSheet(cur,dk,isRec){
+  return new Promise(res=>{
+    taskSheetRes=res;
+    $('tkTxt').value=cur||'';
+    $('tkDate').value=dk||todayKey();
+    $('tkRecHint').classList.toggle('hidden',!isRec);
+    openOverlay('taskModal',()=>{if(taskSheetRes){taskSheetRes(null);taskSheetRes=null}});
+    setTimeout(()=>$('tkTxt').focus(),50);
+  });
+}
+function rerender(){
+  if(curView==='home')renderHome();
+  else if(curView==='tasks')renderTasks();
+  else if(curView==='month')renderMonth();
+  else if(curView==='jornada')renderJornada();
+}
+
+/* ================= cálculo de dia ================= */
+function computeDay(mk,dk){
+  const m=getMonth(mk), rec=m.days[dk]||{p:[]}, cfg=cfgFor(mk);
+  const wd=dow(dk), hol=holidayName(dk,cfg), fer=feriasFor(dk);
+  let type=rec.type||'auto';
+  let eff = type==='auto' ? (fer?'ferias':(hol?'feriado':'normal')) : type;
+  const escMin=num(cfg.escala[wd]||0);
+  let expected = (eff==='normal') ? escMin : 0;
+  let worked=0, warn='';
+  const ps=(rec.p||[]).slice().map(hm2min).filter(v=>v!==null).sort((a,b)=>a-b);
+  for(let i=0;i+1<ps.length;i+=2)worked+=ps[i+1]-ps[i];
+  if(ps.length%2===1)warn='batida ímpar';
+  if(ps.length===2 && Number(cfg.autoAlmoco)===1 && worked>num(cfg.almocoMin))worked-=num(cfg.almocoMin);
+  const ptasks=(rec.tasks||[]);
+  const hasData=ps.length>0||type!=='auto'||!!(rec.note)||ptasks.length>0;
+  const pending = !hasData && expected>0 && dk<todayKey() && !fer;
+  let delta=0, extraMin=0, faltaMin=0;
+  if(eff==='falta'){faltaMin=escMin}
+  else if(ps.length>0||hasData){
+    delta=worked-expected;
+    if(delta>0)extraMin=delta;
+    if(delta<0&&eff==='normal'&&ps.length>0)faltaMin=-delta;
+  }
+  return{rec,type,eff,hol,fer,expected,worked,extraMin,faltaMin,pending,warn,
+    tasks:dayTasks(dk),hasData:(hasData&&!pending)};
+}
+
+/* ================= impostos ================= */
+function calcINSS(base,tb){let t=0,prev=0;for(const f of tb){const top=Math.min(base,f.ate);if(top>prev)t+=(top-prev)*f.aliq/100;prev=f.ate;if(base<=f.ate)break}return Math.max(0,t)}
+function calcIRRF(rendTrib,baseCalc,cfg){
+  let tax=0;for(const f of cfg.irrf){if(baseCalc<=f.ate){tax=Math.max(0,baseCalc*f.aliq/100-f.ded);break}}
+  let red=0;
+  if(rendTrib<=cfg.redIsen)red=tax;
+  else if(rendTrib<=cfg.redGrad)red=Math.max(0,Math.min(tax,cfg.redA-cfg.redB*rendTrib));
+  return{tax:Math.max(0,tax-red),red};
+}
+
+/* ================= admissão / avos / aquisitivo ================= */
+function avos13(y,uptoM){
+  uptoM=uptoM||12;
+  if(!S.adm)return uptoM;
+  const[ay,am,ad]=S.adm.split('-').map(Number);
+  if(Number(y)<ay)return 0;
+  if(Number(y)>ay)return uptoM;
+  let n=0;
+  for(let m=1;m<=uptoM;m++){
+    if(m>am)n++;
+    else if(m===am){
+      const dim=daysInMonth(`${y}-${pad(m)}`);
+      if(dim-ad+1>=15)n++;
+    }
+  }
+  return n;
+}
+function aquisitivo(){
+  if(!S.adm)return null;
+  const t=todayKey();
+  if(t<S.adm)return null;
+  let k=0;
+  while(yAdd(S.adm,k+1)<=t)k++;
+  const ini=yAdd(S.adm,k), fim=dAdd(yAdd(S.adm,k+1),-1);
+  let meses=0;
+  while(meses<12 && yAddM(ini,meses+1)<=t)meses++;
+  return{ini,fim,meses,primeiro:k===0,direitoApos:yAdd(S.adm,1)};
+}
+function yAddM(dk,n){const[y,m,d]=dk.split('-').map(Number);const dt=new Date(y,m-1+n,d);return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`}
+
+/* ================= férias / 13º ================= */
+function feriasCalc(f,cfg){
+  const dias=daysDiff(f.ini,f.fim)+1;
+  const vd=num(cfg.salario)/30;
+  const brutoGozo=vd*dias, terco=brutoGozo/3;
+  const abono=vd*num(f.vendidos||0), abonoTerco=abono/3;
+  const baseTrib=brutoGozo+terco;
+  const inss=calcINSS(baseTrib,cfg.inss);
+  const nDep=depIRCount(f.ini.slice(0,7),cfg);
+  const baseIR=Math.max(0,baseTrib-inss-nDep*num(cfg.dedDep));
+  const ir=calcIRRF(baseTrib,baseIR,cfg);
+  const liq=baseTrib-inss-ir.tax+abono+abonoTerco;
+  return{dias,vd,brutoGozo,terco,abono,abonoTerco,baseTrib,inss,irpf:ir.tax,irRed:ir.red,liq,prazo:dAdd(f.ini,-2),nDep,baseIR};
+}
+function extrasMediaAno(y){
+  let tot=0,n=0;
+  for(const mk of Object.keys(S.months)){
+    if(!mk.startsWith(String(y)))continue;
+    const c=computeMonth(mk);
+    if(c.worked>0||c.extraMin>0){tot+=c.vExtras+c.vDsr;n++}
+  }
+  return n?tot/n:0;
+}
+function calc13(y){
+  const cfg=cfgFor(`${y}-12`);
+  const avos=avos13(y,12);
+  const base=(num(cfg.salario)+extrasMediaAno(y))*avos/12;
+  const inss=calcINSS(base,cfg.inss);
+  const ir=calcIRRF(base,Math.max(0,base-inss-depIRCount(`${y}-12`,cfg)*num(cfg.dedDep)),cfg);
+  const p1=base/2, p2=base-inss-ir.tax-p1;
+  return{base,avos,inss,irpf:ir.tax,p1,p2,liq:base-inss-ir.tax};
+}
+
+/* ================= folha do mês ================= */
+function computeMonth(mk){
+  const m=getMonth(mk), cfg=cfgFor(mk);
+  if(m.closed&&m.snap)return m.snap;
+  const nd=daysInMonth(mk);
+  let worked=0,expected=0,extraMin=0,faltaMin=0,pend=0,diasUteis=0,repousos=0,extrasFeriado=0,diasFerias=0;
+  for(let d=1;d<=nd;d++){
+    const dk=`${mk}-${pad(d)}`,c=computeDay(mk,dk),wd=dow(dk);
+    worked+=c.hasData?c.worked:0; expected+=(c.hasData||c.eff==='falta')?c.expected:0;
+    extraMin+=c.extraMin; faltaMin+=c.faltaMin; if(c.pending)pend++;
+    if(c.eff==='ferias')diasFerias++;
+    const isFer=c.eff==='feriado';
+    if(wd===0||isFer)repousos++; else if(num(cfg.escala[wd])>0)diasUteis++;
+    if(isFer)extrasFeriado+=c.extraMin;
+  }
+  const vh=num(cfg.salario)/Math.max(1,num(cfg.jornada));
+  const vhe=vh*(1+num(cfg.pctExtra)/100);
+  const pagar=cfg.modoExtras==='pagar';
+  const vExtras=pagar?(extraMin/60)*vhe:0;
+  const vDsr=(pagar&&Number(cfg.dsr)===1&&diasUteis>0)?vExtras/diasUteis*repousos:0;
+  const vFaltas=(faltaMin/60)*vh;
+  const vFerias=num(cfg.salario)/30*diasFerias;
+  const pagsT=(m.pags||[]).filter(p=>p.t).reduce((a,p)=>a+num(p.v),0);
+  const pagsN=(m.pags||[]).filter(p=>!p.t).reduce((a,p)=>a+num(p.v),0);
+  const bruto=Math.max(0,num(cfg.salario)+vExtras+vDsr+pagsT-vFaltas-vFerias);
+  const inss=calcINSS(bruto,cfg.inss);
+  const nDep=depIRCount(mk,cfg), nF14=childCount14(mk,cfg);
+  const baseIR=Math.max(0,bruto-inss-nDep*num(cfg.dedDep));
+  const ir=calcIRRF(bruto,baseIR,cfg);
+  const temFilhos=nF14>0;
+  const salFam=(temFilhos&&bruto<=num(cfg.sfLim))?nF14*num(cfg.sfCota):0;
+  const liquido=bruto-inss-ir.tax+salFam+pagsN;
+  return{worked,expected,extraMin,faltaMin,pend,diasUteis,repousos,extrasFeriado,diasFerias,
+    vh,vhe,pagar,vExtras,vDsr,vFaltas,vFerias,pagsT,pagsN,bruto,inss,baseIR,irpf:ir.tax,irRed:ir.red,salFam,temFilhos,liquido,
+    cesta:num(cfg.cesta),sfLim:num(cfg.sfLim),sfCotaTot:childCount14(mk,cfg)*num(cfg.sfCota),nDep,nF14,
+    salario:num(cfg.salario),pctExtra:num(cfg.pctExtra),jornada:num(cfg.jornada),
+    saldoBanco:cfg.modoExtras==='banco'?extraMin:0};
+}
+function holLines(mk){
+  const c=computeMonth(mk),m=getMonth(mk);
+  const pagDesc=(m.pags||[]).map(p=>p.d).join(', ');
+  const l=[
+    {k:'base',d:'Salário base',ref:`${c.jornada}h`,cr:c.salario},
+    {k:'extras',d:`Horas extras ${c.pctExtra}% + DSR`,ref:c.extraMin?min2hm(c.extraMin):'',cr:c.vExtras+c.vDsr},
+    {k:'adic',d:'Adicionais',ref:pagDesc,cr:c.pagsT+c.pagsN},
+    {k:'salfam',d:'Salário-família',ref:c.nF14?`${c.nF14} filho(s)`:'',cr:c.salFam},
+  ];
+  if(c.vFerias>0)l.push({k:'_ferias',d:'Dias de férias (pagos antecipadamente)',ref:`${c.diasFerias} dias`,db:c.vFerias});
+  l.push({k:'faltas',d:'Faltas / atrasos',ref:c.faltaMin?min2hm(c.faltaMin):'',db:c.vFaltas});
+  l.push({k:'inss',d:'INSS',ref:'tab. progressiva',db:c.inss});
+  l.push({k:'irpf',d:'IRPF',ref:c.irRed?`redutor ${brl(c.irRed)}`:'',db:c.irpf});
+  if(!c.pagar&&c.extraMin)l.push({k:'_banco',d:'Extras → banco de horas',ref:min2hm(c.extraMin,true),cr:0});
+  return{c,lines:l,totCr:l.reduce((a,x)=>a+(x.cr||0),0),totDb:l.reduce((a,x)=>a+(x.db||0),0)};
+}
+const FER_FIELDS=[
+  {k:'gozo',lb:'Férias (dias de gozo)',app:fc=>fc.brutoGozo},
+  {k:'terco',lb:'1/3 constitucional',app:fc=>fc.terco},
+  {k:'abono',lb:'Abono + 1/3',app:fc=>fc.abono+fc.abonoTerco},
+  {k:'inss',lb:'INSS de férias',app:fc=>fc.inss},
+  {k:'irpf',lb:'IRPF de férias',app:fc=>fc.irpf},
+  {k:'liq',lb:'Líquido de férias',app:fc=>fc.liq},
+];
+function ferConfDiffs(f){
+  const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7))),conf=f.conf||{};
+  return FER_FIELDS.filter(x=>conf[x.k]!=null&&conf[x.k]!=='').map(x=>{
+    const a=x.app(fc),hh=num(parseFloat(conf[x.k]));
+    return{lb:x.lb,app:a,hol:hh,diff:hh-a,ok:Math.abs(hh-a)<=0.05};
+  });
+}
+const CONF_FIELDS=[
+  {k:'base',lb:'Salário base',app:c=>c.salario},
+  {k:'extras',lb:'Extras + DSR',app:c=>c.vExtras+c.vDsr},
+  {k:'adic',lb:'Adicionais',app:c=>c.pagsT+c.pagsN},
+  {k:'salfam',lb:'Salário-família',app:c=>c.salFam},
+  {k:'faltas',lb:'Faltas (desc.)',app:c=>c.vFaltas},
+  {k:'inss',lb:'INSS',app:c=>c.inss},
+  {k:'irpf',lb:'IRPF',app:c=>c.irpf},
+  {k:'liquido',lb:'LÍQUIDO',app:c=>c.liquido},
+];
+function confDiffs(mk){
+  const m=getMonth(mk),c=computeMonth(mk),conf=m.conf||{};
+  const out=CONF_FIELDS.filter(f=>conf[f.k]!=null&&conf[f.k]!=='').map(f=>{
+    const a=f.app(c),h=num(parseFloat(conf[f.k]));
+    return{lb:f.lb,app:a,hol:h,diff:h-a,ok:Math.abs(h-a)<=0.05};
+  });
+  (m.confX||[]).forEach(x=>out.push({lb:`${x.d} (${x.t==='d'?'débito':'crédito'} só no holerite)`,app:0,hol:num(x.v),diff:num(x.v)*(x.t==='d'?-1:1),ok:false,extra:true}));
+  return out;
+}
+
+/* ================= navegação ================= */
+let curView='home',curMK=curMonthKey();
+function go(v,mk,fromPop){
+  const changed=v!==curView||(mk&&mk!==curMK);
+  curView=v;if(mk)curMK=mk;
+  if(!fromPop&&changed){try{history.pushState({v,mk:curMK},'')}catch(e){}}
+  ['onboard','home','tasks','jornada','month','config'].forEach(x=>$('view-'+x).classList.toggle('hidden',x!==v));
+  document.querySelector('nav').classList.toggle('hidden',v==='onboard');
+  $('navHome').classList.toggle('on',v==='home');
+  $('navTasks').classList.toggle('on',v==='tasks');
+  $('navJornada').classList.toggle('on',v==='jornada'||v==='month');
+  $('navConfig').classList.toggle('on',v==='config');
+  if(v==='home')renderHome(); if(v==='tasks')renderTasks();
+  if(v==='jornada')renderJornada(); if(v==='month')renderMonth(); if(v==='config')renderConfig();
+  window.scrollTo(0,0);
+}
+
+/* ================= INÍCIO ================= */
+function punchState(){return 'Carimbar'}
+function workedNowMin(){
+  const rec=getMonth(curMonthKey()).days[todayKey()];
+  const cfg=cfgFor(curMonthKey());
+  const ps=((rec&&rec.p)||[]).map(hm2min).filter(v=>v!==null).sort((a,b)=>a-b);
+  let w=0;
+  for(let i=0;i+1<ps.length;i+=2)w+=ps[i+1]-ps[i];
+  let open=false;
+  if(ps.length%2===1){const d=new Date();w+=d.getHours()*60+d.getMinutes()-ps[ps.length-1];open=true}
+  if(!open&&ps.length===2&&Number(cfg.autoAlmoco)===1&&w>num(cfg.almocoMin))w-=num(cfg.almocoMin);
+  return{w:Math.max(0,w),open,n:ps.length};
+}
+function taskItemHTML(dk,t,i){
+  const ref=t.kind==='p'?t.idx:`'${t.id}'`;
+  return `<div class="task-item ${t.ok?'done':''}">
+    <input type="checkbox" ${t.ok?'checked':''} onchange="toggleT('${dk}','${t.kind}',${ref})">
+    <span class="t">${esc(t.t)}${t.kind==='r'?` <span class="chip rec">↻ ${t.freq==='w'?'sem':'mês'}</span>`:''}</span>
+    <button class="icon" title="editar" onclick="editT('${dk}','${t.kind}',${ref})">✎</button>
+    <button class="icon del" title="excluir" onclick="delT('${dk}','${t.kind}',${ref})">×</button></div>`;
+}
+function renderHome(){
+  const tk=todayKey(),mk=curMonthKey(),m=getMonth(mk),rec=m.days[tk],cfg=cfgFor(mk);
+  const ps=(rec&&rec.p)||[],dstr=fmtDKs(tk),totalSlots=Number(cfg.batidas)||0;
+  $('punchKicker').textContent=`Cartão de ponto · ${dstr}`;
+  let slotsHTML=ps.map(p=>`<div class="pf-slot-row"><span class="pf-slot-time">${dstr} · ${p}</span></div>`).join('');
+  for(let i=ps.length;i<totalSlots;i++)slotsHTML+='<div class="pf-slot-row"><span class="pf-slot-empty">– – / – – · – – : – –</span></div>';
+  $('todayPunches').innerHTML=slotsHTML||'<div class="pf-slot-row"><span class="pf-slot-empty">nenhuma batida hoje</span></div>';
+  const tks=dayTasks(tk);
+  $('homeTasks').innerHTML=tks.map((t,i)=>taskItemHTML(tk,t,i)).join('')||'<p class="muted">Nada agendado para hoje.</p>';
+  const c=computeMonth(mk);
+  const saldo=c.worked-c.expected;
+  $('homeMonth').innerHTML=`
+    <div class="l"><span>Horas trabalhadas</span><b>${min2hm(c.worked)}</b></div>
+    <div class="l"><span>Saldo</span><b class="${saldo>=0?'pos':'neg'}">${min2hm(saldo,true)}</b></div>
+    ${c.extraMin?`<div class="l"><span>Horas extras</span><b>${min2hm(c.extraMin)}</b></div>`:''}
+    ${c.pend?`<div class="l"><span>Dias sem registro</span><b class="chip pend">${c.pend}</b></div>`:''}
+    <div class="sep"></div>
+    <div class="l tot"><span>Líquido estimado</span><b>${brl(c.liquido)}</b></div>`;
+  // lembrete de backup
+  const hasData=Object.keys(S.months).some(k=>Object.keys(S.months[k].days).length);
+  const last=S.lastExport||null, sn=S.snooze||null;
+  const stale=hasData&&(!last||daysDiff(last,tk)>30)&&(!sn||daysDiff(sn,tk)>30);
+  $('homeBackup').innerHTML=stale?`<div class="promo-banner" style="display:flex;gap:8px;align-items:center;margin-top:4px">
+    <span style="flex:1">Faz tempo que você não exporta um backup. Se o navegador limpar os dados, os registros se perdem.</span>
+    <button class="btn sec small" onclick="doExport()">Exportar</button>
+    <button class="btn ghost small" onclick="S.snooze=todayKey();save();renderHome()">Depois</button></div>`:'';
+}
+$('homeGoMonth').onclick=()=>go('month',curMonthKey());
+$('homeTaskAdd').onclick=()=>{
+  const t=$('homeTaskTxt').value.trim();if(!t)return;
+  const tk=todayKey(),m=getMonth(tk.slice(0,7));
+  if(m.closed){toast('Mês fechado — reabra para lançar.');return}
+  if(!m.days[tk])m.days[tk]={p:[]};
+  m.days[tk].tasks=m.days[tk].tasks||[];
+  m.days[tk].tasks.push({t,ok:false});
+  $('homeTaskTxt').value='';save();renderHome();
+};
+let lastPunch=null,undoT=null;
+function punch(){
+  const tk=todayKey(),m=getMonth(curMonthKey());
+  if(m.closed){toast('Este mês está fechado. Reabra na tela do mês.');return}
+  if(!m.days[tk])m.days[tk]={p:[]};
+  const t=nowHM();m.days[tk].p.push(t);save();
+  lastPunch={dk:tk,t};
+  $('stampMsg').innerHTML=`✓ ${punchState()==='Batida extra'?'registrado':'registrado'} às ${t} <button onclick="undoPunch()">desfazer</button>`;
+  if(navigator.vibrate)navigator.vibrate(30);
+  renderHome();
+  clearTimeout(undoT);
+  undoT=setTimeout(()=>{$('stampMsg').textContent='';lastPunch=null},10000);
+}
+function undoPunch(){
+  if(!lastPunch)return;
+  const m=getMonth(lastPunch.dk.slice(0,7));
+  const arr=m.days[lastPunch.dk]&&m.days[lastPunch.dk].p;
+  if(arr){const i=arr.lastIndexOf(lastPunch.t);if(i>=0)arr.splice(i,1)}
+  save();lastPunch=null;$('stampMsg').textContent='';
+  toast('Batida desfeita');renderHome();
+}
+
+/* ================= TAREFAS (aba) ================= */
+function renderTasks(){
+  const tk=todayKey();
+  $('ntDate').value=$('ntDate').value||tk;
+  const back=60,fwd=60;
+  const overdue=[],today=[],upcoming=[],done=[];
+  for(let i=-back;i<=fwd;i++){
+    const dk=dAdd(tk,i);
+    for(const t of dayTasks(dk)){
+      const item={dk,...t};
+      if(t.ok){if(i<=0)done.push(item);else upcoming.push(item)}
+      else if(i<0)overdue.push(item);
+      else if(i===0)today.push(item);
+      else upcoming.push(item);
+    }
+  }
+  done.sort((a,b)=>a.dk<b.dk?1:-1);
+  const line=it=>`<div class="task-item ${it.ok?'done':''}">
+    <input type="checkbox" ${it.ok?'checked':''} onchange="toggleT('${it.dk}','${it.kind}',${it.kind==='p'?it.idx:`'${it.id}'`})">
+    <span class="tdate">${DSEM[dow(it.dk)]} ${fmtDKs(it.dk)}</span>
+    <span class="t">${esc(it.t)}${it.kind==='r'?` <span class="chip rec">↻ ${it.freq==='w'?'sem':'mês'}</span>`:''}</span>
+    <button class="icon" onclick="editT('${it.dk}','${it.kind}',${it.kind==='p'?it.idx:`'${it.id}'`})">✎</button>
+    <button class="icon del" onclick="delT('${it.dk}','${it.kind}',${it.kind==='p'?it.idx:`'${it.id}'`})">×</button></div>`;
+  let html='';
+  if(overdue.length)html+=`<div class="tgroup over">Atrasadas (${overdue.length})</div><div class="card">${overdue.map(line).join('')}</div>`;
+  html+=`<div class="tgroup">Hoje</div><div class="card">${today.map(line).join('')||'<p class="muted">Nada para hoje.</p>'}</div>`;
+  html+=`<div class="tgroup">Próximas (${fwd} dias)</div><div class="card">${upcoming.map(line).join('')||'<p class="muted">Nada agendado.</p>'}</div>`;
+  if(done.length)html+=`<details class="done-sec"><summary>Concluídas recentes (${done.length})</summary><div class="card">${done.map(line).join('')}</div></details>`;
+  $('tasksList').innerHTML=html;
+  $('ntHint').textContent=$('ntFreq').value==='w'?'Repete toda semana no mesmo dia da semana da data escolhida.':$('ntFreq').value==='m'?'Repete todo mês no mesmo dia (ajustado em meses mais curtos).':'';
+}
+$('ntFreq').onchange=()=>renderTasks();
+$('ntAdd').onclick=()=>{
+  const t=$('ntTxt').value.trim(),dk=$('ntDate').value,fq=$('ntFreq').value;
+  if(!t||!dk){toast('Preencha descrição e data.');return}
+  if(fq){
+    S.rec.push({id:uid(),t,freq:fq,anchor:dk,end:null,skips:[],done:{},over:{}});
+  }else{
+    const m=getMonth(dk.slice(0,7));
+    if(m.closed){toast('Esse mês está fechado.');return}
+    if(!m.days[dk])m.days[dk]={p:[]};
+    m.days[dk].tasks=m.days[dk].tasks||[];
+    m.days[dk].tasks.push({t,ok:false});
+  }
+  $('ntTxt').value='';save();renderTasks();toast('Tarefa criada');
+};
+$('tkSave').onclick=()=>{
+  const t=$('tkTxt').value.trim(),date=$('tkDate').value;
+  closeOverlay();
+  if(taskSheetRes){taskSheetRes(t&&date?{t,date}:null);taskSheetRes=null}
+};
+$('tkCancel').onclick=()=>{
+  closeOverlay();
+  if(taskSheetRes){taskSheetRes(null);taskSheetRes=null}
+};
+
+/* ================= JORNADA ================= */
+function renderJornada(){
+  const tk=todayKey(),y=tk.slice(0,4),mNum=Number(tk.slice(5,7));
+  const t13=calc13(y);
+  const avosNow=avos13(y,mNum);
+  const cfgDez=cfgFor(`${y}-12`);
+  const baseMensal=num(cfgDez.salario)+extrasMediaAno(y);
+  let prov=`
+    <div class="l"><span>13º acumulado (${avosNow}/12 avos)</span><b>${brl(baseMensal*avosNow/12)}</b></div>
+    <div class="l"><span>13º integral previsto (${t13.avos}/12 avos)</span><b>${brl(t13.base)}</b></div>`;
+  const aq=aquisitivo();
+  if(aq){
+    prov+=`<div class="l"><span>Férias + 1/3 acumuladas (${aq.meses}/12)</span><b>${brl(baseMensal*4/3*aq.meses/12)}</b></div>
+    <div class="l muted" style="font-size:11.5px"><span>Período aquisitivo: ${fmtDK(aq.ini)} a ${fmtDK(aq.fim)}</span></div>`;
+    if(aq.primeiro&&todayKey()<aq.direitoApos)prov+=`<div class="l muted" style="font-size:11.5px"><span>Direito ao gozo a partir de ${fmtDK(aq.direitoApos)} (fim do 1º período aquisitivo)</span></div>`;
+  }else{
+    prov+=`<div class="l"><span>Férias + 1/3 (${mNum}/12 do ano)</span><b>${brl(baseMensal*4/3*mNum/12)}</b></div>
+    <div class="l muted" style="font-size:11.5px"><span>Defina a data de admissão em Config → Contrato para avos e período aquisitivo exatos</span></div>`;
+  }
+  prov+=`<div class="l muted" style="font-size:11.5px"><span>Base: salário vigente + média de extras do ano (${brl(baseMensal)})</span></div>`;
+  $('jProv').innerHTML=prov;
+  // férias
+  const tkNow=todayKey();
+  $('jFerias').innerHTML=S.ferias.map((f,i)=>{
+    const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
+    const st=f.fim<tkNow?['fechado','concluídas']:(f.ini<=tkNow?['abonado','em curso']:['ferias','agendadas']);
+    const warn=(S.adm&&f.ini<yAdd(S.adm,1))?' <span class="chip pend">antes do 1º aquisitivo</span>':'';
+    return `<button class="mcard" style="margin-bottom:8px" onclick="openFerias(${i})">
+      <div><div class="t" style="text-transform:none">${fmtDK(f.ini)} → ${fmtDK(f.fim)} <span class="chip ${st[0]}">${st[1]}</span>${warn}</div>
+      <div class="v">${fc.dias} dias de gozo${f.vendidos?` + ${f.vendidos} vendidos`:''} · pagto até ${fmtDK(fc.prazo)}</div></div>
+      <div class="liq">${brl(fc.liq)}</div></button>`;
+  }).join('')||'<p class="muted">Nenhum período programado. Toque no botão para agendar.</p>';
+  const keys=new Set(Object.keys(S.months));keys.add(curMonthKey());
+  const list=[...keys].sort().reverse();
+  $('monthList').innerHTML=list.map(k=>{
+    const c=computeMonth(k),[yy,mm]=k.split('-');
+    const closed=getMonth(k).closed;
+    const ferLiq=S.ferias.filter(f=>f.ini.slice(0,7)<=k&&f.fim.slice(0,7)>=k).reduce((a,f)=>a+feriasCalc(f,cfgFor(f.ini.slice(0,7))).liq,0);
+    return `<button class="mcard" onclick="go('month','${k}')">
+      <div><div class="t">${MESES[mm-1]} ${yy} ${closed?'<span class="chip fechado">fechado</span>':''}</div>
+      <div class="v">${min2hm(c.worked)} trab · saldo ${min2hm(c.worked-c.expected,true)}${c.pend?` · <span style="color:var(--amber-deep)">${c.pend} pendente(s)</span>`:''}</div></div>
+      <div class="liq">${brl(c.liquido+ferLiq)}</div></button>`;
+  }).join('');
+}
+
+/* ================= MÊS ================= */
+function salFamAlert(c){
+  if(!c.temFilhos)return '';
+  if(c.salFam>0){
+    const folga=c.sfLim-c.bruto;
+    if(folga<=150){
+      const hExtra=c.vhe>0?folga/c.vhe:0;
+      return `<div class="msg warn"><b>Atenção ao salário-família:</b> a remuneração deste mês (${brl(c.bruto)}) está a ${brl(folga)} do limite de ${brl(c.sfLim)}. O limite é avaliado mês a mês sobre a remuneração total — se horas extras ou adicionais ultrapassarem (≈ mais ${hExtra.toFixed(1)}h extras), a cota inteira do mês (${brl(c.sfCotaTot)}) é perdida.</div>`;
+    }
+  }else if(c.bruto>c.sfLim){
+    return `<div class="msg err"><b>Salário-família não devido neste mês:</b> a remuneração (${brl(c.bruto)}) ultrapassou o limite de ${brl(c.sfLim)}. Não é erro do holerite — o direito é avaliado mês a mês; em meses com muitas extras a cota (${brl(c.sfCotaTot)}) deixa de ser paga e volta quando a remuneração ficar dentro do limite.</div>`;
+  }
+  return '';
+}
+function renderMonth(){
+  const mk=curMK,m=getMonth(mk),[y,mm]=mk.split('-'),H=holLines(mk),c=H.c;
+  $('mTitle').textContent=`${MESES[mm-1]} ${y}`;
+  let al='';
+  if(m.closed)al+='<div class="msg">Mês fechado — valores congelados. Reabra para editar.</div>';
+  al+=salFamAlert(c);
+  if(mm==='05'&&Number(cfgFor(mk).ferCat)!==1)al+='<div class="msg">Lembrete: a CCT do SinSaúde costuma prever feriado da categoria em maio (12/05). Confira a convenção vigente e marque o dia se aplicável.</div>';
+  $('mAlerts').innerHTML=al;
+  const saldo=c.worked-c.expected;
+  $('mResumo').innerHTML=`
+    <div class="l"><span>Horas trabalhadas</span><b>${min2hm(c.worked)}</b></div>
+    <div class="l"><span>Horas previstas (dias lançados)</span><b>${min2hm(c.expected)}</b></div>
+    <div class="l"><span>Saldo</span><b class="${saldo>=0?'pos':'neg'}">${min2hm(saldo,true)}</b></div>
+    <div class="l"><span>Horas extras</span><b>${min2hm(c.extraMin)}</b></div>
+    ${c.extrasFeriado?`<div class="l"><span>· das quais em feriado</span><b>${min2hm(c.extrasFeriado)}</b></div>`:''}
+    <div class="l"><span>Horas de falta/atraso</span><b class="${c.faltaMin?'neg':''}">${min2hm(c.faltaMin)}</b></div>
+    ${c.diasFerias?`<div class="l"><span>Dias de férias no mês</span><b>${c.diasFerias}</b></div>`:''}
+    ${c.saldoBanco?`<div class="l"><span>Banco de horas do mês</span><b>${min2hm(c.saldoBanco,true)}</b></div>`:''}
+    ${c.pend?`<div class="l"><span>Dias pendentes (sem registro)</span><b class="chip pend">${c.pend}</b></div>`:''}`;
+  const nd=daysInMonth(mk);let html='';const tk=todayKey();
+  for(let d=1;d<=nd;d++){
+    const dk=`${mk}-${pad(d)}`,cd=computeDay(mk,dk),wd=dow(dk);
+    const future=dk>tk;
+    if(future&&!cd.hasData&&cd.eff==='normal'&&!cd.tasks.length)continue;
+    const chips={feriado:'feriado',ferias:'férias',abonado:'abonado',falta:'falta'};
+    let mid='';
+    if(cd.rec.p&&cd.rec.p.length)mid=`<div class="pts">${cd.rec.p.join(' · ')}${cd.warn?' ⚠':''}</div>`;
+    if(cd.eff!=='normal')mid+=`<span class="chip ${cd.eff}">${chips[cd.eff]||cd.eff}</span>${cd.hol&&cd.eff==='feriado'?` <span class="muted">${cd.hol}</span>`:''}`;
+    if(cd.pending)mid+='<span class="chip pend">sem registro</span>';
+    if(cd.tasks.length)mid+=` <span class="chip task">☑ ${cd.tasks.filter(t=>t.ok).length}/${cd.tasks.length}</span>`;
+    if(cd.rec.note)mid+=`<div class="muted">${esc(cd.rec.note)}</div>`;
+    if(!mid)mid='<span class="muted">—</span>';
+    const delta=cd.hasData?cd.worked-cd.expected:0;
+    html+=`<button class="day${dk===tk?' today':''}" ${dk===tk?'id="dayToday"':''} onclick="openDay('${dk}')">
+      <div class="dn">${pad(d)}<small>${DSEM[wd]}</small></div>
+      <div class="mid">${mid}</div>
+      <div class="hrs">${cd.hasData&&cd.worked?min2hm(cd.worked):''}
+        ${cd.hasData&&delta!==0&&cd.eff!=='falta'?`<span class="d ${delta>0?'pos':'neg'}">${min2hm(delta,true)}</span>`:''}
+        ${cd.eff==='falta'?`<span class="d neg">-${min2hm(cd.expected||num(cfgFor(mk).escala[wd]))}</span>`:''}</div>
+    </button>`;
+  }
+  $('mDays').innerHTML=html||'<p class="muted">Nenhum dia lançado ainda.</p>';
+  if(mk===curMonthKey()&&$('dayToday')&&!renderMonth._scrolled){renderMonth._scrolled=mk;setTimeout(()=>{const el=$('dayToday');if(el)el.scrollIntoView({block:'center'})},60)}
+  if(renderMonth._scrolled&&renderMonth._scrolled!==mk)renderMonth._scrolled=null;
+  $('mPags').innerHTML=(m.pags||[]).map((p,i)=>`<div class="pagitem"><span>${esc(p.d)} <span class="chip ${p.t?'abonado':'ferias'}">${p.t?'tributável':'não trib.'}</span></span>
+    <span class="mono">${brl(num(p.v))} <button class="btn warn small" onclick="delPag(${i})" ${m.closed?'disabled':''}>×</button></span></div>`).join('')||'<p class="muted">Nenhum lançamento.</p>';
+  const fers=S.ferias.filter(f=>f.ini.slice(0,7)<=mk&&f.fim.slice(0,7)>=mk);
+  $('mFeriasCard').innerHTML=fers.map(f=>{
+    const fi=S.ferias.indexOf(f);
+    const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
+    const fconf=f.conf||{};
+    const fl=(k,lb,ref,val,isDb,tot)=>{
+      let sub='';
+      if(fconf[k]!=null&&fconf[k]!==''){
+        const fd=FER_FIELDS.find(x=>x.k===k);
+        const dd=num(parseFloat(fconf[k]))-fd.app(fc);
+        sub=`<div class="hv"><b>Holerite: ${brl(num(parseFloat(fconf[k])))}</b>${Math.abs(dd)<=0.05?'<span class="conf-diff pos">✓ confere</span>':`<span class="conf-diff neg">${dd>0?'+':''}${brl(dd)}</span>`}</div>`;
+      }
+      return `<button class="hline" onclick="openFerConf(${fi},'${k}','${mk}')"><div class="l${tot?' tot':''}"><span>${lb}${ref?` <span style="font-size:11px">· ${ref}</span>`:''}</span><b class="${isDb?'neg2':''}">${isDb?'− ':''}${brl(val)}</b></div>${sub}</button>`;
+    };
+    const fdv=ferConfDiffs(f),fbad=fdv.filter(x=>!x.ok);
+    const fAnyFilled=FER_FIELDS.some(x=>fconf[x.k]!=null&&fconf[x.k]!=='');
+    const fAllFilled=FER_FIELDS.every(x=>fconf[x.k]!=null&&fconf[x.k]!=='');
+    return `<div class="card"><h2>Férias · ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
+    <p class="muted" style="margin-bottom:6px">Toque numa verba para registrar o valor do recibo de férias.</p>
+    <div class="row" style="margin-bottom:8px">
+      ${!fAllFilled?`<button class="btn ghost small" onclick="gerarConferenciaFerias(${fi})">Gerar conferência com recibo</button>`:''}
+      ${fAnyFilled?`<button class="btn ghost small" onclick="gerarConferenciaFerias(${fi},true)">Regenerar</button>`:''}
+    </div>
+    <div class="hol">
+      <div class="l"><span>Dias de gozo</span><b>${fc.dias}</b></div>
+      ${f.vendidos?`<div class="l"><span>Dias vendidos (abono)</span><b>${f.vendidos}</b></div>`:''}
+      ${fl('gozo',`Férias (${fc.dias} × ${brl(fc.vd)})`,'',fc.brutoGozo,false)}
+      ${fl('terco','1/3 constitucional','',fc.terco,false)}
+      ${f.vendidos?fl('abono','Abono + 1/3','isentos',fc.abono+fc.abonoTerco,false):''}
+      ${fl('inss','INSS sobre férias','',fc.inss,true)}
+      ${fl('irpf','IRPF sobre férias','',fc.irpf,true)}
+      <div class="sep"></div>
+      ${fl('liq','Líquido de férias (estimado)','',fc.liq,false,true)}
+      <div class="l"><span>Pagamento até</span><b>${fmtDK(fc.prazo)}</b></div>
+    </div>
+    ${fdv.length?(fbad.length?`<div class="msg err" style="margin-top:8px"><b>${fbad.length} divergência(s) no recibo de férias:</b> ${fbad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Recibo de férias confere com o app.</div>'):''}
+    <p class="muted" style="margin-top:8px">Como as férias são pagas antes do descanso, os dias de férias deste mês são descontados da folha mensal — por isso o salário do pagamento seguinte vem menor. O valor não some: veio adiantado no recibo de férias.</p></div>`;
+  }).join('');
+  let c13html='';
+  const dm1=parseDM(S.c13.d1),dm2=parseDM(S.c13.d2),dmU=parseDM(S.c13.dU);
+  const t13=calc13(y);
+  if(S.c13.modo==='2'){
+    if(dm1&&Number(mm)===dm1.m)c13html=`<div class="l"><span>1ª parcela (adiantamento, sem descontos) até ${pad(dm1.d)}/${pad(dm1.m)}</span><b>${brl(t13.p1)}</b></div>`;
+    if(dm2&&Number(mm)===dm2.m)c13html+=`<div class="l"><span>2ª parcela até ${pad(dm2.d)}/${pad(dm2.m)}</span><b>${brl(t13.p2)}</b></div>
+      <div class="l"><span>INSS + IRPF do 13º (na 2ª parcela)</span><b class="neg2">− ${brl(t13.inss+t13.irpf)}</b></div>`;
+  }else if(dmU&&Number(mm)===dmU.m){
+    c13html=`<div class="l"><span>Parcela única até ${pad(dmU.d)}/${pad(dmU.m)}</span><b>${brl(t13.liq)}</b></div>
+      <div class="l"><span>INSS + IRPF do 13º</span><b class="neg2">− ${brl(t13.inss+t13.irpf)}</b></div>`;
+  }
+  $('m13Card').innerHTML=c13html?`<div class="card"><h2>13º salário previsto neste mês</h2><div class="hol">
+    <div class="l"><span>Base (${t13.avos}/12 avos × salário + média de extras)</span><b>${brl(t13.base)}</b></div>${c13html}
+    </div><p class="muted" style="margin-top:8px">O 13º é pago à parte da folha mensal, com tributação exclusiva — não entra no líquido do mês acima.</p></div>`:'';
+  const conf=m.conf||{};
+  $('mFolha').innerHTML=H.lines.map(l=>{
+    const val=l.db!=null?'− '+brl(l.db):brl(l.cr!=null?l.cr:0);
+    const confable=!l.k.startsWith('_');
+    let sub='';
+    if(confable&&conf[l.k]!=null&&conf[l.k]!==''){
+      const appV=l.db!=null?l.db:(l.cr||0);
+      const dd=num(parseFloat(conf[l.k]))-appV;
+      sub=`<div class="hv"><b>Holerite: ${brl(num(parseFloat(conf[l.k])))}</b>${Math.abs(dd)<=0.05?'<span class="conf-diff pos">✓ confere</span>':`<span class="conf-diff neg">${dd>0?'+':''}${brl(dd)}</span>`}</div>`;
+    }
+    const inner=`<div class="l"><span>${l.d}${l.ref?` <span style="font-size:11px">· ${l.ref}</span>`:''}</span><b class="${l.db!=null?'neg2':''}">${val}</b></div>${sub}`;
+    return confable?`<button class="hline" onclick="openConf('${mk}','${l.k}')">${inner}</button>`:`<div class="hline">${inner}</div>`;
+  }).join('')+`
+    <div class="sep"></div>
+    <div class="l"><span>Total de créditos</span><b>${brl(H.totCr)}</b></div>
+    <div class="l"><span>Total de débitos</span><b class="neg2">− ${brl(H.totDb)}</b></div>
+    <div class="l tot"><span>Líquido</span><b>${brl(c.liquido)}</b></div>
+    ${c.cesta?`<div class="l"><span>+ Vale cesta (benefício)</span><b>${brl(c.cesta)}</b></div>`:''}
+    <div class="l muted" style="font-size:11.5px"><span>Bruto tributável ${brl(c.bruto)} · base IRPF ${brl(c.baseIR)} · valor-hora ${brl(c.vh)}</span></div>`;
+  const dv=confDiffs(mk),bad=dv.filter(x=>!x.ok);
+  const xRows=(m.confX||[]).map((x,i)=>`<button class="hline" onclick="openConfX('${mk}',${i})"><div class="l"><span>${esc(x.d)} <span class="chip pend">só no holerite</span></span><b class="${x.t==='d'?'neg2':''}">${x.t==='d'?'− ':''}${brl(num(x.v))}</b></div></button>`).join('');
+  const cfAnyFilled=CONF_FIELDS.some(f=>conf[f.k]!=null&&conf[f.k]!=='');
+  const cfAllFilled=CONF_FIELDS.every(f=>conf[f.k]!=null&&conf[f.k]!=='');
+  $('mConfSummary').innerHTML=xRows
+    +`<div class="row" style="margin-top:8px">
+      ${!cfAllFilled?`<button class="btn ghost small" onclick="gerarConferencia('${mk}')" ${m.closed?'disabled':''}>Gerar conferência com holerite</button>`:''}
+      ${cfAnyFilled?`<button class="btn ghost small" onclick="gerarConferencia('${mk}',true)" ${m.closed?'disabled':''}>Regenerar</button>`:''}
+      <button class="btn ghost small" onclick="openConf('${mk}','liquido')">Conferir líquido${conf.liquido?` (${brl(num(parseFloat(conf.liquido)))})`:''}</button>
+      <button class="btn ghost small" onclick="openConfX('${mk}',-1)" ${m.closed?'disabled':''}>+ Verba do holerite</button></div>`
+    +(dv.length?(bad.length?`<div class="msg err" style="margin-top:8px"><b>${bad.length} divergência(s):</b> ${bad.map(x=>`${x.lb} (${x.diff>0?'+':''}${brl(x.diff)})`).join(' · ')}</div>`:'<div class="msg" style="margin-top:8px">✓ Holerite confere com o app em todas as verbas preenchidas.</div>'):'');
+  $('btnFechar').textContent=m.closed?'Reabrir mês':'Fechar mês';
+  $('pagDesc').disabled=$('pagVal').disabled=$('btnAddPag').disabled=m.closed;
+}
+async function gerarConferencia(mk,force){
+  const m=getMonth(mk);
+  if(m.closed){toast('Mês fechado — reabra para conferir.');return}
+  if(force){
+    const v=await ask('Regenerar conferência','Isso vai sobrescrever os valores do holerite já informados com os valores atuais do app. Continuar?',
+      [{lb:'Regenerar',cls:'warn',val:true},{lb:'Cancelar',cls:'sec',val:false}]);
+    if(!v)return;
+  }
+  const c=computeMonth(mk);
+  CONF_FIELDS.forEach(f=>{
+    if(force||m.conf[f.k]==null||m.conf[f.k]==='')m.conf[f.k]=String(f.app(c));
+  });
+  save();renderMonth();toast(force?'Conferência regenerada':'Conferência gerada — toque numa verba pra corrigir divergências');
+}
+async function gerarConferenciaFerias(fi,force){
+  const f=S.ferias[fi];if(!f)return;
+  const mk=f.ini.slice(0,7);
+  if(getMonth(mk).closed){toast('Mês fechado — reabra para conferir.');return}
+  if(force){
+    const v=await ask('Regenerar conferência','Isso vai sobrescrever os valores do recibo já informados com os valores atuais do app. Continuar?',
+      [{lb:'Regenerar',cls:'warn',val:true},{lb:'Cancelar',cls:'sec',val:false}]);
+    if(!v)return;
+  }
+  f.conf=f.conf||{};
+  const fc=feriasCalc(f,cfgFor(mk));
+  FER_FIELDS.forEach(x=>{
+    if(force||f.conf[x.k]==null||f.conf[x.k]==='')f.conf[x.k]=String(x.app(fc));
+  });
+  save();renderMonth();toast(force?'Conferência regenerada':'Conferência gerada — toque numa verba pra corrigir divergências');
+}
+async function openConf(mk,k){
+  const m=getMonth(mk);
+  if(m.closed){toast('Mês fechado — reabra para conferir.');return}
+  const f=CONF_FIELDS.find(x=>x.k===k);if(!f)return;
+  const c=computeMonth(mk);
+  const cur=m.conf[k]!=null?m.conf[k]:'';
+  const v=await ask(`Holerite — ${f.lb}`,
+    `Valor do app: <b class="mono">${brl(f.app(c))}</b>. Digite o valor que consta no holerite:`+
+    `<input type="number" step="0.01" inputmode="decimal" id="confInp" value="${cur}" style="margin-top:8px;font-family:var(--mono);text-align:right">`,
+    [{lb:'Salvar',val:'save'},{lb:'Limpar valor',cls:'warn',val:'clear'}]);
+  if(v===null)return;
+  if(v==='clear')m.conf[k]=null;
+  else{
+    const n=parseFloat(document.getElementById('confInp').value);
+    m.conf[k]=isFinite(n)?String(n):null;
+  }
+  save();renderMonth();
+}
+async function openFerConf(fi,k,mk){
+  if(getMonth(mk).closed){toast('Mês fechado — reabra para conferir.');return}
+  const f=S.ferias[fi];if(!f)return;
+  const fc=feriasCalc(f,cfgFor(f.ini.slice(0,7)));
+  const fd=FER_FIELDS.find(x=>x.k===k);if(!fd)return;
+  const cur=(f.conf&&f.conf[k]!=null)?f.conf[k]:'';
+  const v=await ask(`Recibo de férias — ${fd.lb}`,
+    `Valor do app: <b class="mono">${brl(fd.app(fc))}</b>. Digite o valor do recibo:`+
+    `<input type="number" step="0.01" inputmode="decimal" id="confInp" value="${cur}" style="margin-top:8px;font-family:var(--mono);text-align:right">`,
+    [{lb:'Salvar',val:'save'},{lb:'Limpar valor',cls:'warn',val:'clear'}]);
+  if(v===null)return;
+  f.conf=f.conf||{};
+  if(v==='clear')f.conf[k]=null;
+  else{const n=parseFloat(document.getElementById('confInp').value);f.conf[k]=isFinite(n)?String(n):null}
+  save();renderMonth();
+}
+async function openConfX(mk,idx){
+  const m=getMonth(mk);
+  if(m.closed){toast('Mês fechado — reabra para conferir.');return}
+  const edit=idx!=null&&idx>=0, x=edit?m.confX[idx]:{d:'',v:'',t:'c'};
+  const btns=[{lb:'Salvar',val:'save'}];
+  if(edit)btns.push({lb:'Excluir verba',cls:'warn',val:'del'});
+  const v=await ask(edit?'Editar verba do holerite':'Verba do holerite não prevista',
+    `<label class="f">Descrição (como está no holerite)<input id="cxD" value="${esc(x.d)}"></label>
+     <label class="f">Valor (R$)<input type="number" step="0.01" inputmode="decimal" id="cxV" value="${x.v}" style="font-family:var(--mono);text-align:right"></label>
+     <label class="f">Tipo<select id="cxT"><option value="c" ${x.t!=='d'?'selected':''}>Crédito (provento)</option><option value="d" ${x.t==='d'?'selected':''}>Débito (desconto)</option></select></label>`,
+    btns);
+  if(v===null)return;
+  if(v==='del'){m.confX.splice(idx,1);save();renderMonth();toast('Verba removida');return}
+  const d=document.getElementById('cxD').value.trim(),val=parseFloat(document.getElementById('cxV').value),t=document.getElementById('cxT').value;
+  if(!d||!isFinite(val)){toast('Preencha descrição e valor.');return}
+  if(edit)m.confX[idx]={d,v:val,t};else m.confX.push({d,v:val,t});
+  save();renderMonth();toast('Verba do holerite registrada');
+}
+$('mPrev').onclick=()=>{curMK=mAdd(curMK,-1);renderMonth()};
+$('mNext').onclick=()=>{curMK=mAdd(curMK,1);renderMonth()};
+$('btnAddPag').onclick=()=>{
+  const d=$('pagDesc').value.trim(),v=parseFloat($('pagVal').value);
+  if(!d||!isFinite(v)){toast('Preencha descrição e valor.');return}
+  getMonth(curMK).pags.push({d,v,t:$('pagTrib').value==='1'});
+  $('pagDesc').value='';$('pagVal').value='';save();renderMonth();
+};
+async function delPag(i){getMonth(curMK).pags.splice(i,1);save();renderMonth();toast('Removido')}
+$('btnFechar').onclick=async()=>{
+  const m=getMonth(curMK);
+  if(m.closed){
+    if(await confirmS('Reabrir o mês?','Os valores voltarão a ser recalculados com as regras vigentes.')){m.closed=false;m.snap=null;save();renderMonth();toast('Mês reaberto')}
+  }else{m.snap=computeMonth(curMK);m.closed=true;save();renderMonth();toast('Mês fechado')}
+};
+$('btnAddDay').onclick=async()=>{
+  const d=prompt('Dia do mês (1-'+daysInMonth(curMK)+'):');
+  const n=parseInt(d);if(!n||n<1||n>daysInMonth(curMK))return;
+  openDay(`${curMK}-${pad(n)}`);
+};
+
+/* ---- modal de dia ---- */
+let editDK=null,editTasks=[];
+function openDay(dk){
+  const m=getMonth(dk.slice(0,7));
+  if(m.closed){toast('Mês fechado — reabra para editar.');return}
+  editDK=dk;const rec=m.days[dk]||{p:[]};
+  editTasks=(rec.tasks||[]).map(t=>({t:t.t,ok:t.ok}));
+  const[y,mm,d]=dk.split('-');
+  const cfg=cfgFor(dk.slice(0,7));
+  $('dmTitle').textContent=`${d}/${mm}/${y} · ${DSEM[dow(dk)]}${holidayName(dk,cfg)?' · '+holidayName(dk,cfg):''}${feriasFor(dk)?' · período de férias':''}`;
+  $('dmType').value=rec.type||'auto';
+  $('dmNote').value=rec.note||'';
+  $('dmPunches').innerHTML='';
+  (rec.p||[]).forEach(p=>addPunchRow(p));
+  renderDmTasks(dk);
+  openOverlay('dayModal',null);
+}
+function renderDmTasks(dk){
+  const recs=recOccur(dk);
+  $('dmTasks').innerHTML=editTasks.map((t,i)=>`<div class="task-item ${t.ok?'done':''}">
+    <input type="checkbox" ${t.ok?'checked':''} onchange="editTasks[${i}].ok=!editTasks[${i}].ok;renderDmTasks('${dk}')">
+    <span class="t">${esc(t.t)}</span>
+    <button class="icon del" onclick="editTasks.splice(${i},1);renderDmTasks('${dk}')">×</button></div>`).join('')
+  +recs.map(r=>`<div class="task-item ${r.ok?'done':''}">
+    <input type="checkbox" ${r.ok?'checked':''} onchange="toggleT('${dk}','r','${r.id}');renderDmTasks('${dk}')">
+    <span class="t">${esc(r.t)} <span class="chip rec">↻ ${r.freq==='w'?'sem':'mês'}</span></span>
+    <button class="icon" onclick="editT('${dk}','r','${r.id}')">✎</button>
+    <button class="icon del" onclick="delT('${dk}','r','${r.id}')">×</button></div>`).join('')
+  ||'<p class="muted">Nenhum item.</p>';
+}
+function addPunchRow(v){
+  const div=document.createElement('div');div.className='prow';
+  div.innerHTML=`<input type="time" value="${v||''}"><button class="del" title="remover">×</button>`;
+  div.querySelector('.del').onclick=()=>div.remove();
+  $('dmPunches').appendChild(div);
+}
+$('dmAdd').onclick=()=>addPunchRow(nowHM());
+$('dmTaskAdd').onclick=()=>{
+  const t=$('dmTaskTxt').value.trim();if(!t)return;
+  editTasks.push({t,ok:false});$('dmTaskTxt').value='';renderDmTasks(editDK);
+};
+$('dmCancel').onclick=()=>closeOverlay();
+$('dmClear').onclick=async()=>{
+  if(!await confirmS('Limpar o dia?','Remove batidas, tipo, observação e tarefas pontuais deste dia.'))return;
+  delete getMonth(editDK.slice(0,7)).days[editDK];save();
+  closeOverlay();rerenderAll();toast('Dia limpo');
+};
+$('dmSave').onclick=()=>{
+  const ps=[...$('dmPunches').querySelectorAll('input')].map(i=>i.value).filter(Boolean).sort();
+  const type=$('dmType').value,note=$('dmNote').value.trim();
+  const m=getMonth(editDK.slice(0,7));
+  if(ps.length||type!=='auto'||note||editTasks.length){
+    m.days[editDK]={p:ps,type:type==='auto'?undefined:type,note:note||undefined,tasks:editTasks.length?editTasks:undefined};
+  }else delete m.days[editDK];
+  save();closeOverlay();rerenderAll();
+};
+function rerenderAll(){renderMonth();renderHome()}
+
+/* ================= relatório ================= */
+$('btnRelatorio').onclick=async()=>{
+  const incAtv=await ask('Gerar relatório','Incluir a agenda de atividades/tarefas dos dias no documento?',[
+    {lb:'Com atividades',val:true},{lb:'Sem atividades',cls:'sec',val:false}]);
+  if(incAtv===null)return;
+  const mk=curMK,[y,mm]=mk.split('-'),m=getMonth(mk),nd=daysInMonth(mk);
+  const H=holLines(mk),c=H.c;
+  const TIPO={normal:'Normal',feriado:'Feriado',ferias:'Férias',abonado:'Abonado',falta:'Falta'};
+  let rows='';
+  for(let d=1;d<=nd;d++){
+    const dk=`${mk}-${pad(d)}`,cd=computeDay(mk,dk);
+    if(!cd.hasData&&!cd.pending&&cd.eff==='normal'&&!(incAtv&&cd.tasks.length))continue;
+    const delta=cd.hasData?cd.worked-cd.expected:0;
+    const atv=(incAtv&&cd.tasks.length)?`<br><span class="atv">Atividades: ${cd.tasks.map(t=>(t.ok?'✓ ':'○ ')+(t.kind==='r'?'↻ ':'')+esc(t.t)).join('; ')}</span>`:'';
+    rows+=`<tr><td>${pad(d)}/${mm} · ${DSEM[dow(dk)]}</td><td>${(cd.rec.p||[]).join(' — ')||'—'}</td>
+      <td>${TIPO[cd.eff]||cd.eff}${cd.hol?' · '+cd.hol:''}${cd.pending?' · sem registro':''}${cd.rec.note?' · '+esc(cd.rec.note):''}${atv}</td>
+      <td class="r">${cd.hasData?min2hm(cd.worked):'—'}</td>
+      <td class="r ${delta>0?'pos':(delta<0||cd.eff==='falta'?'neg':'')}">${cd.hasData&&cd.eff!=='falta'?min2hm(delta,true):(cd.eff==='falta'?'-'+min2hm(cd.expected):'')}</td></tr>`;
+  }
+  const saldo=c.worked-c.expected;
+  const resumo=`
+    <tr><td>Horas trabalhadas</td><td class="r">${min2hm(c.worked)}</td></tr>
+    <tr><td>Horas previstas (dias lançados)</td><td class="r">${min2hm(c.expected)}</td></tr>
+    <tr><td>Saldo do mês</td><td class="r ${saldo>=0?'pos':'neg'}">${min2hm(saldo,true)}</td></tr>
+    <tr><td>Horas extras</td><td class="r">${min2hm(c.extraMin)}</td></tr>
+    ${c.extrasFeriado?`<tr><td>· das quais em feriado</td><td class="r">${min2hm(c.extrasFeriado)}</td></tr>`:''}
+    <tr><td>Horas de falta / atraso</td><td class="r">${min2hm(c.faltaMin)}</td></tr>
+    ${c.diasFerias?`<tr><td>Dias de férias no mês</td><td class="r">${c.diasFerias}</td></tr>`:''}
+    ${c.saldoBanco?`<tr><td>Enviado ao banco de horas</td><td class="r">${min2hm(c.saldoBanco,true)}</td></tr>`:''}
+    ${c.pend?`<tr><td>Dias pendentes (fora do cálculo)</td><td class="r">${c.pend}</td></tr>`:''}`;
+  const holRows=H.lines.map(l=>`<tr><td>${l.d}</td><td class="ref">${l.ref||''}</td>
+    <td class="r">${l.cr!=null?brl(l.cr):''}</td><td class="r neg">${l.db!=null?brl(l.db):''}</td></tr>`).join('');
+  const dv=confDiffs(mk);
+  const baseCalcSec=`<h2>3.2 · Bases de cálculo</h2>
+  <table class="basecalc" style="max-width:420px">
+    <tr><td>Bruto tributável</td><td class="r">${brl(c.bruto)}</td></tr>
+    <tr><td>Base IRPF (bruto − INSS − dependentes)</td><td class="r">${brl(c.baseIR)}</td></tr>
+    ${c.irRed?`<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(c.irRed)}</td></tr>`:''}
+    <tr><td>Valor-hora</td><td class="r">${brl(c.vh)}</td></tr>
+    <tr><td>Valor hora extra (+${c.pctExtra}%)</td><td class="r">${brl(c.vhe)}</td></tr>
+  </table>`;
+  const confSec=`<h2>3.3 · Conferência com holerite</h2>
+    ${dv.length?`<table><tr><th>Verba</th><th class="r">App</th><th class="r">Holerite</th><th class="r">Diferença</th></tr>
+    ${dv.map(x=>`<tr${x.ok?'':' class="divg"'}><td>${x.lb}</td><td class="r">${brl(x.app)}</td><td class="r">${brl(x.hol)}</td>
+      <td class="r">${x.ok?'✓ confere':(x.diff>0?'+':'')+brl(x.diff)}</td></tr>`).join('')}</table>
+    ${dv.some(x=>!x.ok)?`<p class="alert">⚠ ${dv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o holerite informado. Vale conferir com o RH / contabilidade da clínica.</p>`:'<p class="okmsg">✓ Todos os valores informados do holerite conferem com o cálculo do app.</p>'}`:'<p class="note">Conferência com holerite ainda não gerada no app.</p>'}`;
+  const fersRep=S.ferias.filter(f=>f.ini.slice(0,7)<=mk&&f.fim.slice(0,7)>=mk);
+  const fersData=fersRep.map(f=>({f,fc:feriasCalc(f,cfgFor(f.ini.slice(0,7))),fdv:ferConfDiffs(f)}));
+  const feriasSec=fersData.map(({f,fc,fdv})=>`<h2>4 · Férias — ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
+    <h2>4.1 · Férias (pagamento)</h2>
+    <table>
+      <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
+      <tr><td>Férias</td><td class="ref">${fc.dias} dias × ${brl(fc.vd)}</td><td class="r">${brl(fc.brutoGozo)}</td><td></td></tr>
+      <tr><td>1/3 constitucional</td><td class="ref"></td><td class="r">${brl(fc.terco)}</td><td></td></tr>
+      ${f.vendidos?`<tr><td>Abono pecuniário + 1/3</td><td class="ref">${f.vendidos} dias vendidos, isentos</td><td class="r">${brl(fc.abono+fc.abonoTerco)}</td><td></td></tr>`:''}
+      <tr><td>INSS sobre férias</td><td class="ref"></td><td></td><td class="r neg">${brl(fc.inss)}</td></tr>
+      <tr><td>IRPF sobre férias</td><td class="ref"></td><td></td><td class="r neg">${brl(fc.irpf)}</td></tr>
+      <tr class="liq"><td colspan="3">Líquido de férias (estimado) · pagamento até ${fmtDK(fc.prazo)}</td><td class="r">${brl(fc.liq)}</td></tr>
+    </table>
+    <h2>4.2 · Bases de cálculo das férias</h2>
+    <table class="basecalc" style="max-width:420px">
+      <tr><td>Valor do dia de férias (salário ÷ 30)</td><td class="r">${brl(fc.vd)}</td></tr>
+      <tr><td>Base de cálculo (gozo + 1/3, usada para INSS/IRPF)</td><td class="r">${brl(fc.baseTrib)}</td></tr>
+      <tr><td>Base IRPF (base − INSS − dependentes)</td><td class="r">${brl(fc.baseIR)}</td></tr>
+      ${fc.irRed?`<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(fc.irRed)}</td></tr>`:''}
+      <tr><td>Dependentes considerados no IRPF</td><td class="r">${fc.nDep}</td></tr>
+    </table>
+    <h2>4.3 · Conferência com holerite (férias)</h2>
+    ${fdv.length?`<table><tr><th>Verba</th><th class="r">App</th><th class="r">Recibo</th><th class="r">Diferença</th></tr>
+      ${fdv.map(x=>`<tr${x.ok?'':' class="divg"'}><td>${x.lb}</td><td class="r">${brl(x.app)}</td><td class="r">${brl(x.hol)}</td><td class="r">${x.ok?'✓ confere':(x.diff>0?'+':'')+brl(x.diff)}</td></tr>`).join('')}</table>
+      ${fdv.some(x=>!x.ok)?`<p class="alert">⚠ ${fdv.filter(x=>!x.ok).length} divergência(s) entre o cálculo do app e o recibo de férias informado.</p>`:'<p class="okmsg">✓ Recibo de férias confere com o cálculo do app.</p>'}`:'<p class="note">Conferência com o recibo de férias ainda não gerada no app.</p>'}`).join('');
+  const resumoGeralSec=fersData.length?(()=>{
+    const ferCr=fersData.reduce((a,{fc})=>a+fc.brutoGozo+fc.terco+fc.abono+fc.abonoTerco,0);
+    const ferDb=fersData.reduce((a,{fc})=>a+fc.inss+fc.irpf,0);
+    const ferLiq=fersData.reduce((a,{fc})=>a+fc.liq,0);
+    const totDivg=dv.filter(x=>!x.ok).length+fersData.reduce((a,{fdv})=>a+fdv.filter(x=>!x.ok).length,0);
+    return `<h2>5 · Resumo geral</h2>
+    <table style="max-width:420px">
+      <tr><td>Total de créditos (folha + férias)</td><td class="r">${brl(H.totCr+ferCr)}</td></tr>
+      <tr><td>Total de débitos (folha + férias)</td><td class="r neg">${brl(H.totDb+ferDb)}</td></tr>
+      <tr class="liq"><td>Líquido total do mês</td><td class="r">${brl(c.liquido+ferLiq)}</td></tr>
+    </table>
+    ${totDivg?`<p class="alert">⚠ ${totDivg} divergência(s) no total entre app e holerite/recibo neste mês.</p>`:'<p class="okmsg">✓ Nenhuma divergência entre app e holerite/recibo neste mês.</p>'}`;
+  })():'';
+  const w=window.open('','_blank');
+  if(!w){toast('Pop-up bloqueado — permita pop-ups para gerar o relatório.');return}
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+  <title>Relatório ${MESES[mm-1]} ${y}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page{size:A4;margin:13mm}
+    :root{--ink:#000000;--red:#c62828;--line:#e6e6e6;--soft:#666666;--liqbg:#f4f4f2}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',system-ui,sans-serif;font-size:11.5px;color:var(--ink);background:#fff;font-variant-numeric:tabular-nums}
+    .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:14px}
+    .head h1{font-family:'Inter',sans-serif;font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-.02em;text-transform:uppercase}
+    .head .sub{color:var(--soft);font-size:10.5px;text-align:right;line-height:1.5}
+    h2{font-family:'Inter',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin:16px 0 6px}
+    table{width:100%;border-collapse:collapse}
+    tr{page-break-inside:avoid}
+    th{font-family:'Inter',sans-serif;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--soft);text-align:left;border-bottom:1px solid var(--ink);padding:4px 6px}
+    td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+    .r{text-align:right;white-space:nowrap}
+    th.r{text-align:right}
+    .pos{color:#1ea64a}.neg{color:var(--red)}
+    .ref,.atv{color:var(--soft);font-size:10px}
+    tr.tot td{border-top:1px solid var(--ink);border-bottom:none;font-weight:700;font-size:12px;padding-top:6px}
+    tr.liq td{border:none;background:var(--liqbg);font-family:'Inter',sans-serif;font-weight:800;font-size:14px;padding:8px 6px;color:var(--ink)}
+    tr.divg td{background:#fdecea}
+    .alert{background:#fdecea;color:var(--red);padding:6px 8px;font-size:11px;margin-top:6px;font-weight:700;border:1.5px solid var(--red)}
+    .okmsg{background:#e9f7ee;color:#1ea64a;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:700}
+    .note{color:var(--soft);font-size:9.5px;margin-top:14px;border-top:1px solid var(--line);padding-top:6px;line-height:1.5}
+    .basecalc td{border-bottom:1px dashed var(--line)}
+  </style></head><body>
+  <div class="head">
+    <h1>Relatório de ponto e folha<br><span style="font-weight:600;font-size:14px;text-transform:none">${MESES[mm-1]} / ${y}</span>${S.nome?`<br><span style="font-weight:600;font-size:12px;color:#666666;text-transform:none">${esc(S.nome)}${S.adm?' · admissão '+fmtDK(S.adm):''}</span>`:''}</h1>
+    <div class="sub">Gerado em ${new Date().toLocaleString('pt-BR')}<br>${m.closed?'<b>MÊS FECHADO</b> — valores congelados':'Mês em aberto — valores estimados'}</div>
+  </div>
+  <h2>1 · Registro de ponto${incAtv?' e atividades':''}</h2>
+  <table><tr><th>Dia</th><th>Batidas</th><th>Tipo / observações${incAtv?' / atividades':''}</th><th class="r">Trabalhado</th><th class="r">Saldo</th></tr>${rows||'<tr><td colspan="5">Nenhum dia lançado.</td></tr>'}</table>
+  <h2>2 · Resumo de horas</h2>
+  <table style="max-width:340px">${resumo}</table>
+  <h2>3 · Folha de pagamento do mês</h2>
+  <h2>3.1 · Folha de pagamento</h2>
+  <table>
+    <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
+    ${holRows}
+    <tr class="tot"><td colspan="2">Totais</td><td class="r">${brl(H.totCr)}</td><td class="r neg">${brl(H.totDb)}</td></tr>
+    <tr class="liq"><td colspan="3">Líquido a receber</td><td class="r">${brl(c.liquido)}</td></tr>
+    ${c.cesta?`<tr><td colspan="3">Vale cesta básica (benefício, pago à parte)</td><td class="r">${brl(c.cesta)}</td></tr>`:''}
+  </table>
+  ${baseCalcSec}
+  ${confSec}
+  ${feriasSec}
+  ${resumoGeralSec}
+  <p class="note">* verba não tributável.${incAtv?' ↻ tarefa recorrente.':''} Cálculos estimativos gerados pelo app Ponto &amp; Folha — confira sempre com o holerite oficial. Regras conforme a vigência aplicável ao mês${m.closed?' (congeladas no fechamento)':''}.</p>
+  <scr`+`ipt>window.onload=function(){setTimeout(function(){window.print()},350)}</scr`+`ipt>
+  </body></html>`);
+  w.document.close();
+};
+
+/* ================= CONFIG ================= */
+let vigIdx=null;
+function vigLabel(v){return v.desde==='1900-01'?'Inicial (desde o começo)':`Desde ${MESES[Number(v.desde.slice(5,7))-1]}/${v.desde.slice(0,4)}`}
+function idade(n){const t=todayKey();let a=Number(t.slice(0,4))-Number(n.slice(0,4));if(t.slice(5)<n.slice(5))a--;return a}
+function renderFilhosList(elId){
+  const el=$(elId);
+  el.innerHTML=S.filhos.map((f,i)=>`<div class="pagitem"><span>Nascido(a) em ${fmtDK(f.n)} · ${idade(f.n)} anos
+    ${idade(f.n)<14?'<span class="chip abonado">sal.-família</span>':''}${idade(f.n)<21?' <span class="chip task">dep. IRPF</span>':''}</span>
+    <button class="btn warn small" onclick="delFilho(${i},'${elId}')">×</button></div>`).join('')||'<p class="muted">Nenhum filho cadastrado.</p>';
+}
+async function delFilho(i,elId){
+  if(!await confirmS('Remover este filho?',''))return;
+  S.filhos.splice(i,1);save();renderFilhosList(elId);toast('Removido');
+}
+function addFilho(dateId,listId){
+  const n=$(dateId).value;
+  if(!n){toast('Escolha a data de nascimento.');return}
+  if(n>todayKey()){toast('Data no futuro.');return}
+  S.filhos.push({n});S.filhos.sort((a,b)=>a.n<b.n?-1:1);
+  $(dateId).value='';save();renderFilhosList(listId);toast('Filho adicionado');
+}
+function renderConfig(){
+  if(vigIdx==null||vigIdx>=S.vig.length)vigIdx=S.vig.length-1;
+  $('vigSel').innerHTML=S.vig.map((v,i)=>`<option value="${i}" ${i===vigIdx?'selected':''}>${vigLabel(v)}</option>`).join('');
+  $('vigNewMonth').value=curMonthKey();
+  const c=S.vig[vigIdx].cfg;
+  $('cNome').value=S.nome||'';
+  $('cAdm').value=S.adm||'';
+  $('cSalario').value=c.salario;$('cJornada').value=c.jornada;
+  $('cBatidas').value=c.batidas;$('cAutoAlmoco').value=c.autoAlmoco;$('cAlmocoMin').value=c.almocoMin;
+  $('cModoExtras').value=c.modoExtras;$('cPctExtra').value=c.pctExtra;$('cDsr').value=c.dsr;
+  renderFilhosList('cFilhosList',true);
+  $('cDepExtra').value=S.depExtra||0;
+  $('cSfCota').value=c.sfCota;$('cSfLim').value=c.sfLim;$('cCesta').value=c.cesta;$('cFerCat').value=c.ferCat;
+  $('cDedDep').value=c.dedDep;$('cRedIsen').value=c.redIsen;$('cRedGrad').value=c.redGrad;$('cRedA').value=c.redA;$('cRedB').value=c.redB;
+  $('lblDedDep').textContent=num(c.dedDep).toFixed(2).replace('.',',');
+  $('cEscala').innerHTML=[1,2,3,4,5,6,0].map(w=>`<div><label>${DSEM[w]}</label><input data-w="${w}" type="number" step="0.5" inputmode="decimal" value="${(num(c.escala[w])/60)}"></div>`).join('');
+  const ti=$('tInss');ti.querySelectorAll('tr:not(:first-child)').forEach(r=>r.remove());
+  c.inss.forEach(f=>inssRow(f.ate,f.aliq));
+  const tr=$('tIrrf');tr.querySelectorAll('tr:not(:first-child)').forEach(r=>r.remove());
+  c.irrf.forEach(f=>irrfRow(f.ate,f.aliq,f.ded));
+  $('c13Modo').value=S.c13.modo;$('c13D1').value=S.c13.d1;$('c13D2').value=S.c13.d2;$('c13DU').value=S.c13.dU;
+  toggle13();
+  $('cTheme').value=S.ui.theme;
+  $('lblFeriados').textContent=Object.keys(S.holidays).join(', ')||'nenhum';
+}
+function toggle13(){const duas=$('c13Modo').value==='2';$('c13Duas').classList.toggle('hidden',!duas);$('c13Unica').classList.toggle('hidden',duas)}
+$('c13Modo').onchange=toggle13;
+$('cTheme').onchange=()=>{S.ui.theme=$('cTheme').value;applyTheme();save()};
+$('vigSel').onchange=e=>{vigIdx=Number(e.target.value);renderConfig()};
+$('vigNew').onclick=()=>{
+  const mk=$('vigNewMonth').value;
+  if(!/^\d{4}-\d{2}$/.test(mk)){toast('Escolha o mês de início da vigência.');return}
+  if(S.vig.some(v=>v.desde===mk)){toast('Já existe uma vigência nesse mês.');return}
+  const base=structuredClone(cfgFor(mk));
+  S.vig.push({desde:mk,cfg:base});
+  S.vig.sort((a,b)=>a.desde<b.desde?-1:1);
+  vigIdx=S.vig.findIndex(v=>v.desde===mk);
+  save();renderConfig();
+  toast('Vigência criada — edite os valores e salve.');
+};
+$('vigDel').onclick=async()=>{
+  if(S.vig.length<=1){toast('É preciso manter ao menos uma vigência.');return}
+  const v=S.vig[vigIdx];
+  if(!await confirmS('Excluir vigência?','"'+vigLabel(v)+'" — os meses passarão a usar a vigência anterior.'))return;
+  S.vig.splice(vigIdx,1);vigIdx=S.vig.length-1;save();renderConfig();toast('Vigência excluída');
+};
+function inssRow(ate,aliq){const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="number" step="0.01" value="${ate}"></td><td><input type="number" step="0.5" value="${aliq}"></td><td><button class="btn warn small" onclick="this.closest('tr').remove()">×</button></td>`;
+  $('tInss').appendChild(tr)}
+function addInssRow(){inssRow('','')}
+function irrfRow(ate,aliq,ded){const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="number" step="0.01" value="${ate>=999999999?'':ate}" placeholder="∞"></td><td><input type="number" step="0.5" value="${aliq}"></td><td><input type="number" step="0.01" value="${ded}"></td><td><button class="btn warn small" onclick="this.closest('tr').remove()">×</button></td>`;
+  $('tIrrf').appendChild(tr)}
+function addIrrfRow(){irrfRow('','','')}
+async function openFerias(i){
+  const edit=i!=null&&i>=0, f=edit?S.ferias[i]:{ini:'',fim:'',vendidos:0};
+  const btns=[{lb:edit?'Salvar':'Programar',val:'save'}];
+  if(edit)btns.push({lb:'Excluir período',cls:'warn',val:'del'});
+  const v=await ask(edit?'Editar férias':'Programar férias',
+    `<label class="f">Início<input type="date" id="fsIni" value="${f.ini}"></label>
+     <label class="f">Fim (último dia de descanso)<input type="date" id="fsFim" value="${f.fim}"></label>
+     <label class="f">Dias vendidos (abono, máx. 10)<input type="number" id="fsVend" min="0" max="10" inputmode="numeric" value="${f.vendidos||0}"></label>`,
+    btns);
+  if(v===null)return;
+  if(v==='del'){
+    if(await confirmS('Excluir este período de férias?','Os dias voltam a contar como dias normais de trabalho.')){
+      S.ferias.splice(i,1);save();rerender();toast('Período excluído');
+    }
+    return;
+  }
+  const ini=$('fsIni').value,fim=$('fsFim').value,vend=parseInt($('fsVend').value)||0;
+  if(!ini||!fim||fim<ini){toast('Preencha início e fim válidos.');return}
+  if(vend<0||vend>10){toast('Abono: no máximo 10 dias.');return}
+  if(S.ferias.some((x,k)=>k!==i&&ini<=x.fim&&fim>=x.ini)){toast('Período cruza com férias já cadastradas.');return}
+  if(S.adm&&ini<yAdd(S.adm,1)){
+    if(!await confirmS('Antes do 1º período aquisitivo','O direito ao gozo de férias só se completa em '+fmtDK(yAdd(S.adm,1))+'. Programar mesmo assim?'))return;
+  }
+  if(edit)S.ferias[i]={ini,fim,vendidos:vend};
+  else S.ferias.push({ini,fim,vendidos:vend});
+  S.ferias.sort((a,b)=>a.ini<b.ini?-1:1);
+  save();rerender();toast(edit?'Férias atualizadas':'Férias programadas');
+}
+$('btnNovaFerias').onclick=()=>openFerias(-1);
+$('btnSaveCfg').onclick=()=>{
+  const c=S.vig[vigIdx].cfg;
+  S.nome=$('cNome').value.trim();
+  S.adm=$('cAdm').value||'';
+  S.depExtra=parseInt($('cDepExtra').value)||0;
+  c.salario=parseFloat($('cSalario').value)||0;c.jornada=parseFloat($('cJornada').value)||220;
+  c.batidas=$('cBatidas').value;c.autoAlmoco=Number($('cAutoAlmoco').value);c.almocoMin=parseFloat($('cAlmocoMin').value)||0;
+  c.modoExtras=$('cModoExtras').value;c.pctExtra=parseFloat($('cPctExtra').value)||0;c.dsr=Number($('cDsr').value);
+  c.sfCota=parseFloat($('cSfCota').value)||0;c.sfLim=parseFloat($('cSfLim').value)||0;c.cesta=parseFloat($('cCesta').value)||0;c.ferCat=Number($('cFerCat').value);
+  c.dedDep=parseFloat($('cDedDep').value)||0;c.redIsen=parseFloat($('cRedIsen').value)||0;c.redGrad=parseFloat($('cRedGrad').value)||0;
+  c.redA=parseFloat($('cRedA').value)||0;c.redB=parseFloat($('cRedB').value)||0;
+  $('cEscala').querySelectorAll('input').forEach(i=>{c.escala[i.dataset.w]=Math.round((parseFloat(i.value)||0)*60)});
+  c.inss=[...$('tInss').querySelectorAll('tr:not(:first-child)')].map(r=>{const[a,q]=r.querySelectorAll('input');return{ate:parseFloat(a.value)||0,aliq:parseFloat(q.value)||0}}).filter(f=>f.ate>0).sort((a,b)=>a.ate-b.ate);
+  c.irrf=[...$('tIrrf').querySelectorAll('tr:not(:first-child)')].map(r=>{const[a,q,d]=r.querySelectorAll('input');return{ate:a.value===''?999999999:(parseFloat(a.value)||0),aliq:parseFloat(q.value)||0,ded:parseFloat(d.value)||0}}).sort((a,b)=>a.ate-b.ate);
+  S.c13={modo:$('c13Modo').value,d1:$('c13D1').value||'30/11',d2:$('c13D2').value||'20/12',dU:$('c13DU').value||'20/12'};
+  save();toast('Configurações salvas — '+vigLabel(S.vig[vigIdx]));go('home');
+};
+
+/* ================= tema ================= */
+function applyTheme(){document.documentElement.dataset.theme=S.ui.theme}
+
+/* ================= feriados ================= */
+async function fetchFeriados(){
+  const yNow=new Date().getFullYear();
+  const btn=$('btnFeriados');
+  if(btn){btn.disabled=true;btn.textContent='Buscando…'}
+  let ok=0;
+  for(const y of[yNow,yNow+1]){
+    try{
+      const r=await fetch(`https://brasilapi.com.br/api/feriados/v1/${y}`);
+      if(!r.ok)throw 0;
+      const arr=await r.json();
+      S.holidays[y]={};arr.forEach(f=>{S.holidays[y][f.date]=f.name});ok++;
+    }catch(e){}
+  }
+  save();
+  if(btn){btn.disabled=false;btn.textContent='Buscar feriados (ano atual e próximo)'}
+  if(curView==='config')$('lblFeriados').textContent=Object.keys(S.holidays).join(', ')||'nenhum';
+  if(!ok&&curView==='config')toast('Sem conexão — não foi possível buscar os feriados.');
+}
+$('btnFeriados').onclick=fetchFeriados;
+
+/* ================= backup ================= */
+function doExport(){
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`ponto-folha-backup-${todayKey()}.json`;a.click();URL.revokeObjectURL(a.href);
+  S.lastExport=todayKey();save();
+  if(curView==='home')renderHome();
+  toast('Backup exportado');
+}
+$('btnExport').onclick=doExport;
+$('btnImport').onclick=()=>$('fileImport').click();
+$('fileImport').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=async()=>{try{const o=JSON.parse(rd.result);if(!o.months&&!o.vig&&!o.cfg)throw new Error('formato inválido');
+    if(await confirmS('Importar backup?','Os dados atuais serão substituídos.')){
+      localStorage.setItem(LSKEY,JSON.stringify(o));S=load();S.onboarded=true;applyTheme();save();go('home');toast('Backup importado')}}
+    catch(err){toast('Arquivo inválido: '+err.message)}};
+  rd.readAsText(f);e.target.value='';
+};
+
+/* ================= relógio + init ================= */
+let leverDragging=false,leverStartY=0,leverFired=false;
+function tick(){const d=new Date();
+  $('clock').textContent=`${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  if(curView==='home'){
+    if(!leverDragging)$('punchLabel').textContent=punchState();
+    const w=workedNowMin();
+    $('punchWorked').textContent=w.n?`hoje: ${min2hm(w.w)}${w.open?' ⏱':''} · ${w.n} batida${w.n>1?'s':''}`:'';
+  }
+}
+setInterval(tick,1000);tick();
+/* ---- puxar a alavanca para bater o ponto ---- */
+const LEVER_TRAVEL=122;
+function setRing(p){$('punchOuter').style.setProperty('--p',String(Math.min(1,Math.max(0,p))))}
+function leverDown(e){
+  if(e.button!=null&&e.button!==0)return;
+  e.preventDefault();
+  if(e.target.setPointerCapture)try{e.target.setPointerCapture(e.pointerId)}catch(err){}
+  leverDragging=true;leverFired=false;leverStartY=e.clientY;
+  $('punchLabel').textContent='Carimbar';
+}
+function leverMove(e){
+  if(!leverDragging||leverFired)return;
+  const p=(e.clientY-leverStartY)/LEVER_TRAVEL;
+  setRing(p);
+  if(p>=1){
+    leverFired=true;leverDragging=false;
+    punch();
+    setTimeout(()=>{setRing(0);if(curView==='home')$('punchLabel').textContent=punchState()},260);
+  }
+}
+function leverUp(){
+  if(!leverDragging)return;
+  leverDragging=false;
+  if(!leverFired){setRing(0);if(curView==='home')$('punchLabel').textContent=punchState()}
+}
+{
+  const b=$('btnPunch');
+  b.onclick=null;
+  b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
+  b.addEventListener('pointerdown',leverDown);
+  b.addEventListener('pointermove',leverMove);
+  b.addEventListener('pointerup',leverUp);
+  b.addEventListener('pointercancel',leverUp);
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+}
+
+/* ---- onboarding ---- */
+function isFresh(){
+  if(S.onboarded)return false;
+  if(S.adm)return false;
+  if(S.rec.length)return false;
+  return !Object.keys(S.months).some(k=>Object.keys(S.months[k].days).length||(S.months[k].pags||[]).length);
+}
+$('obStart').onclick=()=>{
+  const adm=$('obAdm').value, sal=parseFloat($('obSalario').value);
+  S.nome=$('obNome').value.trim();
+  if(adm)S.adm=adm;
+  const c=S.vig[S.vig.length-1].cfg;
+  if(isFinite(sal)&&sal>0)c.salario=sal;
+  S.onboarded=true;save();
+  toast(S.nome?`Tudo pronto, ${S.nome.split(' ')[0]}!`:'Tudo pronto!');
+  go('home');
+};
+$('obFilhoAdd').onclick=()=>addFilho('obFilhoData','obFilhosList');
+$('obImport').onclick=()=>$('fileImport').click();
+renderFilhosList('obFilhosList');
+$('cFilhoAdd').onclick=()=>addFilho('cFilhoData','cFilhosList');
+
+applyTheme();
+if(!Object.keys(S.holidays).length&&navigator.onLine)fetchFeriados().catch(()=>{});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+window.addEventListener('popstate',e=>{
+  if(ignorePop>0){ignorePop--;return}
+  if(modalStack.length){
+    const m=modalStack.pop();
+    $(m.elId).classList.add('hidden');
+    if(m.onBackCancel)m.onBackCancel();
+    return;
+  }
+  const s=(e&&e.state)||{v:'home',mk:curMonthKey()};
+  if(s.modal)return;
+  go(s.v||'home',s.mk,true);
+});
+const _v0=isFresh()?'onboard':'home';
+try{history.replaceState({v:_v0,mk:curMK},'')}catch(e){}
+go(_v0,null,true);
+
+</script>
+</body>
+</html>

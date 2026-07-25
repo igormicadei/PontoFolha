@@ -1,4 +1,5 @@
 .playwright-mcp/
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -142,3 +143,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+=======
+node_modules/
+dist/
+dist-ssr/
+*.local
+.DS_Store
+.vite/
+coverage/
+>>>>>>> 981d0ff40ef4a96987b3883fc990955235d1ee3a
