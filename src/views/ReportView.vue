@@ -289,21 +289,21 @@ onMounted(async () => {
         <section>
           <h2>Como foi calculado</h2>
           <div class="two">
-            <table class="dense">
+            <table class="dense"><tbody>
               <tr><td>Bruto tributável</td><td class="r">{{ brl(c.bruto) }}</td></tr>
               <tr><td>Base do INSS da competência</td><td class="r">{{ brl(c.baseInss) }}</td></tr>
               <template v-if="c.inssFerias">
                 <tr><td>INSS total da competência</td><td class="r">{{ brl(c.inssCompetencia) }}</td></tr>
                 <tr><td>INSS retido no recibo de férias</td><td class="r">− {{ brl(c.inssFerias) }}</td></tr>
               </template>
-            </table>
-            <table class="dense">
+            </tbody></table>
+            <table class="dense"><tbody>
               <tr><td>Base do IRPF</td><td class="r">{{ brl(c.baseIR) }}</td></tr>
               <tr><td>Dependentes considerados</td><td class="r">{{ c.nDep }}</td></tr>
               <tr v-if="c.irRed"><td>Redutor do IRPF (Lei 15.270/2025)</td><td class="r">− {{ brl(c.irRed) }}</td></tr>
               <tr><td>Valor-hora</td><td class="r">{{ brl(c.vh) }}</td></tr>
               <tr><td>Hora extra (+{{ c.pctExtra }}%)</td><td class="r">{{ brl(c.vhe) }}</td></tr>
-            </table>
+            </tbody></table>
           </div>
         </section>
 
