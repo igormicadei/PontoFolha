@@ -1,0 +1,1 @@
+import{P as i,r as s}from"./index-DRZTu3E1.js";const a=s(-1);function d(e){return(a.value<0||a.value>=e.vig.length)&&(a.value=e.vig.length-1),a.value}function n(e){return e.desde==="1900-01"?"Inicial (desde o começo)":"Desde "+i[Number(e.desde.slice(5,7))-1]+"/"+e.desde.slice(0,4)}export{a,d as c,n as v};
