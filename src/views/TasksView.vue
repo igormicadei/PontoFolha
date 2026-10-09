@@ -1,26 +1,32 @@
 <script setup lang="ts">
-/* Tela de tarefas (index.html #view-tasks 267-280 + renderTasks 1036-1065,
-   ntAdd 1067-1080). Formulário "Nova tarefa" (pontual ou recorrente) e a lista
-   agrupada em Atrasadas/Hoje/Próximas/Concluídas numa janela de ±60 dias.
-   As mutações puras entram na store; save()/renderTasks() do legado saem: a
-   reatividade do Vue recomputa a lista e o watch persiste. */
+/* Tela Tarefas: a lista vem primeiro (atrasadas fixadas no topo, depois hoje,
+   próximas e concluídas); criar é uma ação à parte, num sheet aberto pelo
+   botão "Nova tarefa". Filtros: tudo, hoje, semana, recorrentes. */
 import { computed, ref } from 'vue'
 import { useFolha } from '@/stores/folha'
 import { todayKey, dAdd, uid } from '@/lib/utils'
 import { toast } from '@/lib/toast'
+import Sheet from '@/components/Sheet.vue'
 import TaskItem, { type TaskItemData } from '@/components/TaskItem.vue'
 
 const folha = useFolha()
 
-/** Item da lista = tarefa do engine + o dia (dk) em que ocorre. */
 type TaskRow = TaskItemData & { dk: string }
+type Filtro = 'tudo' | 'hoje' | 'semana' | 'rec'
+const FILTROS: { v: Filtro; lb: string }[] = [
+  { v: 'tudo', lb: 'Tudo' },
+  { v: 'hoje', lb: 'Hoje' },
+  { v: 'semana', lb: 'Semana' },
+  { v: 'rec', lb: 'Recorrentes' }
+]
+const filtro = ref<Filtro>('tudo')
 
+const open = ref(false)
 const ntTxt = ref('')
 const ntDate = ref(todayKey())
 const ntFreq = ref('')
 
-/* Baldes da lista (index.html renderTasks 1040-1051): varre -60..+60 dias e
-   classifica cada ocorrência por concluída/atrasada/hoje/futura. */
+/* Baldes da lista: varre -60..+60 dias e classifica cada ocorrência. */
 const buckets = computed(() => {
   const tk = todayKey()
   const overdue: TaskRow[] = []
@@ -30,20 +36,34 @@ const buckets = computed(() => {
   for (let i = -60; i <= 60; i++) {
     const dk = dAdd(tk, i)
     for (const t of folha.dayTasks(dk) as TaskItemData[]) {
+      if (filtro.value === 'rec' && t.kind !== 'r') continue
       const item: TaskRow = { ...t, dk }
       if (t.ok) {
         if (i <= 0) done.push(item)
-        else upcoming.push(item)
+        else if (filtro.value !== 'hoje') upcoming.push(item)
       } else if (i < 0) overdue.push(item)
       else if (i === 0) today.push(item)
+      else if (filtro.value === 'hoje') continue
+      else if (filtro.value === 'semana' && i > 7) continue
       else upcoming.push(item)
     }
   }
   done.sort((a, b) => (a.dk < b.dk ? 1 : -1))
   return { overdue, today, upcoming, done }
 })
+const total = computed(() => {
+  const b = buckets.value
+  return b.overdue.length + b.today.length + b.upcoming.length + b.done.length
+})
+const sub = computed(() => {
+  const b = buckets.value
+  const parts: string[] = []
+  if (b.overdue.length) parts.push(`${b.overdue.length} atrasada${b.overdue.length > 1 ? 's' : ''}`)
+  if (b.today.length) parts.push(`${b.today.length} para hoje`)
+  return parts.join(' · ') || 'Nada pendente'
+})
+const mostraProximas = computed(() => filtro.value !== 'hoje')
 
-/* Dica do campo de frequência (index.html renderTasks 1064). */
 const ntHint = computed(() =>
   ntFreq.value === 'w'
     ? 'Repete toda semana no mesmo dia da semana da data escolhida.'
@@ -52,12 +72,17 @@ const ntHint = computed(() =>
       : ''
 )
 
-/** Chave estável por ocorrência (dia + tipo + ref) para o v-for. */
 function rowKey(it: TaskRow): string {
   return `${it.dk}:${it.kind}:${it.kind === 'p' ? it.idx : it.id}`
 }
 
-/* Cria tarefa pontual ou recorrente (index.html ntAdd 1067-1080). */
+function abrir(): void {
+  ntTxt.value = ''
+  ntDate.value = todayKey()
+  ntFreq.value = ''
+  open.value = true
+}
+
 function add(): void {
   const t = ntTxt.value.trim()
   const dk = ntDate.value
@@ -78,54 +103,86 @@ function add(): void {
     m.days[dk].tasks = m.days[dk].tasks || []
     m.days[dk].tasks!.push({ t, ok: false })
   }
-  ntTxt.value = ''
+  open.value = false
   toast('Tarefa criada')
 }
 </script>
 
 <template>
   <section id="view-tasks">
-    <div class="card">
-      <h2>Nova tarefa</h2>
-      <input v-model="ntTxt" placeholder="Descrição" style="margin-bottom: 8px" @keyup.enter="add" />
-      <div class="row">
-        <input v-model="ntDate" type="date" />
-        <select v-model="ntFreq">
-          <option value="">Única</option>
-          <option value="w">Semanal</option>
-          <option value="m">Mensal</option>
-        </select>
-        <button class="btn small" style="flex: none" @click="add">Criar</button>
+    <header class="appbar">
+      <div>
+        <h1 class="title">Tarefas</h1>
+        <div class="sub">{{ sub }}</div>
       </div>
-      <p v-if="ntHint" class="muted" style="margin-top: 6px">{{ ntHint }}</p>
-    </div>
+    </header>
 
-    <div id="tasksList">
-      <template v-if="buckets.overdue.length">
-        <div class="tgroup over">Atrasadas ({{ buckets.overdue.length }})</div>
-        <div class="card">
-          <TaskItem v-for="it in buckets.overdue" :key="rowKey(it)" :dk="it.dk" :task="it" show-date />
-        </div>
+    <main class="content">
+      <div class="chips" role="group" aria-label="Filtro">
+        <button v-for="f in FILTROS" :key="f.v" class="pill" :class="{ on: filtro === f.v }" :aria-pressed="filtro === f.v" @click="filtro = f.v">
+          {{ f.lb }}
+        </button>
+      </div>
+
+      <section v-if="total === 0 && filtro === 'tudo'" class="card" style="text-align: center; padding: 28px 20px">
+        <h2 style="font-size: 18px; font-weight: 800; letter-spacing: -0.02em">Nenhuma tarefa ainda</h2>
+        <p class="muted" style="margin: 6px auto 16px; max-width: 280px">Tarefas únicas e recorrentes aparecem aqui no dia certo, e também em Hoje.</p>
+        <button class="btn" @click="abrir">Criar a primeira tarefa</button>
+      </section>
+
+      <template v-else>
+        <section v-if="buckets.overdue.length" class="card" aria-label="Atrasadas">
+          <div class="h2"><span>Atrasadas</span><span class="chip bad">{{ buckets.overdue.length }}</span></div>
+          <div class="list"><TaskItem v-for="it in buckets.overdue" :key="rowKey(it)" :dk="it.dk" :task="it" show-date /></div>
+        </section>
+
+        <section class="card" aria-label="Hoje">
+          <div class="h2"><span>Hoje</span></div>
+          <div v-if="buckets.today.length" class="list"><TaskItem v-for="it in buckets.today" :key="rowKey(it)" :dk="it.dk" :task="it" show-date /></div>
+          <p v-else class="empty">Nada para hoje.</p>
+        </section>
+
+        <section v-if="mostraProximas" class="card" aria-label="Próximas">
+          <div class="h2"><span>Próximas</span><span class="muted">{{ filtro === 'semana' ? '7 dias' : '60 dias' }}</span></div>
+          <div v-if="buckets.upcoming.length" class="list"><TaskItem v-for="it in buckets.upcoming" :key="rowKey(it)" :dk="it.dk" :task="it" show-date /></div>
+          <p v-else class="empty">Nada agendado.</p>
+        </section>
+
+        <details v-if="buckets.done.length" class="card" style="padding: 0 18px">
+          <summary class="between" style="min-height: 56px; cursor: pointer; list-style: none; font-weight: 700">
+            <span>Concluídas recentes</span><span class="chip">{{ buckets.done.length }}</span>
+          </summary>
+          <div class="list" style="padding-bottom: 8px"><TaskItem v-for="it in buckets.done" :key="rowKey(it)" :dk="it.dk" :task="it" show-date /></div>
+        </details>
       </template>
+    </main>
 
-      <div class="tgroup">Hoje</div>
-      <div class="card">
-        <TaskItem v-for="it in buckets.today" :key="rowKey(it)" :dk="it.dk" :task="it" show-date />
-        <p v-if="!buckets.today.length" class="muted">Nada para hoje.</p>
+    <button v-if="total > 0 || filtro !== 'tudo'" class="fab" @click="abrir">
+      <svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>Nova tarefa
+    </button>
+
+    <Sheet :open="open" title="Nova tarefa" @close="open = false">
+      <div class="field">
+        <label for="nt-d">Descrição</label>
+        <input id="nt-d" v-model="ntTxt" class="input" placeholder="Ex.: faturamento convênio X" @keyup.enter="add" />
       </div>
-
-      <div class="tgroup">Próximas (60 dias)</div>
-      <div class="card">
-        <TaskItem v-for="it in buckets.upcoming" :key="rowKey(it)" :dk="it.dk" :task="it" show-date />
-        <p v-if="!buckets.upcoming.length" class="muted">Nada agendado.</p>
+      <div class="field">
+        <label for="nt-dt">Data</label>
+        <input id="nt-dt" v-model="ntDate" type="date" class="input" />
       </div>
-
-      <details v-if="buckets.done.length" class="done-sec">
-        <summary>Concluídas recentes ({{ buckets.done.length }})</summary>
-        <div class="card">
-          <TaskItem v-for="it in buckets.done" :key="rowKey(it)" :dk="it.dk" :task="it" show-date />
+      <div class="field">
+        <span id="nt-f" class="lb">Repetição</span>
+        <div class="chips" role="group" aria-labelledby="nt-f">
+          <button class="pill" :class="{ on: ntFreq === '' }" @click="ntFreq = ''">Única</button>
+          <button class="pill" :class="{ on: ntFreq === 'w' }" @click="ntFreq = 'w'">Semanal</button>
+          <button class="pill" :class="{ on: ntFreq === 'm' }" @click="ntFreq = 'm'">Mensal</button>
         </div>
-      </details>
-    </div>
+        <span v-if="ntHint" class="hint">{{ ntHint }}</span>
+      </div>
+      <template #footer>
+        <button class="btn ghost" @click="open = false">Cancelar</button>
+        <button class="btn grow" @click="add">Criar tarefa</button>
+      </template>
+    </Sheet>
   </section>
 </template>

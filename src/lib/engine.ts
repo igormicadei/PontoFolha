@@ -404,8 +404,10 @@ export function createEngine(S: State) {
       })
     const vFerias = feriasParts.reduce((a, p) => a + p.gozo, 0)
     const tercoFerias = feriasParts.reduce((a, p) => a + p.terco, 0)
-    const pagsT = (m.pags || []).filter((p) => p.t).reduce((a, p) => a + num(p.v), 0)
-    const pagsN = (m.pags || []).filter((p) => !p.t).reduce((a, p) => a + num(p.v), 0)
+    const creditos = (m.pags || []).filter((p) => p.k !== 'd')
+    const pagsT = creditos.filter((p) => p.t).reduce((a, p) => a + num(p.v), 0)
+    const pagsN = creditos.filter((p) => !p.t).reduce((a, p) => a + num(p.v), 0)
+    const pagsD = (m.pags || []).filter((p) => p.k === 'd').reduce((a, p) => a + num(p.v), 0)
     const bruto = Math.max(
       0,
       num(cfg.salario) + vExtras + vDsr + pagsT - vFaltas - vFerias
@@ -433,6 +435,7 @@ export function createEngine(S: State) {
       feriasParts,
       pagsT,
       pagsN,
+      pagsD,
       bruto
     }
   }
@@ -472,7 +475,8 @@ export function createEngine(S: State) {
           ...m.snap,
           baseInss: m.snap.bruto,
           inssCompetencia: m.snap.inss,
-          inssFerias: 0
+          inssFerias: 0,
+          totalReceber: m.snap.totalReceber ?? m.snap.liquido + m.snap.cesta
         }
       }
       return m.snap
@@ -499,6 +503,7 @@ export function createEngine(S: State) {
       tercoFerias,
       pagsT,
       pagsN,
+      pagsD,
       bruto
     } = core
     const baseInss = bruto + vFerias + tercoFerias
@@ -510,7 +515,7 @@ export function createEngine(S: State) {
     const ir = calcIRRF(bruto, inss + nDep * num(cfg.dedDep), cfg)
     const temFilhos = nF14 > 0
     const salFam = temFilhos && baseInss <= num(cfg.sfLim) ? nF14 * num(cfg.sfCota) : 0
-    const liquido = bruto - inss - ir.tax + salFam + pagsN
+    const liquido = bruto - inss - ir.tax + salFam + pagsN - pagsD
     return {
       worked,
       expected,
@@ -530,6 +535,7 @@ export function createEngine(S: State) {
       vFerias,
       pagsT,
       pagsN,
+      pagsD,
       bruto,
       baseInss,
       inssCompetencia,
@@ -559,7 +565,14 @@ export function createEngine(S: State) {
   function holLines(mk: string) {
     const c = computeMonth(mk),
       m = getMonth(mk)
-    const pagDesc = (m.pags || []).map((p) => p.d).join(', ')
+    const pagDesc = (m.pags || [])
+      .filter((p) => p.k !== 'd')
+      .map((p) => p.d)
+      .join(', ')
+    const descDesc = (m.pags || [])
+      .filter((p) => p.k === 'd')
+      .map((p) => p.d)
+      .join(', ')
     const l: Array<{ k: string; d: string; ref: string; cr?: number; db?: number }> = [
       { k: 'base', d: 'Salário base', ref: `${c.jornada}h`, cr: c.salario },
       {
@@ -589,6 +602,8 @@ export function createEngine(S: State) {
       ref: c.faltaMin ? min2hm(c.faltaMin) : '',
       db: c.vFaltas
     })
+    if (num(c.pagsD) > 0)
+      l.push({ k: '_descontos', d: 'Descontos avulsos', ref: descDesc, db: num(c.pagsD) })
     l.push({
       k: 'inss',
       d: c.inssFerias ? 'INSS (saldo da folha)' : 'INSS',

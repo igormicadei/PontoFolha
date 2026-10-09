@@ -16,20 +16,26 @@ function isFresh(): boolean {
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
   { path: '/tarefas', name: 'tasks', component: () => import('@/views/TasksView.vue') },
-  { path: '/jornada', name: 'jornada', component: () => import('@/views/JornadaView.vue') },
+  { path: '/folha', name: 'folha', component: () => import('@/views/FolhaView.vue') },
   { path: '/mes', name: 'month', component: () => import('@/views/MonthView.vue') },
-  { path: '/config', name: 'config', component: () => import('@/views/ConfigView.vue') },
+  { path: '/ajustes', name: 'ajustes', component: () => import('@/views/AjustesView.vue') },
+  { path: '/ajustes/:sec', name: 'ajustes-secao', component: () => import('@/views/AjustesSecaoView.vue') },
+  { path: '/relatorio/:mk', name: 'relatorio', component: () => import('@/views/ReportView.vue') },
   {
     path: '/onboarding',
     name: 'onboarding',
     component: () => import('@/views/OnboardingView.vue')
   },
+  // endereços antigos (PWA instalado, favoritos)
+  { path: '/jornada', redirect: '/folha' },
+  { path: '/config', redirect: '/ajustes' },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
+  scrollBehavior: () => ({ top: 0 })
 })
 
 /* Portão do onboarding (index.html startup 1834-1837): usuários novos caem no

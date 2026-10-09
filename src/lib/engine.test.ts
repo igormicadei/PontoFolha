@@ -60,3 +60,59 @@ describe('regras 2026', () => {
     expect(recibo.inss).toBeCloseTo(dezembro.inssFerias + janeiro.inssFerias, 2)
   })
 })
+
+describe('itens avulsos', () => {
+  const base = () => {
+    const s = state()
+    const engine = createEngine(s)
+    return { s, engine, m: engine.getMonth('2026-03') }
+  }
+
+  it('trata o formato antigo (sem k) como crédito', () => {
+    const { engine, m } = base()
+    const antes = engine.computeMonth('2026-03')
+    m.pags.push({ d: 'Prêmio', v: 100, t: true })
+    const depois = engine.computeMonth('2026-03')
+    expect(depois.pagsT).toBe(100)
+    expect(depois.pagsD).toBe(0)
+    expect(depois.bruto).toBeCloseTo(antes.bruto + 100, 2)
+  })
+
+  it('crédito tributável entra no bruto e no INSS; não tributável só no líquido', () => {
+    const { engine, m } = base()
+    const zero = engine.computeMonth('2026-03')
+    m.pags.push({ d: 'Reembolso', v: 80, t: false, k: 'c', ty: 'reembolso' })
+    const nt = engine.computeMonth('2026-03')
+    expect(nt.bruto).toBeCloseTo(zero.bruto, 2)
+    expect(nt.inss).toBeCloseTo(zero.inss, 2)
+    expect(nt.liquido).toBeCloseTo(zero.liquido + 80, 2)
+    m.pags.push({ d: 'Comissão', v: 500, t: true, k: 'c', ty: 'comissao' })
+    const t = engine.computeMonth('2026-03')
+    expect(t.bruto).toBeCloseTo(zero.bruto + 500, 2)
+    expect(t.inss).toBeGreaterThan(zero.inss)
+  })
+
+  it('débito só desconta do líquido e não mexe em bruto, INSS nem IRPF', () => {
+    const { engine, m } = base()
+    const zero = engine.computeMonth('2026-03')
+    m.pags.push({ d: 'Adiantamento', v: 300, k: 'd', ty: 'adiantamento' })
+    const c = engine.computeMonth('2026-03')
+    expect(c.pagsD).toBe(300)
+    expect(c.bruto).toBeCloseTo(zero.bruto, 2)
+    expect(c.inss).toBeCloseTo(zero.inss, 2)
+    expect(c.irpf).toBeCloseTo(zero.irpf, 2)
+    expect(c.liquido).toBeCloseTo(zero.liquido - 300, 2)
+  })
+
+  it('o holerite lista créditos em Adicionais e débitos em Descontos avulsos', () => {
+    const { engine, m } = base()
+    m.pags.push({ d: 'Comissão', v: 500, t: true, k: 'c' })
+    m.pags.push({ d: 'Adiantamento', v: 300, k: 'd' })
+    const h = engine.holLines('2026-03')
+    expect(h.lines.find((l) => l.k === 'adic')?.cr).toBe(500)
+    const d = h.lines.find((l) => l.k === '_descontos')
+    expect(d?.db).toBe(300)
+    expect(d?.ref).toBe('Adiantamento')
+  })
+})
+

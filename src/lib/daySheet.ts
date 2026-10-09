@@ -13,13 +13,14 @@ import { reactive } from 'vue'
 import { useFolha } from '@/stores/folha'
 import { confirmS } from './dialog'
 import { toast } from './toast'
-import { DSEM, dow, nowHM, pad, daysInMonth } from './utils'
+import { MESES, cap, dsemLongo, dow, min2hm, nowHM, pad, daysInMonth, todayKey } from './utils'
 import type { PTask } from '@/stores/types'
 
 interface DaySheetState {
   open: boolean
   dk: string
   title: string
+  subtitle: string
   dayType: string
   note: string
   punches: string[]
@@ -31,6 +32,7 @@ export const daySheet = reactive<DaySheetState>({
   open: false,
   dk: '',
   title: '',
+  subtitle: '',
   dayType: 'auto',
   note: '',
   punches: [],
@@ -48,14 +50,20 @@ export function openDay(dk: string): void {
     return
   }
   const rec = m.days[dk] || {}
-  const [y, mm, d] = dk.split('-')
+  const [, mm, d] = dk.split('-')
   const cfg = folha.cfgFor(dk.slice(0, 7))
   const hol = folha.holidayName(dk, cfg)
+  const prev = Number(cfg.escala[dow(dk)]) || 0
   daySheet.dk = dk
-  daySheet.title =
-    `${d}/${mm}/${y} · ${DSEM[dow(dk)]}` +
-    (hol ? ` · ${hol}` : '') +
-    (folha.feriasFor(dk) ? ' · período de férias' : '')
+  daySheet.title = `${cap(dsemLongo(dk))}, ${Number(d)} de ${MESES[Number(mm) - 1]}`
+  daySheet.subtitle = [
+    dk === todayKey() ? 'Hoje' : '',
+    hol || '',
+    folha.feriasFor(dk) ? 'período de férias' : '',
+    prev ? `previstas ${min2hm(prev)}` : 'sem jornada prevista'
+  ]
+    .filter(Boolean)
+    .join(' · ')
   daySheet.dayType = rec.type || 'auto'
   daySheet.note = rec.note || ''
   daySheet.punches = [...(rec.p || [])]

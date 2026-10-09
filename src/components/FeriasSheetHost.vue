@@ -1,43 +1,46 @@
 <script setup lang="ts">
-/* Sheet do editor de férias (index.html openFerias 1658-1687: os inputs que o
-   `ask()` do legado montava num <form>). Espelha o TaskSheetHost — renderizado
-   uma única vez no App.vue. Botões: Programar/Salvar (save), Excluir período
-   (del, só na edição), Cancelar. */
+/* Host do editor de férias: início, fim e dias vendidos. Excluir fica separado
+   do Salvar (só na edição). */
+import Sheet from './Sheet.vue'
 import { feriasSheet, resolveFeriasSheet } from '@/lib/ferias'
 </script>
 
 <template>
-  <div v-if="feriasSheet.open" class="overlay" @click.self="resolveFeriasSheet(null)">
-    <div class="sheet">
-      <h3>{{ feriasSheet.isEdit ? 'Editar férias' : 'Programar férias' }}</h3>
-      <label class="f">Início<input v-model="feriasSheet.ini" type="date" /></label>
-      <label class="f"
-        >Fim (último dia de descanso)<input v-model="feriasSheet.fim" type="date"
-      /></label>
-      <label class="f"
-        >Dias vendidos (abono, máx. 10)<input
-          v-model.number="feriasSheet.vend"
-          type="number"
-          min="0"
-          max="10"
-          inputmode="numeric"
-      /></label>
-      <div class="row">
-        <button class="btn" @click="resolveFeriasSheet('save')">
-          {{ feriasSheet.isEdit ? 'Salvar' : 'Programar' }}
-        </button>
-        <button
-          v-if="feriasSheet.isEdit"
-          class="btn warn"
-          style="flex: none"
-          @click="resolveFeriasSheet('del')"
-        >
-          Excluir período
-        </button>
-        <button class="btn ghost" style="flex: none" @click="resolveFeriasSheet(null)">
-          Cancelar
-        </button>
+  <Sheet
+    :open="feriasSheet.open"
+    :title="feriasSheet.isEdit ? 'Editar férias' : 'Programar férias'"
+    @close="resolveFeriasSheet(null)"
+  >
+    <div class="grid2">
+      <div class="field">
+        <label for="fe-ini">Início</label>
+        <input id="fe-ini" v-model="feriasSheet.ini" type="date" class="input" />
+      </div>
+      <div class="field">
+        <label for="fe-fim">Último dia</label>
+        <input id="fe-fim" v-model="feriasSheet.fim" type="date" class="input" />
       </div>
     </div>
-  </div>
+    <div class="field">
+      <label for="fe-vend">Dias vendidos (abono, máx. 10)</label>
+      <input
+        id="fe-vend"
+        v-model.number="feriasSheet.vend"
+        class="input num"
+        type="number"
+        min="0"
+        max="10"
+        inputmode="numeric"
+      />
+    </div>
+    <button v-if="feriasSheet.isEdit" class="link bad" style="align-self: flex-start" @click="resolveFeriasSheet('del')">
+      Excluir este período
+    </button>
+    <template #footer>
+      <button class="btn ghost" @click="resolveFeriasSheet(null)">Cancelar</button>
+      <button class="btn grow" @click="resolveFeriasSheet('save')">
+        {{ feriasSheet.isEdit ? 'Salvar' : 'Programar' }}
+      </button>
+    </template>
+  </Sheet>
 </template>

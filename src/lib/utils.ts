@@ -112,3 +112,20 @@ export function parseDM(s: string | null | undefined): { d: number; m: number } 
   const m = /^(\d{1,2})\/(\d{1,2})$/.exec((s || '').trim())
   return m ? { d: +m[1], m: +m[2] } : null
 }
+
+/* ---- apresentação (redesign) ---- */
+export const MES_ABR = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+export const cap = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s)
+
+/** "Ter, 6 out" — dia da semana + dia + mês abreviado. */
+export function fmtDia(dk: string): string {
+  const [, m, d] = dk.split('-')
+  return `${cap(DSEM[dow(dk)])}, ${Number(d)} ${MES_ABR[Number(m) - 1]}`
+}
+/** "13 out" sem o dia da semana. */
+export function fmtDM(dk: string): string {
+  const [, m, d] = dk.split('-')
+  return `${Number(d)} ${MES_ABR[Number(m) - 1]}`
+}
+const DSEM_LONGO = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
+export const dsemLongo = (dk: string): string => DSEM_LONGO[dow(dk)]!
