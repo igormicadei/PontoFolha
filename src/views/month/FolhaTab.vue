@@ -10,6 +10,7 @@ import { openConf, openConfX, gerarConferencia } from '@/lib/confSheet'
 import { openItemSheet, removeItem } from '@/lib/itemSheet'
 import { itemType, pagKind, pagTag } from '@/lib/itemTypes'
 import { abrirRelatorio } from '@/lib/report'
+import FeriasAvisos from '@/components/FeriasAvisos.vue'
 
 const props = defineProps<{ mk: string }>()
 const emit = defineEmits<{ fechar: [] }>()
@@ -19,6 +20,8 @@ const S = folha.S
 const m = computed(() => folha.getMonth(props.mk))
 const H = computed(() => folha.holLines(props.mk))
 const c = computed(() => H.value.c)
+/** Férias que tocam este mês (a média de horas extras delas pesa no INSS da competência). */
+const feriasDoMes = computed(() => S.ferias.filter((f) => f.ini.slice(0, 7) <= props.mk && f.fim.slice(0, 7) >= props.mk))
 const mesNome = computed(() => MESES[Number(props.mk.slice(5, 7)) - 1]!)
 
 /* ---- itens avulsos ---- */
@@ -129,6 +132,8 @@ function conferir(l: Linha): void {
 </script>
 
 <template>
+  <FeriasAvisos v-for="f in feriasDoMes" :key="f.ini" :ferias="f" so="warn" titulo />
+
   <section class="card" aria-label="Itens avulsos">
     <div class="h2"><span>Itens avulsos</span></div>
     <template v-if="itens.length">

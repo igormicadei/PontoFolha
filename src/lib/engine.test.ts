@@ -116,3 +116,133 @@ describe('itens avulsos', () => {
   })
 })
 
+describe('média de horas extras nas férias (manual 8.1)', () => {
+  /** 3 dias de 17h por mês com escala de 8h = 27h extras/mês (exemplo do manual). */
+  function cenario(opts: { meses?: number; adm?: string; pct?: number; dsr?: number } = {}) {
+    const s = state()
+    const c = s.vig[0].cfg
+    c.salario = 2500
+    c.jornada = 220
+    c.pctExtra = opts.pct ?? 50
+    c.dsr = opts.dsr ?? 0
+    c.autoAlmoco = 0
+    c.ferCat = 0
+    c.escala = { 0: 0, 1: 480, 2: 480, 3: 480, 4: 480, 5: 480, 6: 0 }
+    s.adm = opts.adm ?? '2024-01-01'
+    const engine = createEngine(s)
+    for (let mes = 1; mes <= (opts.meses ?? 12); mes++) {
+      const mk = `2024-${String(mes).padStart(2, '0')}`
+      const m = engine.getMonth(mk)
+      let n = 0
+      const nd = new Date(2024, mes, 0).getDate()
+      for (let d = 1; d <= nd; d++) {
+        const dk = `${mk}-${String(d).padStart(2, '0')}`
+        const wd = new Date(2024, mes - 1, d).getDay()
+        if (wd === 0 || wd === 6) continue
+        const extra = d >= 15 && n < 3
+        if (extra) n++
+        m.days[dk] = { p: extra ? ['00:00', '17:00'] : ['08:00', '16:00'] }
+      }
+    }
+    s.ferias.push({ ini: '2025-02-03', fim: '2025-03-04' })
+    return { s, engine }
+  }
+
+  it('reproduz o exemplo do manual: 27h × R$ 17,05 = R$ 460,23 e terço de R$ 153,41', () => {
+    const { s, engine } = cenario()
+    const fc = engine.feriasCalc(s.ferias[0], s.vig[0].cfg)
+    expect(fc.dias).toBe(30)
+    expect(fc.mediaRef.mediaMin / 60).toBeCloseTo(27, 6)
+    expect(fc.mediaRef.vhe).toBeCloseTo(17.0454545, 6)
+    expect(fc.mediaHE).toBeCloseTo(460.23, 2)
+    expect(fc.mediaDsr).toBe(0)
+    expect(fc.terco).toBeCloseTo((2500 + 460.227) / 3, 2)
+    expect(fc.media + fc.terco - (fc.brutoGozo + fc.media) / 3 - fc.media).toBeCloseTo(0, 6)
+    // parcela da média + seu reflexo no terço
+    expect(fc.media + fc.media / 3).toBeCloseTo(613.64, 2)
+  })
+
+  it('o período de referência é o período aquisitivo completo (12 meses ÷ 12)', () => {
+    const { s, engine } = cenario()
+    const info = engine.feriasMediaInfo(s.ferias[0])
+    expect(info.modo).toBe('periodo')
+    expect([info.ini, info.fim, info.meses]).toEqual(['2024-01-01', '2024-12-31', 12])
+    expect(info.mesesSem).toHaveLength(0)
+    expect(info.avisos.some((a) => a.nivel === 'warn')).toBe(false)
+  })
+
+  it('proporcional aos dias de gozo e entra na base de INSS e IRRF das férias', () => {
+    const { s, engine } = cenario()
+    s.ferias[0] = { ini: '2025-02-03', fim: '2025-02-17' } // 15 dias
+    const fc = engine.feriasCalc(s.ferias[0], s.vig[0].cfg)
+    expect(fc.mediaHE).toBeCloseTo(460.23 / 2, 2)
+    expect(fc.baseTrib).toBeCloseTo(fc.brutoGozo + fc.media + fc.terco, 6)
+    const sem = cenario({ meses: 0 })
+    sem.s.ferias[0] = { ini: '2025-02-03', fim: '2025-02-17' }
+    const fc0 = sem.engine.feriasCalc(sem.s.ferias[0], sem.s.vig[0].cfg)
+    expect(fc.baseTrib).toBeGreaterThan(fc0.baseTrib)
+    expect(fc.inss).toBeGreaterThan(fc0.inss)
+  })
+
+  it('DSR sobre a média aparece separado e só quando ligado', () => {
+    const on = cenario({ dsr: 1 })
+    const off = cenario({ dsr: 0 })
+    const a = on.engine.feriasCalc(on.s.ferias[0], on.s.vig[0].cfg)
+    const b = off.engine.feriasCalc(off.s.ferias[0], off.s.vig[0].cfg)
+    expect(b.mediaDsr).toBe(0)
+    expect(a.mediaDsr).toBeGreaterThan(0)
+    expect(a.mediaHE).toBeCloseTo(b.mediaHE, 6)
+  })
+
+  it('avisa quando faltam meses de ponto no período e o cálculo fica subestimado', () => {
+    const { s, engine } = cenario({ meses: 5 })
+    const info = engine.feriasMediaInfo(s.ferias[0])
+    expect(info.mesesSem).toHaveLength(7)
+    const w = info.avisos.filter((a) => a.nivel === 'warn')
+    expect(w).toHaveLength(1)
+    expect(w[0].texto).toMatch(/em 7 meses do período/)
+    const fc = engine.feriasCalc(s.ferias[0], s.vig[0].cfg)
+    expect(fc.mediaRef.mediaMin / 60).toBeCloseTo((27 * 5) / 12, 6)
+  })
+
+  it('sem nenhum registro no período: média zero e aviso explícito', () => {
+    const { s, engine } = cenario({ meses: 0 })
+    const info = engine.feriasMediaInfo(s.ferias[0])
+    expect(info.avisos[0].nivel).toBe('warn')
+    expect(info.avisos[0].texto).toMatch(/nenhum registro de ponto/)
+    expect(engine.feriasCalc(s.ferias[0], s.vig[0].cfg).media).toBe(0)
+  })
+
+  it('férias antes do 1º aniversário usam só os meses desde a admissão e avisam', () => {
+    const { s, engine } = cenario({ adm: '2024-07-01' })
+    s.ferias[0] = { ini: '2024-12-02', fim: '2024-12-31' }
+    const info = engine.feriasMediaInfo(s.ferias[0])
+    expect(info.modo).toBe('parcial')
+    expect(info.meses).toBe(5)
+    expect(info.avisos.some((a) => a.nivel === 'warn' && /1º período aquisitivo/.test(a.texto))).toBe(true)
+  })
+
+  it('sem data de admissão usa os 12 meses anteriores e informa', () => {
+    const { s, engine } = cenario()
+    s.adm = ''
+    const info = engine.feriasMediaInfo(s.ferias[0])
+    expect(info.modo).toBe('12m')
+    expect(info.avisos.some((a) => /admissão não informada/.test(a.texto))).toBe(true)
+  })
+
+  it('banco de horas não entra na média', () => {
+    const { s, engine } = cenario()
+    s.vig[0].cfg.modoExtras = 'banco'
+    const fc = engine.feriasCalc(s.ferias[0], s.vig[0].cfg)
+    expect(fc.media).toBe(0)
+  })
+
+  it('a base de INSS da competência inclui a média das férias', () => {
+    const { s, engine } = cenario()
+    s.ferias[0] = { ini: '2025-02-03', fim: '2025-02-14' }
+    const c = engine.computeMonth('2025-02')
+    expect(c.mediaFerias).toBeGreaterThan(0)
+    expect(c.baseInss - c.bruto - c.vFerias).toBeGreaterThan(c.vFerias / 3)
+  })
+})
+

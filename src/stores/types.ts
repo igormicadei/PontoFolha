@@ -163,6 +163,8 @@ export interface MonthResult {
   vDsr: number
   vFaltas: number
   vFerias: number
+  /** Média de horas extras que integra a remuneração das férias da competência (ausente em snapshots antigos). */
+  mediaFerias?: number
   pagsT: number
   pagsN: number
   /** Soma dos débitos avulsos (ausente em snapshots antigos = 0). */

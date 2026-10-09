@@ -33,6 +33,14 @@ const feriasAnteriores = computed(() =>
   S.ferias.filter((f) => f.ini.slice(0, 7) < mk.value && f.fim.slice(0, 7) >= mk.value)
 )
 
+/* avisos de confiabilidade da média de horas extras das férias que tocam o mês */
+const avisosFerias = computed(() =>
+  S.ferias
+    .filter((f) => f.ini.slice(0, 7) <= mk.value && f.fim.slice(0, 7) >= mk.value)
+    .map((f) => ({ f, warns: folha.feriasMediaInfo(f).avisos.filter((a) => a.nivel === 'warn') }))
+    .filter((x) => x.warns.length)
+)
+
 /* ---- dias ---- */
 const dias = computed(() => {
   const nd = daysInMonth(mk.value)
@@ -127,7 +135,9 @@ const recibos = computed(() =>
       const fconf = f.conf || {}
       const linhas = [
         { k: 'gozo', d: 'Férias', ref: `${fc.dias} dias × ${brl(fc.vd)}`, cr: fc.brutoGozo },
-        { k: 'terco', d: '1/3 constitucional', ref: '', cr: fc.terco },
+        { k: 'media', d: 'Média de horas extras', ref: `${min2hm(fc.mediaRef.mediaMin)}/mês × ${brl(fc.mediaRef.vhe)}`, cr: fc.mediaHE },
+        { k: 'dsr', d: 'DSR sobre a média', ref: `${min2hm(fc.mediaRef.mediaDsrMin)}/mês de repouso`, cr: fc.mediaDsr },
+        { k: 'terco', d: '1/3 constitucional', ref: 'sobre férias + média', cr: fc.terco },
         ...(f.vendidos ? [{ k: 'abono', d: 'Abono pecuniário + 1/3', ref: `${f.vendidos} dias vendidos, isentos`, cr: fc.abono + fc.abonoTerco }] : []),
         { k: 'inss', d: 'INSS sobre férias', ref: '', db: fc.inss },
         { k: 'irpf', d: 'IRPF sobre férias', ref: '', db: fc.irpf }
@@ -142,6 +152,7 @@ const recibos = computed(() =>
         totCr: vis.reduce((a, l) => a + (l.cr || 0), 0),
         totDb: vis.reduce((a, l) => a + (l.db || 0), 0),
         fdv: folha.ferConfDiffs(f),
+        info: folha.feriasMediaInfo(f),
         prazo: `${dsemLongo(fc.prazo)}, ${fmtDKs(fc.prazo)}`
       }
     })
@@ -163,7 +174,21 @@ const fim = computed(() => {
 const totalPaginas = computed(() => fim.value[fim.value.length - 1] || 0)
 async function medir(): Promise<void> {
   await nextTick()
-  alturas.value = [...(root.value?.querySelectorAll<HTMLElement>('.rp') || [])].map((e) => e.scrollHeight)
+  // O zoom de tela (para caber no celular) arredonda linhas de outro jeito;
+  // mede-se em escala 1, como na impressão.
+  const el = root.value
+  if (el) el.style.zoom = '1'
+  // altura natural do conteúdo (sem o min-height que já reserva páginas)
+  alturas.value = [...(el?.querySelectorAll<HTMLElement>('.rp') || [])].map((e) => {
+    const pb = parseFloat(getComputedStyle(e).paddingBottom) || 0
+    let fundo = 0
+    for (const k of Array.from(e.children) as HTMLElement[]) {
+      if (k.classList.contains('rp-foot')) continue
+      fundo = Math.max(fundo, k.offsetTop + k.offsetHeight)
+    }
+    return fundo + pb
+  })
+  if (el) el.style.zoom = ''
 }
 
 const isRec = (t: unknown): boolean => (t as { kind?: string }).kind === 'r'
@@ -186,6 +211,8 @@ onMounted(async () => {
   } catch {
     /* ignore */
   }
+  await medir()
+  window.addEventListener('beforeprint', medir)
   if (route.query.auto !== '0') setTimeout(() => window.print(), 400)
 })
 </script>
@@ -232,9 +259,14 @@ onMounted(async () => {
           {{ MESES[Number(f.ini.slice(5, 7)) - 1] }}/{{ f.ini.slice(0, 4) }}. Este demonstrativo mantém só os reflexos da competência atual.
         </div>
 
+        <div v-for="x in avisosFerias" :key="x.f.ini" class="rp-alert">
+          <b>Férias de {{ fmtDKs(x.f.ini) }} a {{ fmtDKs(x.f.fim) }}: confira a média de horas extras.</b>{{ ' ' }}
+          <template v-for="(a, i) in x.warns" :key="i"> {{ a.texto }}</template>
+        </div>
+
         <section>
           <h2>Demonstrativo mensal</h2>
-          <table>
+          <table class="dense">
             <thead><tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr></thead>
             <tbody>
               <tr v-for="(r, i) in rows" :key="i">
@@ -257,7 +289,7 @@ onMounted(async () => {
         <section>
           <h2>Como foi calculado</h2>
           <div class="two">
-            <table>
+            <table class="dense">
               <tr><td>Bruto tributável</td><td class="r">{{ brl(c.bruto) }}</td></tr>
               <tr><td>Base do INSS da competência</td><td class="r">{{ brl(c.baseInss) }}</td></tr>
               <template v-if="c.inssFerias">
@@ -265,7 +297,7 @@ onMounted(async () => {
                 <tr><td>INSS retido no recibo de férias</td><td class="r">− {{ brl(c.inssFerias) }}</td></tr>
               </template>
             </table>
-            <table>
+            <table class="dense">
               <tr><td>Base do IRPF</td><td class="r">{{ brl(c.baseIR) }}</td></tr>
               <tr><td>Dependentes considerados</td><td class="r">{{ c.nDep }}</td></tr>
               <tr v-if="c.irRed"><td>Redutor do IRPF (Lei 15.270/2025)</td><td class="r">− {{ brl(c.irRed) }}</td></tr>
@@ -387,7 +419,7 @@ onMounted(async () => {
 
         <section>
           <h2>Pagamento</h2>
-          <table>
+          <table class="dense">
             <thead><tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr></thead>
             <tbody>
               <tr v-for="l in r.vis" :key="l.k">
@@ -403,18 +435,26 @@ onMounted(async () => {
         </section>
 
         <section>
-          <h2>Como foi calculado</h2>
-          <div class="two">
-            <table>
-              <tr><td>Base de INSS e IRPF (gozo + 1/3)</td><td class="r">{{ brl(r.fc.baseTrib) }}</td></tr>
-              <tr><td>Base do IRPF</td><td class="r">{{ brl(r.fc.baseIR) }}</td></tr>
-            </table>
-            <table>
-              <tr><td>Dependentes considerados no IRPF</td><td class="r">{{ r.fc.nDep }}</td></tr>
-              <tr v-if="r.fc.irRed"><td>Redutor do IRPF (Lei 15.270/2025)</td><td class="r">− {{ brl(r.fc.irRed) }}</td></tr>
-            </table>
+          <h2>Como a média de horas extras foi calculada</h2>
+          <table class="dense">
+            <tbody>
+              <tr><td>Período de referência</td><td class="r">{{ fmtDK(r.info.ini) }} a {{ fmtDK(r.info.fim) }} · {{ r.info.meses }} {{ r.info.meses === 1 ? 'mês' : 'meses' }}</td></tr>
+              <tr><td>Média mensal de horas ({{ min2hm(r.info.extraMin) }} lançadas ÷ {{ r.info.meses }})</td><td class="r">{{ min2hm(r.info.mediaMin) }}</td></tr>
+              <tr><td>Valor da hora extra hoje ({{ brl(r.info.vh) }} × {{ (1 + r.info.pctExtra / 100).toFixed(2).replace('.', ',') }})</td><td class="r">{{ brl(r.info.vhe) }}</td></tr>
+              <tr><td>Média mensal em dinheiro ({{ min2hm(r.info.mediaMin) }} × {{ brl(r.info.vhe) }})</td><td class="r">{{ brl(r.info.mensalHE) }}</td></tr>
+              <tr v-if="r.info.mediaDsrMin > 0"><td>DSR sobre a média ({{ min2hm(r.info.mediaDsrMin) }} de repouso)</td><td class="r">{{ brl(r.info.mensalDsr) }}</td></tr>
+              <tr><td>Proporcional aos {{ r.fc.dias }} dias de gozo (× {{ r.fc.dias }} ÷ 30)</td><td class="r">{{ brl(r.fc.media) }}</td></tr>
+              <tr><td>1/3 constitucional sobre a média</td><td class="r">{{ brl(r.fc.media / 3) }}</td></tr>
+            </tbody>
+          </table>
+          <div v-for="(a, i) in r.info.avisos" :key="i" class="rp-alert" :class="{ info: a.nivel === 'info' }" style="margin-top: 6px; font-size: 12px">
+            {{ a.texto }}
           </div>
         </section>
+
+        <p class="note">
+          Bases: INSS e IRPF {{ brl(r.fc.baseTrib) }} (gozo + média + 1/3) · base do IRPF {{ brl(r.fc.baseIR) }} (menos INSS e {{ r.fc.nDep }} dependente(s))<template v-if="r.fc.irRed"> · redutor do IRPF − {{ brl(r.fc.irRed) }}</template>.
+        </p>
 
         <section v-if="r.fdv.length">
           <h2>Conferência com o recibo oficial</h2>
@@ -432,8 +472,7 @@ onMounted(async () => {
         <section>
           <h2>Efeito na folha de {{ mesNome }}</h2>
           <p class="rp-text">
-            Os {{ r.fc.dias }} dias de férias ({{ brl(r.fc.brutoGozo) }}) já são pagos adiantados neste recibo e por isso saem da folha mensal. O valor não desaparece: muda de data.
-            Na folha de {{ mesNome }} o líquido é {{ brl(c.liquido) }}, e o total recebido no mês, somando este recibo, é <b>{{ brl(c.liquido + r.fc.liq) }}</b> (sem o vale cesta).
+            Os {{ r.fc.dias }} dias de férias ({{ brl(r.fc.brutoGozo) }}) são pagos adiantados neste recibo e saem da folha mensal. Folha de {{ mesNome }}: {{ brl(c.liquido) }}; somando este recibo, o mês rende <b>{{ brl(c.liquido + r.fc.liq) }}</b> (sem o vale cesta).
           </p>
           <p v-if="!r.fdv.length" class="note" style="margin-top: 10px">Conferência com o recibo oficial de férias: não realizada.</p>
         </section>
@@ -453,7 +492,7 @@ onMounted(async () => {
 .rp-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: var(--card); border-bottom: 1px solid var(--line); }
 .rp-zoom { zoom: var(--z, 1); display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 12px 0; }
 
-.rp { position: relative; width: 794px; min-height: calc(var(--pg, 1) * 1123px); background: #fff; color: #0e0e10; padding: 44px 56px 84px; font-family: 'Inter Variable', Inter, system-ui, sans-serif; font-size: 13px; line-height: 1.45; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12); }
+.rp { position: relative; width: 794px; min-height: calc(var(--pg, 1) * 1123px); background: #fff; color: #0e0e10; padding: 44px 56px 72px; font-family: 'Inter Variable', Inter, system-ui, sans-serif; font-size: 13px; line-height: 1.45; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12); }
 .rp *, .rp *::before, .rp *::after { box-sizing: border-box; }
 .rp, .rp * { color-scheme: light; }
 .rp h1, .rp h2, .rp p { margin: 0; }
@@ -473,13 +512,13 @@ onMounted(async () => {
 .rp-hero .v { font-size: 22px; line-height: 1.1; font-weight: 800; letter-spacing: -0.025em; }
 .rp-hero .v.big { font-size: 30px; }
 .rp-hero .sm { font-size: 12px; color: #55534f; }
-.rp-alert { padding: 9px 12px; border: 1.5px solid #6b4300; background: #fbebc8; color: #4a2f00; border-radius: 10px; font-size: 12.5px; line-height: 1.45; }
+.rp-alert { padding: 8px 12px; border: 1.5px solid #6b4300; background: #fbebc8; color: #4a2f00; border-radius: 10px; font-size: 12px; line-height: 1.4; }
 .rp-alert.info { border-color: #1d4ed8; background: #eff6ff; color: #1e3a8a; }
 .rp h2 { font-size: 15px; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; }
 .rp table { width: 100%; border-collapse: collapse; }
 .rp th { text-align: left; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #55534f; padding: 6px 8px; border-bottom: 2px solid #0e0e10; }
-.rp td { padding: 6px 8px; border-bottom: 1px solid #dad7ce; vertical-align: top; }
-.rp table.dense td { padding: 5px 8px; }
+.rp td { padding: 5px 8px; border-bottom: 1px solid #dad7ce; vertical-align: top; }
+.rp table.dense td { padding: 4px 8px; }
 .rp .r { text-align: right; white-space: nowrap; }
 .rp .nw { white-space: nowrap; }
 .rp .ref { color: #55534f; font-size: 12px; }

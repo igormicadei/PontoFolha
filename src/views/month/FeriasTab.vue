@@ -4,9 +4,11 @@
 import { computed, ref } from 'vue'
 import { useFolha } from '@/stores/folha'
 import { FER_FIELDS } from '@/lib/engine'
-import { brl, num, fmtDM, fmtDKs, dow, DSEM, daysDiff, todayKey } from '@/lib/utils'
+import { brl, num, fmtDM, fmtDKs, dow, DSEM, daysDiff, todayKey, min2hm } from '@/lib/utils'
 import { openFerConf, gerarConferenciaFerias } from '@/lib/confSheet'
 import { openFerias } from '@/lib/ferias'
+import FeriasAvisos from '@/components/FeriasAvisos.vue'
+import FeriasMedia from '@/components/FeriasMedia.vue'
 
 const props = defineProps<{ mk: string }>()
 const folha = useFolha()
@@ -45,7 +47,9 @@ const cards = computed(() => {
       }
       const linhas: Linha[] = [
         l('gozo', 'Férias', `${fc.dias} × ${brl(fc.vd)}`, fc.brutoGozo, false),
-        l('terco', '1/3 constitucional', undefined, fc.terco, false)
+        l('media', 'Média de horas extras', `${min2hm(fc.mediaRef.mediaMin)}/mês × ${brl(fc.mediaRef.vhe)}`, fc.mediaHE, false),
+        { k: '_dsr', d: 'DSR sobre a média', ref: `${min2hm(fc.mediaRef.mediaDsrMin)}/mês de repouso`, val: fc.mediaDsr, isDb: false, zero: fc.mediaDsr === 0 },
+        l('terco', '1/3 constitucional', 'sobre férias + média', fc.terco, false)
       ]
       if (f.vendidos) linhas.push(l('abono', 'Abono + 1/3', `${f.vendidos} dias vendidos, isentos`, fc.abono + fc.abonoTerco, false))
       linhas.push(l('inss', 'INSS sobre férias', undefined, fc.inss, true))
@@ -87,18 +91,26 @@ const cards = computed(() => {
       <p style="margin-top: 6px; font-size: 14px">Líquido do recibo · pagamento até <b>{{ c.prazoTxt }}</b></p>
     </section>
 
+    <FeriasAvisos :ferias="c.f" />
+
     <section class="card" aria-label="Recibo estimado">
       <div class="h2"><span>Recibo de férias estimado</span></div>
       <p class="muted">Toque numa verba para registrar o valor do recibo oficial.</p>
       <div class="pay">
         <div class="ln"><div class="d">Dias de gozo<small>{{ c.f.vendidos ? `${c.f.vendidos} dias vendidos (abono)` : 'sem dias vendidos' }}</small></div><div class="v">{{ c.fc.dias }}</div></div>
         <template v-for="l in c.linhas" :key="l.k">
-          <button v-if="!l.zero || zeros[c.fi]" class="ln" @click="openFerConf(c.fi, l.k, mk)">
-            <div class="d">{{ l.d }}<small v-if="l.ref">{{ l.ref }}</small></div>
-            <div class="v" :class="{ neg: l.isDb }">{{ l.isDb ? '− ' : '' }}{{ brl(l.val) }}
-              <small v-if="l.sub" :class="l.sub.ok ? 'pos' : 'neg'">{{ l.sub.ok ? '✓ confere' : l.sub.diff }} · recibo {{ l.sub.holerite }}</small>
+          <template v-if="!l.zero || zeros[c.fi]">
+            <div v-if="l.k.startsWith('_')" class="ln">
+              <div class="d">{{ l.d }}<small v-if="l.ref">{{ l.ref }}</small></div>
+              <div class="v">{{ brl(l.val) }}</div>
             </div>
-          </button>
+            <button v-else class="ln" @click="openFerConf(c.fi, l.k, mk)">
+              <div class="d">{{ l.d }}<small v-if="l.ref">{{ l.ref }}</small></div>
+              <div class="v" :class="{ neg: l.isDb }">{{ l.isDb ? '− ' : '' }}{{ brl(l.val) }}
+                <small v-if="l.sub" :class="l.sub.ok ? 'pos' : 'neg'">{{ l.sub.ok ? '✓ confere' : l.sub.diff }} · recibo {{ l.sub.holerite }}</small>
+              </div>
+            </button>
+          </template>
         </template>
         <button v-if="c.linhas.some((x) => x.zero)" class="link" style="margin-top: 4px" @click="zeros[c.fi] = !zeros[c.fi]">
           {{ zeros[c.fi] ? 'Ocultar linhas zeradas' : `Mostrar ${c.linhas.filter((x) => x.zero).length} linha(s) zerada(s)` }}
@@ -116,6 +128,12 @@ const cards = computed(() => {
         <button v-if="!c.todos" class="btn block" @click="gerarConferenciaFerias(c.fi)">Gerar conferência com o recibo</button>
         <button v-if="c.algum" class="btn ghost block" @click="gerarConferenciaFerias(c.fi, true)">Regenerar conferência</button>
       </div>
+    </section>
+
+    <section class="card" aria-label="Média de horas extras">
+      <div class="h2"><span>Como a média de horas extras foi calculada</span></div>
+      <p class="muted" style="margin-bottom: 4px">Pelas horas extras do período de referência, na hora extra de hoje, como manda a CLT (art. 142) e a Súmula 347 do TST. Aparece separada no recibo.</p>
+      <FeriasMedia :ferias="c.f" />
     </section>
 
     <section class="card" aria-label="Por que a folha é menor">
