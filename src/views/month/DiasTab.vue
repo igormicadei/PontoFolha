@@ -46,15 +46,15 @@ function escMin(dk: string): number {
 const EFF: Record<string, string> = { ferias: 'Férias', feriado: 'Feriado', abonado: 'Abonado', falta: 'Falta' }
 const EFFCLS: Record<string, string> = { ferias: 'vac', feriado: 'fer', abonado: 'ok', falta: 'bad' }
 
-/* calendário (segunda a domingo) */
+/* calendário (domingo a sábado) */
 const calCells = computed(() => {
   const first = dow(`${props.mk}-01`)
-  const lead = (first + 6) % 7
+  const lead = first
   const cells: { n: number | null; cls: string }[] = Array.from({ length: lead }, () => ({ n: null, cls: '' }))
   dias.value.forEach(({ dk, cd }, i) => cells.push({ n: i + 1, cls: calClass(cd, dk, tk.value) }))
   return cells
 })
-const CAL_HD = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
+const CAL_HD = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 const temPend = computed(() => calCells.value.some((c) => c.cls === 'p'))
 const temFalta = computed(() => calCells.value.some((c) => c.cls === 'b'))
 
