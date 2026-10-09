@@ -1,69 +1,62 @@
 <script setup lang="ts">
-/* Host dos sheets de conferência (index.html openConf/openFerConf 1311-1344 +
-   openConfX 1345-1362). Espelha o FeriasSheetHost: dois singletons reativos
-   de src/lib/confSheet.ts, montados uma única vez no App.vue. numConfSheet
-   cobre o valor único (holerite mensal ou recibo de férias); xConfSheet cobre
-   a verba não prevista (desc + valor + tipo + excluir). */
+/* Hosts dos sheets de conferência: valor único (holerite ou recibo) e verba
+   que só existe no holerite. */
+import Sheet from './Sheet.vue'
 import { numConfSheet, resolveNumConfSheet, xConfSheet, resolveXConfSheet } from '@/lib/confSheet'
 import { brl } from '@/lib/utils'
 </script>
 
 <template>
-  <div v-if="numConfSheet.open" class="overlay" @click.self="resolveNumConfSheet(null)">
-    <div class="sheet">
-      <h3>{{ numConfSheet.title }}</h3>
-      <p class="muted" style="margin-bottom: 4px">
-        Valor do app: <b class="mono">{{ brl(numConfSheet.appValue) }}</b>. Digite o valor que
-        consta no documento:
-      </p>
-      <input
-        v-model="numConfSheet.value"
-        type="number"
-        step="0.01"
-        inputmode="decimal"
-        class="mono"
-        style="text-align: right; margin-bottom: 10px"
-      />
-      <div class="row">
-        <button class="btn" @click="resolveNumConfSheet('save')">Salvar</button>
-        <button class="btn warn" style="flex: none" @click="resolveNumConfSheet('clear')">
-          Limpar valor
-        </button>
-      </div>
+  <Sheet :open="numConfSheet.open" :title="numConfSheet.title" @close="resolveNumConfSheet(null)">
+    <div class="between note-box" style="background: var(--cream); color: var(--cream-ink)">
+      <span class="eyebrow" style="color: rgba(var(--cream-rgb), 0.78)">Valor calculado pelo app</span>
+      <b style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">{{ brl(numConfSheet.appValue) }}</b>
     </div>
-  </div>
-
-  <div v-if="xConfSheet.open" class="overlay" @click.self="resolveXConfSheet(null)">
-    <div class="sheet">
-      <h3>{{ xConfSheet.title }}</h3>
-      <label class="f">Descrição (como está no holerite)<input v-model="xConfSheet.desc" /></label>
-      <label class="f"
-        >Valor (R$)<input
-          v-model="xConfSheet.valor"
+    <div class="field">
+      <label for="nc-v">Valor no documento oficial</label>
+      <div class="inwrap">
+        <span class="pre">R$</span>
+        <input
+          id="nc-v"
+          v-model="numConfSheet.value"
+          class="input num withpre"
           type="number"
           step="0.01"
           inputmode="decimal"
-          class="mono"
-          style="text-align: right"
-      /></label>
-      <label class="f"
-        >Tipo
-        <select v-model="xConfSheet.tipo">
-          <option value="c">Crédito (provento)</option>
-          <option value="d">Débito (desconto)</option>
-        </select></label
-      >
-      <div class="row">
-        <button class="btn" @click="resolveXConfSheet('save')">Salvar</button>
-        <button
-          v-if="xConfSheet.isEdit"
-          class="btn warn"
-          style="flex: none"
-          @click="resolveXConfSheet('del')"
-        >
-          Excluir verba
-        </button>
+          placeholder="0,00"
+          style="font-size: 20px"
+        />
+      </div>
+      <span class="hint">Diferenças acima de R$ 0,05 ficam destacadas e entram no PDF.</span>
+    </div>
+    <template #footer>
+      <button class="btn ghost" @click="resolveNumConfSheet('clear')">Limpar valor</button>
+      <button class="btn grow" @click="resolveNumConfSheet('save')">Salvar</button>
+    </template>
+  </Sheet>
+
+  <Sheet :open="xConfSheet.open" :title="xConfSheet.title" @close="resolveXConfSheet(null)">
+    <div class="field">
+      <label for="xc-d">Descrição (como está no holerite)</label>
+      <input id="xc-d" v-model="xConfSheet.desc" class="input" />
+    </div>
+    <div class="field">
+      <label for="xc-v">Valor</label>
+      <div class="inwrap">
+        <span class="pre">R$</span>
+        <input id="xc-v" v-model="xConfSheet.valor" class="input num withpre" type="number" step="0.01" inputmode="decimal" placeholder="0,00" />
       </div>
     </div>
-  </div>
+    <div class="seg" role="group" aria-label="Tipo da verba">
+      <button :class="{ on: xConfSheet.tipo === 'c' }" :aria-pressed="xConfSheet.tipo === 'c'" @click="xConfSheet.tipo = 'c'">Crédito</button>
+      <button :class="{ on: xConfSheet.tipo === 'd' }" :aria-pressed="xConfSheet.tipo === 'd'" @click="xConfSheet.tipo = 'd'">Débito</button>
+    </div>
+    <button v-if="xConfSheet.isEdit" class="link bad" style="align-self: flex-start" @click="resolveXConfSheet('del')">
+      Excluir esta verba
+    </button>
+    <template #footer>
+      <button class="btn ghost" @click="resolveXConfSheet(null)">Cancelar</button>
+      <button class="btn grow" @click="resolveXConfSheet('save')">Salvar</button>
+    </template>
+  </Sheet>
 </template>

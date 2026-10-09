@@ -64,11 +64,16 @@ export interface Day {
   tasks?: PTask[]
 }
 
-/** Pagamento avulso do mês. t=true → tributável (entra no bruto). */
+/** Item avulso do mês (antes "pagamento avulso"). `k` ausente = crédito, o
+ *  formato antigo. Crédito: t=true → tributável (entra no bruto, INSS e IRPF);
+ *  t=false → só soma ao líquido. Débito (k='d'): só desconta do líquido e não
+ *  altera as bases de INSS/IRPF. `ty` guarda o id do tipo (lib/itemTypes). */
 export interface Pag {
   d: string
   v: number
   t?: boolean
+  k?: 'c' | 'd'
+  ty?: string
 }
 
 /** Ajuste que existe só no holerite (confX). t: 'd' débito | 'c' crédito. */
@@ -158,8 +163,12 @@ export interface MonthResult {
   vDsr: number
   vFaltas: number
   vFerias: number
+  /** Média de horas extras que integra a remuneração das férias da competência (ausente em snapshots antigos). */
+  mediaFerias?: number
   pagsT: number
   pagsN: number
+  /** Soma dos débitos avulsos (ausente em snapshots antigos = 0). */
+  pagsD?: number
   bruto: number
   /** Base previdenciária da competência, inclusive férias gozadas e 1/3. */
   baseInss: number
@@ -175,6 +184,8 @@ export interface MonthResult {
   temFilhos: boolean
   liquido: number
   cesta: number
+  /** líquido + vale cesta (benefício pago à parte). */
+  totalReceber: number
   sfLim: number
   sfCotaTot: number
   nDep: number

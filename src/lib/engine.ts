@@ -17,7 +17,9 @@ import {
   hm2min,
   min2hm,
   brl,
-  uid
+  uid,
+  MESES,
+  fmtDK
 } from './utils'
 import type {
   State,
@@ -297,14 +299,190 @@ export function createEngine(S: State) {
     return { ini, fim, meses, primeiro: k === 0, direitoApos: yAdd(S.adm, 1) }
   }
 
+  /* ---- média de horas extras nas férias (CLT art. 142 §5º, Súmula 347 TST;
+     manual 8.1) ---- */
+
+  /** Período de referência da média: o período aquisitivo completo que deu
+   *  origem às férias (12 meses); se as férias começam antes do 1º aniversário,
+   *  os meses desde a admissão; sem data de admissão, os 12 meses anteriores. */
+  function feriasRef(f: Ferias) {
+    let modo: 'periodo' | 'parcial' | '12m' = '12m'
+    let ini = yAdd(f.ini, -1)
+    let fim = dAdd(f.ini, -1)
+    let meses = 12
+    if (S.adm) {
+      let k = 0
+      while (yAdd(S.adm, k + 1) <= f.ini) k++
+      if (k >= 1) {
+        modo = 'periodo'
+        ini = yAdd(S.adm, k - 1)
+        fim = dAdd(yAdd(S.adm, k), -1)
+      } else {
+        modo = 'parcial'
+        ini = S.adm
+        fim = dAdd(f.ini, -1)
+        meses = fim >= ini ? Math.max(1, Math.round((daysDiff(ini, fim) + 1) / 30.4375)) : 1
+      }
+    }
+    return { modo, ini, fim, meses }
+  }
+
+  /** Relação repousos/dias úteis do mês (mesma regra do DSR da folha). */
+  function dsrRatio(mk: string): number {
+    let uteis = 0
+    let repousos = 0
+    const cfg = cfgFor(mk)
+    const nd = daysInMonth(mk)
+    for (let d = 1; d <= nd; d++) {
+      const dk = `${mk}-${pad(d)}`
+      const c = computeDay(mk, dk)
+      const wd = dow(dk)
+      if (wd === 0 || c.eff === 'feriado') repousos++
+      else if (num(cfg.escala[wd]) > 0) uteis++
+    }
+    return uteis > 0 ? repousos / uteis : 0
+  }
+
+  function mesesDoPeriodo(ini: string, fim: string): string[] {
+    const out: string[] = []
+    if (fim < ini) return out
+    let mk = ini.slice(0, 7)
+    const last = fim.slice(0, 7)
+    while (mk <= last) {
+      out.push(mk)
+      mk = yAddM(mk + '-01', 1).slice(0, 7)
+    }
+    return out
+  }
+
+  /** Média mensal de horas extras (e DSR) do período de referência, em valor da
+   *  hora extra da data da concessão. Percorre só os dias lançados. */
+  function feriasMediaCore(f: Ferias) {
+    const ref = feriasRef(f)
+    let extraMin = 0
+    let dsrMin = 0
+    let bancoMeses = 0
+    for (const mk of mesesDoPeriodo(ref.ini, ref.fim)) {
+      const m = S.months[mk]
+      if (!m) continue
+      const cfg = cfgFor(mk)
+      if (cfg.modoExtras !== 'pagar') {
+        bancoMeses++
+        continue
+      }
+      let ex = 0
+      for (const dk of Object.keys(m.days)) {
+        if (dk < ref.ini || dk > ref.fim) continue
+        ex += computeDay(mk, dk).extraMin
+      }
+      if (ex > 0) {
+        extraMin += ex
+        if (Number(cfg.dsr) === 1) dsrMin += ex * dsrRatio(mk)
+      }
+    }
+    const cfgC = cfgFor(f.ini.slice(0, 7))
+    const vh = num(cfgC.salario) / Math.max(1, num(cfgC.jornada))
+    const vhe = vh * (1 + num(cfgC.pctExtra) / 100)
+    const mediaMin = extraMin / ref.meses
+    const mediaDsrMin = dsrMin / ref.meses
+    const mensalHE = (mediaMin / 60) * vhe
+    const mensalDsr = (mediaDsrMin / 60) * vhe
+    return {
+      ...ref,
+      extraMin,
+      mediaMin,
+      mediaDsrMin,
+      bancoMeses,
+      vh,
+      vhe,
+      pctExtra: num(cfgC.pctExtra),
+      mensalHE,
+      mensalDsr,
+      mensal: mensalHE + mensalDsr
+    }
+  }
+
+  function mesCurto(mk: string): string {
+    return `${MESES[Number(mk.slice(5, 7)) - 1]!.slice(0, 3)}/${mk.slice(0, 4)}`
+  }
+
+  /** Detalhe da média + avisos de confiabilidade (para a tela e o relatório). */
+  function feriasMediaInfo(f: Ferias) {
+    const med = feriasMediaCore(f)
+    const hoje = todayKey()
+    const meses = mesesDoPeriodo(med.ini, med.fim)
+    const sem: string[] = []
+    const incompletos: string[] = []
+    for (const mk of meses) {
+      const m = S.months[mk]
+      let dados = false
+      let pend = 0
+      if (m) {
+        const nd = daysInMonth(mk)
+        for (let d = 1; d <= nd; d++) {
+          const dk = `${mk}-${pad(d)}`
+          if (dk < med.ini || dk > med.fim) continue
+          const rec = m.days[dk]
+          if (rec && ((rec.p && rec.p.length) || rec.type)) dados = true
+          if (dk < hoje && computeDay(mk, dk).pending) pend++
+        }
+      }
+      if (!dados) sem.push(mk)
+      else if (pend > 0) incompletos.push(mk)
+    }
+    const lista = (l: string[]): string => (l.length > 6 ? `${mesCurto(l[0]!)} a ${mesCurto(l[l.length - 1]!)}` : l.map(mesCurto).join(', '))
+    const avisos: { nivel: 'warn' | 'info'; texto: string }[] = []
+    if (med.modo === '12m')
+      avisos.push({
+        nivel: 'info',
+        texto: `Data de admissão não informada: usei os 12 meses antes do início das férias (${fmtDK(med.ini)} a ${fmtDK(med.fim)}). Informe a data nos Ajustes para usar o período aquisitivo exato.`
+      })
+    if (med.modo === 'parcial')
+      avisos.push({
+        nivel: 'warn',
+        texto: `As férias começam antes de completar o 1º período aquisitivo (1 ano de casa em ${fmtDK(yAdd(S.adm, 1))}). A média usa os ${med.meses} ${med.meses === 1 ? 'mês' : 'meses'} desde a admissão (${fmtDK(med.ini)} a ${fmtDK(med.fim)}).`
+      })
+    if (sem.length && sem.length === meses.length)
+      avisos.push({
+        nivel: 'warn',
+        texto: `Não há nenhum registro de ponto no período de referência (${fmtDK(med.ini)} a ${fmtDK(med.fim)}). A média de horas extras ficou em zero porque falta lançamento, não necessariamente porque não houve horas extras. Lance os meses anteriores ou confira a média com a empresa.`
+      })
+    else if (sem.length)
+      avisos.push({
+        nivel: 'warn',
+        texto: `Sem registro de ponto em ${sem.length} ${sem.length === 1 ? 'mês' : 'meses'} do período (${lista(sem)}). A média considera só o que está lançado e pode ficar abaixo do real. Complete os lançamentos ou confira a média com a empresa.`
+      })
+    if (incompletos.length)
+      avisos.push({
+        nivel: 'warn',
+        texto: `Há dias úteis sem registro em ${incompletos.length} ${incompletos.length === 1 ? 'mês' : 'meses'} do período (${lista(incompletos)}). As horas extras desses dias não entram na média.`
+      })
+    if (med.bancoMeses)
+      avisos.push({
+        nivel: 'info',
+        texto: `Em ${med.bancoMeses} ${med.bancoMeses === 1 ? 'mês' : 'meses'} do período o saldo foi para o banco de horas e não entra na média.`
+      })
+    avisos.push({
+      nivel: 'info',
+      texto: `O app usa um único adicional de hora extra (${med.pctExtra}%). Se houve horas com adicionais diferentes (ex.: 50% e 100%), calcule por categoria com a empresa.`
+    })
+    return { ...med, mesesSem: sem, mesesIncompletos: incompletos, totalMeses: meses.length, avisos }
+  }
+
   function feriasCalc(f: Ferias, cfg: Cfg) {
     const dias = daysDiff(f.ini, f.fim) + 1
     const vd = num(cfg.salario) / 30
-    const brutoGozo = vd * dias,
-      terco = brutoGozo / 3
-    const abono = vd * num(f.vendidos || 0),
-      abonoTerco = abono / 3
-    const baseTrib = brutoGozo + terco
+    const brutoGozo = vd * dias
+    // Média de horas extras do período de referência, proporcional aos dias de gozo.
+    const med = feriasMediaCore(f)
+    const mediaHE = (med.mensalHE * dias) / 30
+    const mediaDsr = (med.mensalDsr * dias) / 30
+    const media = mediaHE + mediaDsr
+    const terco = (brutoGozo + media) / 3
+    // O abono pecuniário é a remuneração dos dias vendidos, também com a média.
+    const abono = ((num(cfg.salario) + med.mensal) / 30) * num(f.vendidos || 0)
+    const abonoTerco = abono / 3
+    const baseTrib = brutoGozo + media + terco
     // O INSS é apurado por competência. A parcela exibida no recibo é a parte
     // daquela apuração atribuída às férias, e não uma segunda competência.
     const inss = feriasInssTotal(f)
@@ -315,6 +493,10 @@ export function createEngine(S: State) {
       dias,
       vd,
       brutoGozo,
+      mediaHE,
+      mediaDsr,
+      media,
+      mediaRef: med,
       terco,
       abono,
       abonoTerco,
@@ -399,13 +581,19 @@ export function createEngine(S: State) {
         const ini = f.ini > `${mk}-01` ? f.ini : `${mk}-01`
         const fim = f.fim < `${mk}-${pad(nd)}` ? f.fim : `${mk}-${pad(nd)}`
         const cfgFerias = cfgFor(f.ini.slice(0, 7))
-        const gozo = (num(cfgFerias.salario) / 30) * (daysDiff(ini, fim) + 1)
-        return { f, gozo, terco: gozo / 3 }
+        const diasMes = daysDiff(ini, fim) + 1
+        const gozo = (num(cfgFerias.salario) / 30) * diasMes
+        // média de horas extras do período de referência, rateada pelos dias de gozo da competência
+        const media = (feriasMediaCore(f).mensal * diasMes) / 30
+        return { f, gozo, media, terco: (gozo + media) / 3 }
       })
     const vFerias = feriasParts.reduce((a, p) => a + p.gozo, 0)
+    const mediaFerias = feriasParts.reduce((a, p) => a + p.media, 0)
     const tercoFerias = feriasParts.reduce((a, p) => a + p.terco, 0)
-    const pagsT = (m.pags || []).filter((p) => p.t).reduce((a, p) => a + num(p.v), 0)
-    const pagsN = (m.pags || []).filter((p) => !p.t).reduce((a, p) => a + num(p.v), 0)
+    const creditos = (m.pags || []).filter((p) => p.k !== 'd')
+    const pagsT = creditos.filter((p) => p.t).reduce((a, p) => a + num(p.v), 0)
+    const pagsN = creditos.filter((p) => !p.t).reduce((a, p) => a + num(p.v), 0)
+    const pagsD = (m.pags || []).filter((p) => p.k === 'd').reduce((a, p) => a + num(p.v), 0)
     const bruto = Math.max(
       0,
       num(cfg.salario) + vExtras + vDsr + pagsT - vFaltas - vFerias
@@ -429,10 +617,12 @@ export function createEngine(S: State) {
       vDsr,
       vFaltas,
       vFerias,
+      mediaFerias,
       tercoFerias,
       feriasParts,
       pagsT,
       pagsN,
+      pagsD,
       bruto
     }
   }
@@ -444,7 +634,7 @@ export function createEngine(S: State) {
       .slice()
       .sort((a, b) => (a.f.ini < b.f.ini ? -1 : a.f.ini > b.f.ini ? 1 : 0))
       .map((p) => {
-        const baseComFerias = baseAnterior + p.gozo + p.terco
+        const baseComFerias = baseAnterior + p.gozo + p.media + p.terco
         const inss = calcINSS(baseComFerias, core.cfg.inss) - calcINSS(baseAnterior, core.cfg.inss)
         baseAnterior = baseComFerias
         return { ...p, inss }
@@ -472,7 +662,8 @@ export function createEngine(S: State) {
           ...m.snap,
           baseInss: m.snap.bruto,
           inssCompetencia: m.snap.inss,
-          inssFerias: 0
+          inssFerias: 0,
+          totalReceber: m.snap.totalReceber ?? m.snap.liquido + m.snap.cesta
         }
       }
       return m.snap
@@ -496,12 +687,14 @@ export function createEngine(S: State) {
       vDsr,
       vFaltas,
       vFerias,
+      mediaFerias,
       tercoFerias,
       pagsT,
       pagsN,
+      pagsD,
       bruto
     } = core
-    const baseInss = bruto + vFerias + tercoFerias
+    const baseInss = bruto + vFerias + mediaFerias + tercoFerias
     const inssCompetencia = calcINSS(baseInss, cfg.inss)
     const inssFerias = inssFeriasPorCompetencia(mk, core).reduce((a, p) => a + p.inss, 0)
     const inss = Math.max(0, inssCompetencia - inssFerias)
@@ -510,7 +703,7 @@ export function createEngine(S: State) {
     const ir = calcIRRF(bruto, inss + nDep * num(cfg.dedDep), cfg)
     const temFilhos = nF14 > 0
     const salFam = temFilhos && baseInss <= num(cfg.sfLim) ? nF14 * num(cfg.sfCota) : 0
-    const liquido = bruto - inss - ir.tax + salFam + pagsN
+    const liquido = bruto - inss - ir.tax + salFam + pagsN - pagsD
     return {
       worked,
       expected,
@@ -528,8 +721,10 @@ export function createEngine(S: State) {
       vDsr,
       vFaltas,
       vFerias,
+      mediaFerias,
       pagsT,
       pagsN,
+      pagsD,
       bruto,
       baseInss,
       inssCompetencia,
@@ -559,7 +754,14 @@ export function createEngine(S: State) {
   function holLines(mk: string) {
     const c = computeMonth(mk),
       m = getMonth(mk)
-    const pagDesc = (m.pags || []).map((p) => p.d).join(', ')
+    const pagDesc = (m.pags || [])
+      .filter((p) => p.k !== 'd')
+      .map((p) => p.d)
+      .join(', ')
+    const descDesc = (m.pags || [])
+      .filter((p) => p.k === 'd')
+      .map((p) => p.d)
+      .join(', ')
     const l: Array<{ k: string; d: string; ref: string; cr?: number; db?: number }> = [
       { k: 'base', d: 'Salário base', ref: `${c.jornada}h`, cr: c.salario },
       {
@@ -589,6 +791,8 @@ export function createEngine(S: State) {
       ref: c.faltaMin ? min2hm(c.faltaMin) : '',
       db: c.vFaltas
     })
+    if (num(c.pagsD) > 0)
+      l.push({ k: '_descontos', d: 'Descontos avulsos', ref: descDesc, db: num(c.pagsD) })
     l.push({
       k: 'inss',
       d: c.inssFerias ? 'INSS (saldo da folha)' : 'INSS',
@@ -670,6 +874,7 @@ export function createEngine(S: State) {
     avos13,
     aquisitivo,
     feriasCalc,
+    feriasMediaInfo,
     extrasMediaAno,
     calc13,
     computeMonth,
@@ -696,6 +901,7 @@ export interface FieldDescriptor<T> {
 
 export const FER_FIELDS: FieldDescriptor<FeriasCalc>[] = [
   { k: 'gozo', lb: 'Férias (dias de gozo)', app: (fc) => fc.brutoGozo },
+  { k: 'media', lb: 'Média de horas extras + DSR', app: (fc) => fc.mediaHE + fc.mediaDsr },
   { k: 'terco', lb: '1/3 constitucional', app: (fc) => fc.terco },
   { k: 'abono', lb: 'Abono + 1/3', app: (fc) => fc.abono + fc.abonoTerco },
   { k: 'inss', lb: 'INSS de férias', app: (fc) => fc.inss },

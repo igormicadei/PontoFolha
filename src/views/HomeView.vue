@@ -1,110 +1,80 @@
 <script setup lang="ts">
-/* Tela inicial (index.html #view-home 228-265 + renderHome 976-1002,
-   homeTaskAdd 1004-1012, punch 1014-1025, undoPunch 1026-1033,
-   workedNowMin 957-967). Cartão de ponto com alavanca, agenda do dia,
-   resumo do mês e lembrete de backup. As mutações puras ficam na store;
-   aqui fica a orquestração de UI (toast, vibrate, timeout do desfazer) e o
-   tique de 1s que mantém o "trabalhado hoje" vivo. */
+/* Tela Início. Responde "como está meu dia e o que vem a seguir": cartão de
+   ponto com total do dia, barra do dia, batidas nomeadas e slider; próximo
+   evento (férias, 13º); agenda do dia; resumo do mês com o líquido em destaque. */
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFolha } from '@/stores/folha'
-import { todayKey, curMonthKey, fmtDKs, min2hm, brl, hm2min, num, daysDiff } from '@/lib/utils'
+import { todayKey, curMonthKey, fmtDia, MESES, min2hm, brl, daysDiff, dow, nowHM, num } from '@/lib/utils'
 import { toast } from '@/lib/toast'
-import PunchLever from '@/components/PunchLever.vue'
+import { openDay } from '@/lib/daySheet'
+import { dayProgress } from '@/lib/dayProgress'
+import { proximoEvento } from '@/lib/proximo'
+import PunchSlider from '@/components/PunchSlider.vue'
 import TaskItem, { type TaskItemData } from '@/components/TaskItem.vue'
 
 const folha = useFolha()
 const router = useRouter()
 
-/* Relógio interno: um tique de 1s reavalia os computeds dependentes do tempo
-   (trabalhado ao vivo + virada de dia). As mutações de estado já reagem pelo
-   Pinia; `now` cobre só o que muda com o relógio. */
 const now = ref(new Date())
 let tickTimer: ReturnType<typeof setInterval> | undefined
-
-const stampTime = ref<string | null>(null)
 const taskTxt = ref('')
-let undoT: ReturnType<typeof setTimeout> | undefined
 
-const tk = computed(() => {
-  now.value
-  return todayKey()
-})
-const mk = computed(() => {
-  now.value
-  return curMonthKey()
-})
-
+const tk = computed(() => (now.value, todayKey()))
+const mk = computed(() => (now.value, curMonthKey()))
 const cfg = computed(() => folha.cfgFor(mk.value))
-const dstr = computed(() => fmtDKs(tk.value))
-const kicker = computed(() => `Cartão de ponto · ${dstr.value}`)
+const hhmm = computed(() => (now.value, nowHM()))
+const nowMin = computed(() => now.value.getHours() * 60 + now.value.getMinutes())
 
-const punches = computed<string[]>(() => {
-  const rec = folha.getMonth(mk.value).days[tk.value]
-  return (rec && rec.p) || []
-})
+const mesFechado = computed(() => folha.getMonth(mk.value).closed)
+const punches = computed<string[]>(() => folha.getMonth(mk.value).days[tk.value]?.p || [])
+const expected = computed(() => num(cfg.value.escala[dow(tk.value)]))
+const prog = computed(() => dayProgress(punches.value, cfg.value, nowMin.value, expected.value))
 
-/** Slots do cartão: batidas preenchidas + vazias até `batidas`; se nada, o
- *  aviso "nenhuma batida hoje" (index.html renderHome 979-984). */
-const slots = computed<Array<{ text: string; empty: boolean }>>(() => {
-  const out: Array<{ text: string; empty: boolean }> = []
-  const ps = punches.value
-  const d = dstr.value
-  ps.forEach((p) => out.push({ text: `${d} · ${p}`, empty: false }))
-  const total = Number(cfg.value.batidas) || 0
-  for (let i = ps.length; i < total; i++) {
-    out.push({ text: '– – / – – · – – : – –', empty: true })
+const statusChip = computed(() => {
+  switch (prog.value.status) {
+    case 'complete':
+      return { text: 'Dia completo', cls: 'ink' }
+    case 'working':
+      return { text: '● Trabalhando', cls: 'mag' }
+    case 'break':
+      return { text: 'Em intervalo', cls: '' }
+    default:
+      return { text: mesFechado.value ? 'Mês fechado' : 'Não iniciado', cls: '' }
   }
-  if (!out.length) out.push({ text: 'nenhuma batida hoje', empty: true })
-  return out
 })
+const sliderLabel = computed(() => {
+  const s = prog.value.slots.find((x) => x.next)
+  return s ? `Deslize para bater: ${s.label.toLowerCase()}` : 'Deslize para bater o ponto'
+})
+const completo = computed(() => prog.value.status === 'complete')
+const barTotal = computed(() => prog.value.segments.reduce((a, s) => a + s.min, 0) || 1)
+
+const exitStr = computed(() => {
+  const e = prog.value.exitMin
+  if (e == null) return ''
+  return `${String(Math.floor(e / 60) % 24).padStart(2, '0')}:${String(e % 60).padStart(2, '0')}`
+})
+
+const proximo = computed(() => (now.value, proximoEvento(folha)))
 
 const tasks = computed<TaskItemData[]>(() => folha.dayTasks(tk.value) as TaskItemData[])
 
-/* Trabalhado hoje ao vivo (index.html workedNowMin 957-967). */
-const workedStr = computed(() => {
-  now.value
-  const rec = folha.getMonth(curMonthKey()).days[todayKey()]
-  const cf = folha.cfgFor(curMonthKey())
-  const ps = ((rec && rec.p) || [])
-    .map(hm2min)
-    .filter((v): v is number => v !== null)
-    .sort((a, b) => a - b)
-  let w = 0
-  for (let i = 0; i + 1 < ps.length; i += 2) w += ps[i + 1] - ps[i]
-  let open = false
-  if (ps.length % 2 === 1) {
-    const d = new Date()
-    w += d.getHours() * 60 + d.getMinutes() - ps[ps.length - 1]
-    open = true
-  }
-  if (!open && ps.length === 2 && Number(cf.autoAlmoco) === 1 && w > num(cf.almocoMin)) {
-    w -= num(cf.almocoMin)
-  }
-  const ww = Math.max(0, w)
-  const n = ps.length
-  return n ? `hoje: ${min2hm(ww)}${open ? ' ⏱' : ''} · ${n} batida${n > 1 ? 's' : ''}` : ''
-})
-
-/* Resumo do mês (index.html renderHome 987-993). */
 const c = computed(() => folha.computeMonth(mk.value))
 const saldo = computed(() => c.value.worked - c.value.expected)
+const mesNome = computed(() => MESES[Number(mk.value.slice(5, 7)) - 1]!)
 
-/* Lembrete de backup (index.html renderHome 995-1001). */
 const staleBackup = computed(() => {
   const S = folha.S
-  const hasData = Object.keys(S.months).some((k) => Object.keys(S.months[k].days).length)
+  const hasData = Object.keys(S.months).some((k) => Object.keys(S.months[k]!.days).length)
   const last = S.lastExport || null
   const sn = S.snooze || null
   const t = tk.value
   return hasData && (!last || daysDiff(last, t) > 30) && (!sn || daysDiff(sn, t) > 30)
 })
 
-/* Bate o ponto (index.html punch 1014-1025). Mês fechado → avisa; senão grava
-   na store, vibra, mostra o carimbo e agenda a limpeza do desfazer em 10s. */
 function onPunch(): void {
-  const m = folha.getMonth(curMonthKey())
-  if (m.closed) {
+  if (mesFechado.value) {
     toast('Este mês está fechado. Reabra na tela do mês.')
     return
   }
@@ -112,30 +82,21 @@ function onPunch(): void {
   const t = folha.lastPunch?.t
   if (!t) return
   navigator.vibrate?.(30)
-  stampTime.value = t
-  if (undoT) clearTimeout(undoT)
-  undoT = setTimeout(() => {
-    stampTime.value = null
-    folha.lastPunch = null
-  }, 10000)
+  now.value = new Date()
+  toast(`Ponto registrado às ${t}`, { label: 'Desfazer', run: onUndo }, 10000)
 }
-
-/* Desfaz a última batida (index.html undoPunch 1026-1033). */
 function onUndo(): void {
   folha.undoPunch()
-  stampTime.value = null
-  if (undoT) clearTimeout(undoT)
-  toast('Batida desfeita')
+  now.value = new Date()
 }
 
-/* Adiciona tarefa/registro do dia (index.html homeTaskAdd 1004-1012). */
 function addTask(): void {
   const t = taskTxt.value.trim()
   if (!t) return
   const tkd = todayKey()
   const m = folha.getMonth(tkd.slice(0, 7))
   if (m.closed) {
-    toast('Mês fechado — reabra para lançar.')
+    toast('Mês fechado: reabra para lançar.')
     return
   }
   if (!m.days[tkd]) m.days[tkd] = { p: [] }
@@ -144,101 +105,147 @@ function addTask(): void {
   taskTxt.value = ''
 }
 
-function goMonth(): void {
-  router.push('/mes')
+function abrirMes(k: string, aba?: string): void {
+  folha.activeMK = k
+  router.push({ name: 'month', query: aba ? { aba } : {} })
 }
-
 function onExport(): void {
   folha.exportBackup()
   toast('Backup exportado')
 }
-
 function onSnooze(): void {
   folha.S.snooze = todayKey()
 }
 
 onMounted(() => {
-  tickTimer = setInterval(() => {
-    now.value = new Date()
-  }, 1000)
+  tickTimer = setInterval(() => (now.value = new Date()), 10000)
 })
-
 onUnmounted(() => {
   if (tickTimer) clearInterval(tickTimer)
-  if (undoT) clearTimeout(undoT)
 })
 </script>
 
 <template>
   <section>
-    <div v-if="staleBackup" id="homeBackup">
-      <div
-        class="promo-banner"
-        style="display: flex; gap: 8px; align-items: center; margin-top: 4px"
-      >
-        <span style="flex: 1"
-          >Faz tempo que você não exporta um backup. Se o navegador limpar os dados, os registros se
-          perdem.</span
-        >
-        <button class="btn sec small" @click="onExport">Exportar</button>
-        <button class="btn ghost small" @click="onSnooze">Depois</button>
+    <header class="appbar">
+      <div>
+        <h1 class="title">{{ fmtDia(tk) }}</h1>
+        <div class="sub">Ponto&amp;Folha · {{ hhmm }}</div>
       </div>
+      <button class="iconbtn" :aria-label="staleBackup ? 'Backup pendente: exportar dados' : 'Exportar backup'" @click="onExport">
+        <svg class="i" viewBox="0 0 24 24"><path d="M12 3v12" /><path d="M7 10l5 5 5-5" /><path d="M5 21h14" /></svg>
+        <span v-if="staleBackup" class="dot"></span>
+      </button>
+    </header>
+
+    <div v-if="staleBackup" class="banner">
+      <span class="grow">Faz mais de 30 dias do último backup. Exporte para não perder registros.</span>
+      <button class="btn sm" @click="onExport">Exportar</button>
+      <button class="link" @click="onSnooze">Depois</button>
     </div>
 
-    <div class="card tcard">
-      <div class="pf-punchcard-head">
-        <span class="tcard-kicker" style="margin-bottom: 0">{{ kicker }}</span>
-      </div>
-      <div class="punchcard2">
-        <div class="punch-slots">
-          <div v-for="(s, i) in slots" :key="i" class="pf-slot-row">
-            <span :class="s.empty ? 'pf-slot-empty' : 'pf-slot-time'">{{ s.text }}</span>
+    <main class="content">
+      <section class="card cream punch" aria-label="Cartão de ponto de hoje">
+        <div class="top">
+          <div>
+            <div class="eyebrow">Cartão de ponto · {{ tk.slice(8) }}/{{ tk.slice(5, 7) }}</div>
+            <div class="worked">{{ min2hm(prog.worked) }}</div>
+          </div>
+          <span class="chip" :class="statusChip.cls">{{ statusChip.text }}</span>
+        </div>
+
+        <div class="rowflex" style="margin-top: 8px; flex-wrap: wrap">
+          <template v-if="completo && expected > 0">
+            <span class="chip" :class="prog.delta >= 0 ? 'ok' : 'bad'" style="background: rgba(var(--cream-rgb), 0.08)">{{ min2hm(prog.delta, true) }}</span>
+            <span class="eyebrow">sobre as {{ min2hm(expected) }} previstas</span>
+          </template>
+          <span v-else-if="exitStr" class="eyebrow">
+            Saída prevista às <b style="color: var(--cream-ink)">{{ exitStr }}</b> para fechar {{ min2hm(expected) }}
+          </span>
+          <span v-else-if="prog.status === 'idle' && expected > 0" class="eyebrow">Previstas hoje: {{ min2hm(expected) }}</span>
+          <span v-else-if="expected === 0" class="eyebrow">Sem jornada prevista hoje</span>
+        </div>
+
+        <div class="daybar" aria-hidden="true">
+          <i v-for="(s, i) in prog.segments" :key="i" :class="s.kind === 'work' ? '' : s.kind" :style="{ flex: s.min / barTotal }"></i>
+        </div>
+
+        <div class="slots" :style="{ gridTemplateColumns: `repeat(${Math.min(prog.slots.length, 4)}, 1fr)` }">
+          <div v-for="(s, i) in prog.slots" :key="i" class="slot" :class="{ empty: !s.time, next: s.next }">
+            <span>{{ s.label }}</span>
+            <b>{{ s.time || (s.next && exitStr ? '~' + exitStr : '--:--') }}</b>
           </div>
         </div>
-        <PunchLever @punch="onPunch" />
-      </div>
-      <div class="pf-punchcard-worked">{{ workedStr }}</div>
-      <div v-if="stampTime" class="stamp">
-        ✓ registrado às {{ stampTime }} <button @click="onUndo">desfazer</button>
-      </div>
-    </div>
 
-    <div class="card">
-      <h2>Hoje — agenda &amp; atividades</h2>
-      <div>
-        <TaskItem v-for="(t, i) in tasks" :key="i" :dk="tk" :task="t" />
-        <p v-if="!tasks.length" class="muted">Nada agendado para hoje.</p>
-      </div>
-      <div class="row" style="margin-top: 8px">
-        <input
-          v-model="taskTxt"
-          placeholder="Nova tarefa ou registro do dia"
-          @keyup.enter="addTask"
-        />
-        <button class="btn small" style="flex: none" @click="addTask">Add</button>
-      </div>
-    </div>
+        <div v-if="mesFechado" class="slide off">Mês fechado</div>
+        <div v-else-if="completo" class="slide off">Dia completo · {{ prog.n }} de {{ prog.total }} batidas</div>
+        <PunchSlider v-else :label="sliderLabel" @punch="onPunch" />
 
-    <div class="card">
-      <h2>Este mês</h2>
-      <div class="hol">
-        <div class="l"><span>Horas trabalhadas</span><b>{{ min2hm(c.worked) }}</b></div>
-        <div class="l">
-          <span>Saldo</span
-          ><b :class="saldo >= 0 ? 'pos' : 'neg'">{{ min2hm(saldo, true) }}</b>
+        <div class="alt">
+          <button v-if="mesFechado" @click="abrirMes(mk)">Abrir o mês</button>
+          <template v-else-if="completo">
+            <button @click="openDay(tk)">Corrigir batidas</button>
+            <button @click="onPunch">Bater ponto mesmo assim</button>
+          </template>
+          <template v-else>
+            <button @click="onPunch">Bater ponto sem deslizar</button>
+          </template>
         </div>
-        <div v-if="c.extraMin" class="l">
-          <span>Horas extras</span><b>{{ min2hm(c.extraMin) }}</b>
+      </section>
+
+      <section v-if="proximo" class="card lilac" aria-label="Próximo evento">
+        <div class="rowflex" style="align-items: flex-start; gap: 14px">
+          <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(var(--lilac-rgb), 0.14); display: grid; place-items: center; flex: none">
+            <svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+          </div>
+          <div class="grow">
+            <div class="eyebrow">Próximo</div>
+            <h2 style="font-size: 20px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em">{{ proximo.title }}</h2>
+            <p style="margin-top: 4px; font-size: 14px; line-height: 1.4">{{ proximo.line }}</p>
+          </div>
         </div>
-        <div v-if="c.pend" class="l">
-          <span>Dias sem registro</span><b class="chip pend">{{ c.pend }}</b>
+        <div v-if="proximo.note" class="between" style="margin-top: 14px; padding: 12px 14px; border-radius: 16px; background: rgba(var(--lilac-rgb), 0.12)">
+          <div>
+            <div style="font-size: 13px; font-weight: 600">{{ proximo.note.label }}</div>
+            <div style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em">{{ proximo.note.amount }}</div>
+          </div>
+          <button class="btn sm" style="background: var(--lilac-ink); color: var(--lilac)" @click="abrirMes(proximo.mk, proximo.aba)">
+            {{ proximo.kind === 'ferias' ? 'Ver férias' : 'Ver mês' }}
+          </button>
         </div>
-        <div class="sep"></div>
-        <div class="l tot"><span>Líquido estimado</span><b>{{ brl(c.liquido) }}</b></div>
-      </div>
-      <button class="btn sec small" style="margin-top: 10px" @click="goMonth">
-        Ver mês em detalhe →
-      </button>
-    </div>
+      </section>
+
+      <section class="card" aria-label="Tarefas de hoje">
+        <div class="h2"><span>Hoje</span><button class="link" @click="router.push({ name: 'tasks' })">Todas as tarefas</button></div>
+        <div v-if="tasks.length" class="list">
+          <TaskItem v-for="(t, i) in tasks" :key="i" :dk="tk" :task="t" />
+        </div>
+        <p v-else class="muted" style="margin-bottom: 12px">Nada agendado para hoje.</p>
+        <div class="rowflex" style="margin-top: 8px">
+          <input v-model="taskTxt" class="input grow" placeholder="Nova tarefa ou registro do dia" aria-label="Nova tarefa ou registro do dia" @keyup.enter="addTask" />
+          <button class="iconbtn solid" aria-label="Adicionar tarefa" @click="addTask">
+            <svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="card" aria-label="Resumo do mês">
+        <div class="eyebrow">{{ mesNome[0]!.toUpperCase() + mesNome.slice(1) }} · líquido estimado</div>
+        <div class="big" style="margin-top: 4px">{{ brl(c.liquido) }}</div>
+        <p v-if="c.cesta" class="muted" style="margin-top: 6px">
+          + {{ brl(c.cesta) }} de vale cesta = <b style="color: var(--ink)">{{ brl(c.totalReceber) }}</b> a receber
+        </p>
+        <div class="stats" style="margin-top: 14px">
+          <div class="stat"><span>Trabalhadas</span><b>{{ min2hm(c.worked) }}</b></div>
+          <div class="stat"><span>Saldo</span><b :class="saldo >= 0 ? 'pos' : 'neg'">{{ min2hm(saldo, true) }}</b></div>
+          <div class="stat"><span>Extras</span><b>{{ min2hm(c.extraMin) }}</b></div>
+        </div>
+        <p v-if="c.pend" class="note-box warn" style="margin-top: 10px">{{ c.pend }} dia(s) sem registro neste mês.</p>
+        <button class="link" style="margin-top: 6px" @click="abrirMes(mk, 'folha')">
+          Ver folha de {{ mesNome }}
+          <svg class="i sm" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+        </button>
+      </section>
+    </main>
   </section>
 </template>

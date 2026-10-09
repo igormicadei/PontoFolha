@@ -1,6 +1,6 @@
 # Manual de cálculo da folha de pagamento brasileira — 2026
 
-**Versão:** 1.0  
+**Versão:** 1.1  
 **Data de referência normativa:** 9 de outubro de 2026  
 **Escopo principal:** empregado regido pela CLT no setor privado, residente fiscal no Brasil, com folha mensal processada sob as regras gerais do RGPS/eSocial.  
 **Objetivo:** permitir que uma pessoa reconstrua e confira os principais cálculos de um holerite, inclusive quando houver férias parciais, adiantamentos, 13º salário, PLR, salário-família, verbas variáveis, descontos e mais de um demonstrativo no mês.
@@ -286,6 +286,63 @@ Não subtraia 8% do salário bruto ao calcular o salário líquido: esse valor �
 
 ## 8. Como montar o cálculo de um mês com férias parciais
 
+## 8.1 Como calcular a remuneração bruta das férias e as médias de horas extras
+
+Esta etapa é **trabalhista e vem antes dos cálculos de INSS, IRRF e FGTS**. Primeiro se determina a remuneração bruta das férias; depois cada verba é classificada e tributada segundo sua regra própria.
+
+### Regra legal
+
+O art. 142 da [CLT](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm#art142) determina que o empregado receba nas férias a remuneração devida na data da concessão. O § 5º manda computar os adicionais por trabalho extraordinário, noturno, insalubre ou perigoso na base das férias. Para horas extras habituais, a [Súmula 347 do TST](https://www.tst.jus.br/documents/10157/63003/Livro-Internet.pdf?version=1.13) estabelece a apuração pela quantidade de horas efetivamente prestadas, aplicando-se a elas o salário-hora vigente na época do pagamento da verba reflexa.
+
+Na prática, para horas extras remuneradas por hora, a regra padrão é apurar a **média física de horas** do período de referência e convertê-la em dinheiro pelo valor da hora extra aplicável na data da concessão das férias. Não se deve simplesmente somar o dinheiro de horas extras pago em cada mês e dividir por 12 sem considerar a evolução salarial: esse método pode deixar de refletir o salário-hora vigente.
+
+### Passo a passo para horas extras
+
+1. **Defina o período de referência.** Para férias adquiridas em um período completo, use como ponto de partida o período aquisitivo de 12 meses que gerou aquele direito. Confira a convenção/acordo coletivo e a regra de folha aplicável, pois a norma coletiva pode estabelecer critério próprio mais favorável ou período de média diferente, quando válido.
+2. **Levante as horas extras efetivamente prestadas e que devem integrar a remuneração.** Use registros de ponto e folhas, não apenas o valor pago. Não conte como horas extras realizadas aquelas que foram apenas lançadas em banco de horas e compensadas, salvo se houver verba remuneratória efetivamente devida a considerar. Verifique ajustes retroativos, diferenças reconhecidas e horas devidas ainda não pagas.
+3. **Separe categorias com adicionais diferentes.** Se houver, por exemplo, horas com adicional de 50%, 60% e 100%, noturnas ou com regras específicas de domingos/feriados, não aplique um único percentual médio de forma indiscriminada. Faça o cálculo separado por categoria de horas e pelo adicional que for juridicamente aplicável, respeitando lei, contrato e norma coletiva.
+4. **Calcule a média física.** Como regra operacional para um período aquisitivo completo de 12 meses:
+
+   `Média mensal de horas extras = total de horas extras elegíveis no período aquisitivo ÷ 12`
+
+   O divisor precisa refletir o período de referência aplicável. Se o período não for completo, houver afastamentos ou a norma coletiva estabelecer outro método, não aplique automaticamente o divisor 12 sem verificar a regra correspondente.
+5. **Determine o valor da hora extra na data da concessão.** Apure o salário-hora vigente com o divisor contratual/legal aplicável e com os componentes salariais que integrem a base de cálculo da hora extra, conforme a legislação e a jurisprudência aplicáveis. Depois aplique o adicional correspondente. Em um caso simples com salário mensal fixo e apenas adicional de 50%: `valor da hora extra atual = salário-hora atual × 1,50`. O percentual legal de 50% é o mínimo geral; contrato ou norma coletiva pode prever adicional superior.
+6. **Converta a média em valor de férias.** Para cada categoria: `valor médio de horas extras para férias = média mensal de horas extras × valor atual da hora extra`. Some os resultados das categorias pertinentes.
+7. **Verifique DSR e outros reflexos.** O descanso semanal remunerado (DSR) decorrente de horas extras pode constituir parcela remuneratória própria. Verifique se ele já foi calculado e incluído na média/base de férias pelo método adotado; não o omita quando devido nem o some duas vezes. Considere também outros adicionais variáveis que devam integrar as férias, cada qual com seu próprio método legal ou normativo.
+8. **Calcule o terço constitucional.** Depois de montar a remuneração de férias — salário fixo correspondente aos dias de férias mais as médias e demais parcelas devidas — calcule o acréscimo constitucional de 1/3 sobre essa remuneração. Portanto, a média de horas extras que compõe as férias também aumenta a base do terço constitucional.
+9. **Se as férias forem fracionadas, calcule a parcela correspondente aos dias daquele período.** Determine a remuneração aplicável às férias concedidas naquele intervalo e o terço correspondente. A forma de alocar os valores nas competências e nos recibos não altera o direito à integração da média.
+
+### Exemplo numérico — salário fixo e horas extras a 50%
+
+Hipóteses ilustrativas: empregado mensalista, salário fixo de R$ 2.500, divisor 220, 324 horas extras elegíveis no período aquisitivo completo de 12 meses, todas remuneradas com adicional de 50%, sem alteração do divisor e sem outros componentes na base da hora extra. Para simplificar, o exemplo não calcula DSR sobre horas extras nem outros adicionais variáveis; eles devem ser avaliados à parte quando devidos.
+
+| Etapa | Cálculo | Resultado |
+|---|---|---:|
+| 1. Média física mensal | 324 ÷ 12 | 27 horas |
+| 2. Salário-hora atual | R$ 2.500 ÷ 220 | R$ 11,363636… |
+| 3. Valor da hora extra atual | R$ 11,363636… × 1,50 | R$ 17,045455… |
+| 4. Média de horas extras a integrar as férias | 27 × R$ 17,045455… | R$ 460,23 |
+| 5. Terço constitucional sobre essa parcela | R$ 460,23 ÷ 3 | R$ 153,41 |
+| **Total desta parcela nas férias, incluindo o terço** | R$ 460,23 + R$ 153,41 | **R$ 613,64** |
+
+Os valores são arredondados para demonstração; o sistema deve aplicar sua regra de arredondamento de centavos de forma consistente. Os R$ 613,64 são apenas a parcela relativa à média de horas extras e seu reflexo no terço — não o valor total das férias. A remuneração fixa das férias e outros componentes são adicionados separadamente.
+
+### Outras remunerações variáveis: não aplique uma fórmula única a tudo
+
+O art. 142 prevê métodos diferentes conforme a forma de remuneração:
+
+- **Salário pago por hora com jornadas variáveis (§ 1º):** média do período aquisitivo, aplicando o valor do salário vigente na data da concessão.
+- **Salário pago por tarefa (§ 2º):** média da produção do período aquisitivo, aplicada à remuneração unitária vigente na concessão.
+- **Comissões, percentagens ou viagens (§ 3º):** média percebida nos 12 meses anteriores à concessão das férias.
+- **Horas extras e adicionais extraordinários (§ 5º e Súmula 347 do TST):** integrar os adicionais devidos, apurando a média física das horas extras e usando o salário-hora aplicável na época das férias.
+- **Adicionais cujo valor não tenha sido uniforme ou que não sejam pagos na mesma base na data das férias (§ 6º):** aplicar o método de média duodecimal e atualização salarial previsto na CLT, conforme a situação concreta.
+
+Essas regras não dispensam a leitura da convenção ou acordo coletivo da categoria, do contrato e das rubricas que compõem a remuneração. Uma verba não deve ser classificada como indenizatória apenas por ser variável, eventual no nome ou paga separadamente.
+
+### Depois da apuração trabalhista, calcule os tributos
+
+A remuneração de férias obtida nesta seção — incluindo a média aplicável e o terço constitucional — deve ser levada às bases de INSS, IRRF e FGTS conforme as regras específicas de cada uma, explicadas nas seções tributárias deste manual. **Não aplique a média física diretamente sobre a base de imposto, nem trate o adiantamento como uma segunda remuneração:** primeiro calcule o valor bruto correto das férias, depois classifique e tribute cada rubrica pelo momento e base previstos em lei.
+
 Considere uma pessoa mensalista que recebe salário fixo e goza parte das férias em um determinado mês. O método é:
 
 1. **Identifique a competência e os dias.** Separe salário dos dias trabalhados e remuneração dos dias de férias gozadas. Se as férias atravessarem dois meses, distribua férias e terço pelas competências conforme os dias de gozo.
@@ -477,6 +534,7 @@ O 13º e a PLR corretamente tratados como tributação exclusiva não devem ser 
 - [ ] Foi usada a tabela de INSS vigente na competência e respeitado o teto?
 - [ ] O 13º foi apurado separadamente do salário mensal?
 - [ ] As férias gozadas foram alocadas às competências corretas, incluindo o terço constitucional?
+- [ ] A remuneração bruta das férias incluiu as médias de horas extras e outros adicionais/variáveis que legalmente integrem a base, calculadas pelo método correto e sem duplicar DSR?
 - [ ] O IRRF de férias foi calculado separadamente, no pagamento, e não foi retido novamente na folha de fechamento?
 - [ ] Os pagamentos mensais comuns da mesma fonte pagadora foram consolidados quando a regra de IRRF exige isso?
 - [ ] A redução de IR de 2026 foi aplicada depois da tabela, com a renda relevante e limite corretos?
@@ -503,33 +561,8 @@ O 13º e a PLR corretamente tratados como tributação exclusiva não devem ser 
 9. **eSocial — tabelas de natureza e incidência de rubricas, leiautes 2026:** https://www.gov.br/esocial/pt-br/documentacao-tecnica/leiautes-esocial-versao-s-1-3-nt-07-2026/tabelas.html
 10. **eSocial — perguntas frequentes sobre férias, adiantamentos e 13º:** https://www.gov.br/esocial/pt-br/empregador-domestico/perguntas-frequentes/perguntas-frequentes e https://www.gov.br/esocial/pt-br/empresas/perguntas-frequentes/historico-de-perguntas-frequentes
 11. **Lei nº 10.101/2000 — participação nos lucros ou resultados:** https://www.planalto.gov.br/ccivil_03/leis/l10101.htm
-12. **CLT — arts. 457 e 145, entre outros:** https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm
-13. **Ministério do Trabalho e Emprego — Perguntas frequentes do FGTS Digital (competência de férias):** https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/fgtsdigital/perguntas-frequentes
+12. **CLT — arts. 142, 143, 145 e 457, entre outros:** https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm
+13. **TST — Súmula 347 (média física de horas extras para reflexos):** https://www.tst.jus.br/documents/10157/63003/Livro-Internet.pdf?version=1.13
+14. **Ministério do Trabalho e Emprego — Perguntas frequentes do FGTS Digital (competência de férias):** https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/fgtsdigital/perguntas-frequentes
 
 **Como manter este manual atualizado:** antes de usá-lo em competência de ano posterior, confirme novamente a tabela do INSS, o teto previdenciário, a tabela mensal/anual do IRPF, a redução de IR, as faixas da PLR e o limite do salário-família. Os valores tabelados são temporais; as fórmulas e a classificação jurídica também devem ser revistas diante de novas leis, instruções normativas, decisões judiciais e versões das tabelas do eSocial.
-
----
-
-## 15. Aderência do aplicativo Ponto & Folha — revisão de 9/10/2026
-
-Esta seção separa a regra jurídica geral daquilo que o aplicativo consegue estimar. A palavra “suportado” não transforma a estimativa em folha oficial: a empresa continua responsável pelas rubricas, incidências e eventos transmitidos ao eSocial.
-
-| Regra | Situação no aplicativo | Critério usado |
-|---|---|---|
-| INSS mensal progressivo de 2026 | Suportado | Faixas de R$ 1.621,00, R$ 2.902,84, R$ 4.354,27 e teto de R$ 8.475,55; cálculo marginal. |
-| IRRF mensal de 2026 e redução da Lei nº 15.270/2025 | Suportado | Tabela iniciada em R$ 2.428,80, redutor até R$ 5.000,00 e redução gradual até R$ 7.350,00. |
-| Desconto simplificado mensal | Suportado | Compara R$ 607,20 com INSS e dedução por dependente; usa somente a opção mais vantajosa, sem somá-las. |
-| Férias gozadas | Suportado como estimativa por competência | O recibo de férias é próprio. O motor distribui a remuneração e o terço pelos meses de gozo, calcula o INSS da competência e atribui ao recibo a parcela correspondente, deixando no holerite mensal apenas o saldo de INSS. |
-| IRRF de férias | Suportado | Calculado separadamente do salário mensal, com o redutor de 2026 quando cabível. |
-| Abono pecuniário de até 10 dias | Suportado | Exibido separado, sem integrar a base tributável estimada. A validade depende de ser o abono legal. |
-| Salário-família | Suportado como estimativa | Usa a remuneração previdenciária da competência, incluindo férias gozadas e terço, e os parâmetros configuráveis de 2026. Documentação do dependente e outros vínculos continuam fora do app. |
-| 13º salário | Suportado como estimativa | INSS e IRRF são apurados em grupo próprio; a média de extras inclui também os meses sem extra como zero. Médias previstas em CCT, comissões e afastamentos exigem conferência oficial. |
-| DSR e hora extra | Configurável | O percentual, o pagamento/banco e o DSR dependem de contrato e CCT; o app não decide o adicional legal ou convencional aplicável. |
-| FGTS, INSS patronal, RAT e terceiros | Não calculado | Não são descontos do empregado e não devem ser deduzidos do líquido exibido. |
-| PLR, rescisão, RRA, pensão alimentícia, previdência complementar, múltiplos vínculos e adiantamento salarial | Não calculados automaticamente | Necessitam rubricas e controles próprios. Não lance esses valores como “não tributáveis” sem confirmar a natureza jurídica. |
-
-### Como interpretar os demonstrativos gerados
-
-Quando houver férias iniciadas no mês selecionado, a impressão gera páginas independentes: primeiro o **holerite mensal** e, em seguida, um **recibo de férias** para cada período. O recibo não é repetido no mês seguinte se o gozo atravessar competências. A separação do documento não altera as bases legais: o INSS continua por competência e o IRRF das férias continua separado do IRRF do salário normal.
-
-O campo “pagamento adicional não tributável” do aplicativo é apenas um crédito fora das bases estimadas. Use-o somente para uma verba cuja exclusão de INSS e IRRF tenha sido confirmada; o nome da verba, isoladamente, não é suficiente.

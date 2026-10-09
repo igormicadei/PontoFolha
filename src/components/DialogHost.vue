@@ -1,23 +1,18 @@
 <script setup lang="ts">
-/* Host dos diálogos ask()/confirmS() (index.html #askModal 478-484 + ask() 604).
-   Renderiza o sheet quando dlg.open; cada botão resolve a Promise. */
+/* Host dos diálogos ask()/confirmS(): cartão centralizado com título, texto e
+   uma pilha de botões. Destrutivo ('warn') vira botão de perigo. */
 import { dlg, resolveDlg } from '@/lib/dialog'
+
+const cls = (c?: string): string => (c === 'warn' ? 'danger' : c || '')
 </script>
 
 <template>
-  <div v-if="dlg.open" class="overlay" @click.self="resolveDlg(null)">
-    <div class="sheet">
-      <h3>{{ dlg.title }}</h3>
-      <div v-if="dlg.body">
-        <p class="muted" style="margin-bottom: 4px">{{ dlg.body }}</p>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px">
-        <button
-          v-for="(b, i) in dlg.btns"
-          :key="i"
-          :class="`btn ${b.cls || ''}`"
-          @click="resolveDlg(b.val)"
-        >
+  <div v-if="dlg.open" class="scrim center" @click.self="resolveDlg(null)" @keydown.esc="resolveDlg(null)">
+    <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dlg-t" :aria-describedby="dlg.body ? 'dlg-d' : undefined">
+      <h2 id="dlg-t">{{ dlg.title }}</h2>
+      <p v-if="dlg.body" id="dlg-d">{{ dlg.body }}</p>
+      <div class="stack" style="margin-top: 12px">
+        <button v-for="(b, i) in dlg.btns" :key="i" :class="['btn', 'block', cls(b.cls)]" @click="resolveDlg(b.val)">
           {{ b.lb }}
         </button>
       </div>
