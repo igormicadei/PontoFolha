@@ -51,10 +51,12 @@ async function onFile(e: Event): Promise<void> {
 
       <div>
         <svg width="72" height="72" viewBox="0 0 72 72" role="img" aria-label="Ponto&amp;Folha">
-          <rect width="72" height="72" rx="22" fill="#0E0E10" />
-          <circle cx="36" cy="36" r="20" fill="none" stroke="#FFFFFF" stroke-width="4" />
-          <path d="M36 24v12l8 6" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-          <circle cx="54" cy="18" r="7" fill="#FF3D8B" />
+          <rect width="72" height="72" rx="16" fill="#FF3D8B" />
+          <g transform="translate(-2.5 0)">
+            <rect x="18" y="13" width="9" height="48" rx="4.5" fill="#FFFFFF" />
+            <circle cx="41" cy="30" r="15.5" fill="none" stroke="#FFFFFF" stroke-width="9" />
+            <path d="M41 21.5v8.5l6 4.5" fill="none" stroke="#0E0E10" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
         </svg>
         <h1 style="margin-top: 20px; font-size: 32px; line-height: 1.1; font-weight: 800; letter-spacing: -0.035em; text-wrap: balance">
           {{ passo === 1 ? 'Vamos configurar em um minuto' : passo === 2 ? 'Sua família' : 'Tudo pronto' }}
