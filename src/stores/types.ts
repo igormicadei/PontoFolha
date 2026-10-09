@@ -38,6 +38,7 @@ export interface Cfg {
   inss: InssFaixa[]
   irrf: IrrfFaixa[]
   dedDep: number
+  descSimplificado: number
   redIsen: number
   redGrad: number
   redA: number
@@ -160,6 +161,12 @@ export interface MonthResult {
   pagsT: number
   pagsN: number
   bruto: number
+  /** Base previdenciária da competência, inclusive férias gozadas e 1/3. */
+  baseInss: number
+  /** INSS total apurado na competência, antes de separar a parcela já retida no recibo de férias. */
+  inssCompetencia: number
+  /** Parcela do INSS da competência atribuída aos recibos de férias. */
+  inssFerias: number
   inss: number
   baseIR: number
   irpf: number
@@ -201,13 +208,14 @@ export const DEFCFG: Cfg = {
     { ate: 8475.55, aliq: 14 }
   ],
   irrf: [
-    { ate: 2259.2, aliq: 0, ded: 0 },
-    { ate: 2826.65, aliq: 7.5, ded: 169.44 },
-    { ate: 3751.05, aliq: 15, ded: 381.44 },
-    { ate: 4664.68, aliq: 22.5, ded: 662.77 },
-    { ate: 999999999, aliq: 27.5, ded: 896.0 }
+    { ate: 2428.8, aliq: 0, ded: 0 },
+    { ate: 2826.65, aliq: 7.5, ded: 182.16 },
+    { ate: 3751.05, aliq: 15, ded: 394.16 },
+    { ate: 4664.68, aliq: 22.5, ded: 675.49 },
+    { ate: 999999999, aliq: 27.5, ded: 908.73 }
   ],
   dedDep: 189.59,
+  descSimplificado: 607.2,
   redIsen: 5000,
   redGrad: 7350,
   redA: 978.62,

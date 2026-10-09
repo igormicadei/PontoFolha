@@ -180,6 +180,7 @@ function salvar(): void {
   c.cesta = parseFloat(String(c.cesta)) || 0
   c.ferCat = Number(c.ferCat)
   c.dedDep = parseFloat(String(c.dedDep)) || 0
+  c.descSimplificado = parseFloat(String(c.descSimplificado)) || 0
   c.redIsen = parseFloat(String(c.redIsen)) || 0
   c.redGrad = parseFloat(String(c.redGrad)) || 0
   c.redA = parseFloat(String(c.redA)) || 0
@@ -383,6 +384,7 @@ function salvar(): void {
           </tbody>
         </table>
         <button class="btn ghost small" style="margin-top: 8px" @click="addIrrfRow">+ faixa</button>
+        <label class="f">Desconto simplificado mensal (R$)<input v-model="cfg.descSimplificado" type="number" step="0.01" /></label>
         <label class="f" style="margin-top: 10px">Dedução por dependente (R$)<input v-model="cfg.dedDep" type="number" step="0.01" /></label>
         <div class="grid2">
           <label class="f">Isenção total até (rend. R$)<input v-model="cfg.redIsen" type="number" step="0.01" /></label>

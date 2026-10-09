@@ -11,7 +11,7 @@
 import { useFolha } from '@/stores/folha'
 import { ask } from './dialog'
 import { toast } from './toast'
-import { MESES, DSEM, brl, min2hm, fmtDK, pad, daysInMonth, dow, esc } from './utils'
+import { MESES, DSEM, brl, min2hm, fmtDK, pad, daysInMonth, dow, esc, todayKey } from './utils'
 
 const TIPO: Record<string, string> = {
   normal: 'Normal',
@@ -42,6 +42,20 @@ export async function abrirRelatorio(mk: string): Promise<void> {
   const nd = daysInMonth(mk)
   const H = folha.holLines(mk)
   const c = H.c
+  const avisoParcial = !m.closed && todayKey() <= `${mk}-${pad(nd)}`
+    ? `<div class="partial-alert"><strong>VALORES PARCIAIS — MÊS AINDA EM ABERTO</strong><br>Este holerite é uma estimativa calculada exclusivamente com as datas, registros de ponto e lançamentos disponíveis até esta emissão. As horas, adicionais, faltas, descontos e o líquido poderão mudar com os registros restantes e o fechamento do mês.</div>`
+    : ''
+  const feriasDoMesAnterior = S.ferias.filter(
+    (f) => f.ini.slice(0, 7) < mk && f.fim.slice(0, 7) >= mk
+  )
+  const avisoFeriasAnterior = feriasDoMesAnterior.length
+    ? `<div class="ferias-prev-alert"><strong>RECIBO DE FÉRIAS EMITIDO NO MÊS ANTERIOR</strong><br>${feriasDoMesAnterior
+        .map(
+          (f) =>
+            `As informações de pagamento das férias de ${fmtDK(f.ini)} a ${fmtDK(f.fim)} constam no holerite de ${MESES[Number(f.ini.slice(5, 7)) - 1]}/${f.ini.slice(0, 4)}.`
+        )
+        .join('<br>')} Este holerite mantém apenas os reflexos da competência atual.</div>`
+    : ''
 
   let rows = ''
   for (let d = 1; d <= nd; d++) {
@@ -85,6 +99,9 @@ export async function abrirRelatorio(mk: string): Promise<void> {
   const baseCalcSec = `<h2>3.2 · Bases de cálculo</h2>
   <table class="basecalc" style="max-width:420px">
     <tr><td>Bruto tributável</td><td class="r">${brl(c.bruto)}</td></tr>
+    <tr><td>Base INSS da competência</td><td class="r">${brl(c.baseInss)}</td></tr>
+    ${c.inssFerias ? `<tr><td>INSS total da competência</td><td class="r">${brl(c.inssCompetencia)}</td></tr>
+    <tr><td>INSS retido no recibo de férias</td><td class="r">− ${brl(c.inssFerias)}</td></tr>` : ''}
     <tr><td>Base IRPF (bruto − INSS − dependentes)</td><td class="r">${brl(c.baseIR)}</td></tr>
     ${c.irRed ? `<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(c.irRed)}</td></tr>` : ''}
     <tr><td>Valor-hora</td><td class="r">${brl(c.vh)}</td></tr>
@@ -110,7 +127,10 @@ export async function abrirRelatorio(mk: string): Promise<void> {
         : '<p class="note">Conferência com holerite ainda não gerada no app.</p>'
     }`
 
-  const fersRep = S.ferias.filter((f) => f.ini.slice(0, 7) <= mk && f.fim.slice(0, 7) >= mk)
+  // Um recibo é emitido uma única vez, no mês de início das férias. Quando o
+  // gozo cruza competências, a apropriação previdenciária continua em cada mês,
+  // mas o documento de pagamento não é duplicado.
+  const fersRep = S.ferias.filter((f) => f.ini.slice(0, 7) === mk)
   const fersData = fersRep.map((f) => ({
     f,
     fc: folha.feriasCalc(f, folha.cfgFor(f.ini.slice(0, 7))),
@@ -118,8 +138,9 @@ export async function abrirRelatorio(mk: string): Promise<void> {
   }))
   const feriasSec = fersData
     .map(
-      ({ f, fc, fdv }) => `<h2>4 · Férias — ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</h2>
-    <h2>4.1 · Férias (pagamento)</h2>
+      ({ f, fc, fdv }) => `<section class="ferias-slip"><h1>Recibo de férias</h1>
+    <p class="slip-sub">Período de gozo: ${fmtDK(f.ini)} a ${fmtDK(f.fim)}</p>
+    <h2>Férias (pagamento)</h2>
     <table>
       <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
       <tr><td>Férias</td><td class="ref">${fc.dias} dias × ${brl(fc.vd)}</td><td class="r">${brl(fc.brutoGozo)}</td><td></td></tr>
@@ -129,7 +150,7 @@ export async function abrirRelatorio(mk: string): Promise<void> {
       <tr><td>IRPF sobre férias</td><td class="ref"></td><td></td><td class="r neg">${brl(fc.irpf)}</td></tr>
       <tr class="liq"><td colspan="3">Líquido de férias (estimado) · pagamento até ${fmtDK(fc.prazo)}</td><td class="r">${brl(fc.liq)}</td></tr>
     </table>
-    <h2>4.2 · Bases de cálculo das férias</h2>
+    <h2>Bases de cálculo das férias</h2>
     <table class="basecalc" style="max-width:420px">
       <tr><td>Valor do dia de férias (salário ÷ 30)</td><td class="r">${brl(fc.vd)}</td></tr>
       <tr><td>Base de cálculo (gozo + 1/3, usada para INSS/IRPF)</td><td class="r">${brl(fc.baseTrib)}</td></tr>
@@ -137,7 +158,7 @@ export async function abrirRelatorio(mk: string): Promise<void> {
       ${fc.irRed ? `<tr><td>Redutor IRPF (Lei 15.270/2025)</td><td class="r">− ${brl(fc.irRed)}</td></tr>` : ''}
       <tr><td>Dependentes considerados no IRPF</td><td class="r">${fc.nDep}</td></tr>
     </table>
-    <h2>4.3 · Conferência com holerite (férias)</h2>
+    <h2>Conferência com recibo de férias</h2>
     ${
       fdv.length
         ? `<table><tr><th>Verba</th><th class="r">App</th><th class="r">Recibo</th><th class="r">Diferença</th></tr>
@@ -153,30 +174,9 @@ export async function abrirRelatorio(mk: string): Promise<void> {
           : '<p class="okmsg">✓ Recibo de férias confere com o cálculo do app.</p>'
       }`
         : '<p class="note">Conferência com o recibo de férias ainda não gerada no app.</p>'
-    }`
+    }</section>`
     )
     .join('')
-
-  const resumoGeralSec = fersData.length
-    ? (() => {
-        const ferCr = fersData.reduce(
-          (a, { fc }) => a + fc.brutoGozo + fc.terco + fc.abono + fc.abonoTerco,
-          0
-        )
-        const ferDb = fersData.reduce((a, { fc }) => a + fc.inss + fc.irpf, 0)
-        const ferLiq = fersData.reduce((a, { fc }) => a + fc.liq, 0)
-        const totDivg =
-          dv.filter((x) => !x.ok).length +
-          fersData.reduce((a, { fdv }) => a + fdv.filter((x) => !x.ok).length, 0)
-        return `<h2>5 · Resumo geral</h2>
-    <table style="max-width:420px">
-      <tr><td>Total de créditos (folha + férias)</td><td class="r">${brl(H.totCr + ferCr)}</td></tr>
-      <tr><td>Total de débitos (folha + férias)</td><td class="r neg">${brl(H.totDb + ferDb)}</td></tr>
-      <tr class="liq"><td>Líquido total do mês</td><td class="r">${brl(c.liquido + ferLiq)}</td></tr>
-    </table>
-    ${totDivg ? `<p class="alert">⚠ ${totDivg} divergência(s) no total entre app e holerite/recibo neste mês.</p>` : '<p class="okmsg">✓ Nenhuma divergência entre app e holerite/recibo neste mês.</p>'}`
-      })()
-    : ''
 
   const w = window.open('', '_blank')
   if (!w) {
@@ -210,6 +210,11 @@ export async function abrirRelatorio(mk: string): Promise<void> {
     .okmsg{background:#e9f7ee;color:#1ea64a;padding:6px 8px;font-size:11px;margin-top:6px;font-weight:700}
     .note{color:var(--soft);font-size:9.5px;margin-top:14px;border-top:1px solid var(--line);padding-top:6px;line-height:1.5}
     .basecalc td{border-bottom:1px dashed var(--line)}
+    .partial-alert,.ferias-prev-alert{font-size:11px;line-height:1.45;padding:9px 10px;margin:7px 0 10px;border:2px solid #9a3412;background:#fff4d6;color:#7c2d12}
+    .ferias-prev-alert{border-color:#1d4ed8;background:#eff6ff;color:#1e3a8a}
+    .ferias-slip{break-before:page;page-break-before:always}
+    .ferias-slip h1{font-family:'Inter',sans-serif;font-weight:800;font-size:19px;text-transform:uppercase;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:4px}
+    .slip-sub{color:var(--soft);font-size:11px;margin-bottom:12px}
   </style></head><body>
   <div class="head">
     <h1>Relatório de ponto e folha<br><span style="font-weight:600;font-size:14px;text-transform:none">${MESES[Number(mm) - 1]} / ${y}</span>${S.nome ? `<br><span style="font-weight:600;font-size:12px;color:#666666;text-transform:none">${esc(S.nome)}${S.adm ? ' · admissão ' + fmtDK(S.adm) : ''}</span>` : ''}</h1>
@@ -219,8 +224,9 @@ export async function abrirRelatorio(mk: string): Promise<void> {
   <table><tr><th>Dia</th><th>Batidas</th><th>Tipo / observações${incAtv ? ' / atividades' : ''}</th><th class="r">Trabalhado</th><th class="r">Saldo</th></tr>${rows || '<tr><td colspan="5">Nenhum dia lançado.</td></tr>'}</table>
   <h2>2 · Resumo de horas</h2>
   <table style="max-width:340px">${resumo}</table>
-  <h2>3 · Folha de pagamento do mês</h2>
-  <h2>3.1 · Folha de pagamento</h2>
+  <h2>3 · Holerite mensal</h2>
+  ${avisoParcial}
+  ${avisoFeriasAnterior}
   <table>
     <tr><th>Descrição</th><th>Referência</th><th class="r">Créditos</th><th class="r">Débitos</th></tr>
     ${holRows}
@@ -232,7 +238,6 @@ export async function abrirRelatorio(mk: string): Promise<void> {
   ${baseCalcSec}
   ${confSec}
   ${feriasSec}
-  ${resumoGeralSec}
   <p class="note">* verba não tributável.${incAtv ? ' ↻ tarefa recorrente.' : ''} Cálculos estimativos gerados pelo app Ponto &amp; Folha — confira sempre com o holerite oficial. Regras conforme a vigência aplicável ao mês${m.closed ? ' (congeladas no fechamento)' : ''}.</p>
   <script>window.onload=function(){setTimeout(function(){window.print()},350)}</script>
   </body></html>`)

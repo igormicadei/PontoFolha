@@ -12,6 +12,27 @@ import { createEngine } from '@/lib/engine'
 import { num2, todayKey, curMonthKey, nowHM } from '@/lib/utils'
 import { LSKEY, DEFCFG, type State, type Vigencia } from './types'
 
+const IRRF_PADRAO_ANTERIOR = [
+  [2259.2, 0, 0],
+  [2826.65, 7.5, 169.44],
+  [3751.05, 15, 381.44],
+  [4664.68, 22.5, 662.77],
+  [999999999, 27.5, 896]
+]
+
+function usaIrrfPadraoAnterior(cfg: any): boolean {
+  return (
+    Array.isArray(cfg?.irrf) &&
+    cfg.irrf.length === IRRF_PADRAO_ANTERIOR.length &&
+    cfg.irrf.every(
+      (f: any, i: number) =>
+        Number(f.ate) === IRRF_PADRAO_ANTERIOR[i][0] &&
+        Number(f.aliq) === IRRF_PADRAO_ANTERIOR[i][1] &&
+        Number(f.ded) === IRRF_PADRAO_ANTERIOR[i][2]
+    )
+  )
+}
+
 /** Hidrata `S` do localStorage aplicando a migração de schema do legado
  *  (index.html, load() 524–541), incluindo o upgrade `o.cfg`→`o.vig`. */
 function load(): State {
@@ -39,7 +60,11 @@ function load(): State {
     delete o.cfg
   }
   o.vig.forEach((v: Vigencia) => {
+    const eraPadraoAnterior = v.desde === '1900-01' && usaIrrfPadraoAnterior(v.cfg)
     v.cfg = Object.assign({}, structuredClone(DEFCFG), v.cfg)
+    // Atualiza somente o conjunto padrão antigo que valia globalmente; tabelas
+    // personalizadas e vigências históricas continuam intactas.
+    if (eraPadraoAnterior) v.cfg.irrf = structuredClone(DEFCFG.irrf)
   })
   o.vig.sort((a: Vigencia, b: Vigencia) => (a.desde < b.desde ? -1 : 1))
   return o as State

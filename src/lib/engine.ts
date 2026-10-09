@@ -45,9 +45,12 @@ export function calcINSS(base: number, tb: InssFaixa[]): number {
 
 export function calcIRRF(
   rendTrib: number,
-  baseCalc: number,
+  deducoesLegais: number,
   cfg: Cfg
-): { tax: number; red: number } {
+): { tax: number; red: number; base: number } {
+  // O desconto simplificado substitui, não se soma, às deduções legais.
+  const deducao = Math.max(0, deducoesLegais, Math.min(rendTrib, num(cfg.descSimplificado)))
+  const baseCalc = Math.max(0, rendTrib - deducao)
   let tax = 0
   for (const f of cfg.irrf) {
     if (baseCalc <= f.ate) {
@@ -59,7 +62,7 @@ export function calcIRRF(
   if (rendTrib <= cfg.redIsen) red = tax
   else if (rendTrib <= cfg.redGrad)
     red = Math.max(0, Math.min(tax, cfg.redA - cfg.redB * rendTrib))
-  return { tax: Math.max(0, tax - red), red }
+  return { tax: Math.max(0, tax - red), red, base: baseCalc }
 }
 
 export function occursOn(s: RecSeries, dk: string): boolean {
@@ -83,20 +86,20 @@ export interface SalFamAlert {
 export function salFamAlert(c: MonthResult): SalFamAlert | null {
   if (!c.temFilhos) return null
   if (c.salFam > 0) {
-    const folga = c.sfLim - c.bruto
+    const folga = c.sfLim - c.baseInss
     if (folga <= 150) {
       const hExtra = c.vhe > 0 ? folga / c.vhe : 0
       return {
         level: 'warn',
         title: 'Atenção ao salário-família:',
-        text: `a remuneração deste mês (${brl(c.bruto)}) está a ${brl(folga)} do limite de ${brl(c.sfLim)}. O limite é avaliado mês a mês sobre a remuneração total — se horas extras ou adicionais ultrapassarem (≈ mais ${hExtra.toFixed(1)}h extras), a cota inteira do mês (${brl(c.sfCotaTot)}) é perdida.`
+        text: `a remuneração previdenciária deste mês (${brl(c.baseInss)}) está a ${brl(folga)} do limite de ${brl(c.sfLim)}. O limite é avaliado mês a mês sobre a remuneração total — inclusive férias gozadas e 1/3; se horas extras ou adicionais ultrapassarem (≈ mais ${hExtra.toFixed(1)}h extras), a cota inteira do mês (${brl(c.sfCotaTot)}) é perdida.`
       }
     }
-  } else if (c.bruto > c.sfLim) {
+  } else if (c.baseInss > c.sfLim) {
     return {
       level: 'err',
       title: 'Salário-família não devido neste mês:',
-      text: `a remuneração (${brl(c.bruto)}) ultrapassou o limite de ${brl(c.sfLim)}. Não é erro do holerite — o direito é avaliado mês a mês; em meses com muitas extras a cota (${brl(c.sfCotaTot)}) deixa de ser paga e volta quando a remuneração ficar dentro do limite.`
+        text: `a remuneração previdenciária (${brl(c.baseInss)}) ultrapassou o limite de ${brl(c.sfLim)}. Não é erro do holerite — o direito é avaliado mês a mês; em meses com muitas extras ou férias a cota (${brl(c.sfCotaTot)}) deixa de ser paga e volta quando a remuneração ficar dentro do limite.`
     }
   }
   return null
@@ -302,10 +305,11 @@ export function createEngine(S: State) {
     const abono = vd * num(f.vendidos || 0),
       abonoTerco = abono / 3
     const baseTrib = brutoGozo + terco
-    const inss = calcINSS(baseTrib, cfg.inss)
+    // O INSS é apurado por competência. A parcela exibida no recibo é a parte
+    // daquela apuração atribuída às férias, e não uma segunda competência.
+    const inss = feriasInssTotal(f)
     const nDep = depIRCount(f.ini.slice(0, 7), cfg)
-    const baseIR = Math.max(0, baseTrib - inss - nDep * num(cfg.dedDep))
-    const ir = calcIRRF(baseTrib, baseIR, cfg)
+    const ir = calcIRRF(baseTrib, inss + nDep * num(cfg.dedDep), cfg)
     const liq = baseTrib - inss - ir.tax + abono + abonoTerco
     return {
       dias,
@@ -321,22 +325,23 @@ export function createEngine(S: State) {
       liq,
       prazo: dAdd(f.ini, -2),
       nDep,
-      baseIR
+      baseIR: ir.base
     }
   }
 
   function extrasMediaAno(y: string | number): number {
-    let tot = 0,
-      n = 0
-    for (const mk of Object.keys(S.months)) {
-      if (!mk.startsWith(String(y))) continue
+    const avos = avos13(y, 12)
+    if (!avos) return 0
+    let tot = 0
+    // Meses sem hora extra também entram na média como zero; ignorá-los
+    // superestimava o reflexo de uma única competência com extra.
+    for (let mes = 1; mes <= 12; mes++) {
+      const mk = `${y}-${pad(mes)}`
+      if (!S.months[mk]) continue
       const c = computeMonth(mk)
-      if (c.worked > 0 || c.extraMin > 0) {
-        tot += c.vExtras + c.vDsr
-        n++
-      }
+      tot += c.vExtras + c.vDsr
     }
-    return n ? tot / n : 0
+    return tot / avos
   }
 
   function calc13(y: string | number) {
@@ -344,20 +349,16 @@ export function createEngine(S: State) {
     const avos = avos13(y, 12)
     const base = ((num(cfg.salario) + extrasMediaAno(y)) * avos) / 12
     const inss = calcINSS(base, cfg.inss)
-    const ir = calcIRRF(
-      base,
-      Math.max(0, base - inss - depIRCount(`${y}-12`, cfg) * num(cfg.dedDep)),
-      cfg
-    )
+    const ir = calcIRRF(base, inss + depIRCount(`${y}-12`, cfg) * num(cfg.dedDep), cfg)
     const p1 = base / 2,
       p2 = base - inss - ir.tax - p1
     return { base, avos, inss, irpf: ir.tax, p1, p2, liq: base - inss - ir.tax }
   }
 
-  function computeMonth(mk: string): MonthResult {
+  /** Componentes financeiros da competência antes de INSS e IRRF. */
+  function monthCore(mk: string) {
     const m = getMonth(mk),
       cfg = cfgFor(mk)
-    if (m.closed && m.snap) return m.snap
     const nd = daysInMonth(mk)
     let worked = 0,
       expected = 0,
@@ -392,20 +393,123 @@ export function createEngine(S: State) {
         ? (vExtras / diasUteis) * repousos
         : 0
     const vFaltas = (faltaMin / 60) * vh
-    const vFerias = (num(cfg.salario) / 30) * diasFerias
+    const feriasParts = S.ferias
+      .filter((f) => f.ini.slice(0, 7) <= mk && f.fim.slice(0, 7) >= mk)
+      .map((f) => {
+        const ini = f.ini > `${mk}-01` ? f.ini : `${mk}-01`
+        const fim = f.fim < `${mk}-${pad(nd)}` ? f.fim : `${mk}-${pad(nd)}`
+        const cfgFerias = cfgFor(f.ini.slice(0, 7))
+        const gozo = (num(cfgFerias.salario) / 30) * (daysDiff(ini, fim) + 1)
+        return { f, gozo, terco: gozo / 3 }
+      })
+    const vFerias = feriasParts.reduce((a, p) => a + p.gozo, 0)
+    const tercoFerias = feriasParts.reduce((a, p) => a + p.terco, 0)
     const pagsT = (m.pags || []).filter((p) => p.t).reduce((a, p) => a + num(p.v), 0)
     const pagsN = (m.pags || []).filter((p) => !p.t).reduce((a, p) => a + num(p.v), 0)
     const bruto = Math.max(
       0,
       num(cfg.salario) + vExtras + vDsr + pagsT - vFaltas - vFerias
     )
-    const inss = calcINSS(bruto, cfg.inss)
+    return {
+      m,
+      cfg,
+      worked,
+      expected,
+      extraMin,
+      faltaMin,
+      pend,
+      diasUteis,
+      repousos,
+      extrasFeriado,
+      diasFerias,
+      vh,
+      vhe,
+      pagar,
+      vExtras,
+      vDsr,
+      vFaltas,
+      vFerias,
+      tercoFerias,
+      feriasParts,
+      pagsT,
+      pagsN,
+      bruto
+    }
+  }
+
+  /** Distribui o INSS progressivo entre as férias da competência, em ordem de início. */
+  function inssFeriasPorCompetencia(mk: string, core = monthCore(mk)) {
+    let baseAnterior = core.bruto
+    return core.feriasParts
+      .slice()
+      .sort((a, b) => (a.f.ini < b.f.ini ? -1 : a.f.ini > b.f.ini ? 1 : 0))
+      .map((p) => {
+        const baseComFerias = baseAnterior + p.gozo + p.terco
+        const inss = calcINSS(baseComFerias, core.cfg.inss) - calcINSS(baseAnterior, core.cfg.inss)
+        baseAnterior = baseComFerias
+        return { ...p, inss }
+      })
+  }
+
+  function feriasInssTotal(f: Ferias): number {
+    let mk = f.ini.slice(0, 7)
+    const last = f.fim.slice(0, 7)
+    let total = 0
+    while (mk <= last) {
+      total += inssFeriasPorCompetencia(mk).find((p) => p.f.ini === f.ini && p.f.fim === f.fim)?.inss || 0
+      mk = yAddM(mk + '-01', 1).slice(0, 7)
+    }
+    return total
+  }
+
+  function computeMonth(mk: string): MonthResult {
+    const m = getMonth(mk)
+    if (m.closed && m.snap) {
+      // Snapshots gravados antes desta revisão não têm as novas bases. Mantemos
+      // seus valores congelados e os completamos para não quebrar a consulta.
+      if (m.snap.baseInss == null) {
+        return {
+          ...m.snap,
+          baseInss: m.snap.bruto,
+          inssCompetencia: m.snap.inss,
+          inssFerias: 0
+        }
+      }
+      return m.snap
+    }
+    const core = monthCore(mk)
+    const {
+      cfg,
+      worked,
+      expected,
+      extraMin,
+      faltaMin,
+      pend,
+      diasUteis,
+      repousos,
+      extrasFeriado,
+      diasFerias,
+      vh,
+      vhe,
+      pagar,
+      vExtras,
+      vDsr,
+      vFaltas,
+      vFerias,
+      tercoFerias,
+      pagsT,
+      pagsN,
+      bruto
+    } = core
+    const baseInss = bruto + vFerias + tercoFerias
+    const inssCompetencia = calcINSS(baseInss, cfg.inss)
+    const inssFerias = inssFeriasPorCompetencia(mk, core).reduce((a, p) => a + p.inss, 0)
+    const inss = Math.max(0, inssCompetencia - inssFerias)
     const nDep = depIRCount(mk, cfg),
       nF14 = childCount14(mk, cfg)
-    const baseIR = Math.max(0, bruto - inss - nDep * num(cfg.dedDep))
-    const ir = calcIRRF(bruto, baseIR, cfg)
+    const ir = calcIRRF(bruto, inss + nDep * num(cfg.dedDep), cfg)
     const temFilhos = nF14 > 0
-    const salFam = temFilhos && bruto <= num(cfg.sfLim) ? nF14 * num(cfg.sfCota) : 0
+    const salFam = temFilhos && baseInss <= num(cfg.sfLim) ? nF14 * num(cfg.sfCota) : 0
     const liquido = bruto - inss - ir.tax + salFam + pagsN
     return {
       worked,
@@ -427,8 +531,11 @@ export function createEngine(S: State) {
       pagsT,
       pagsN,
       bruto,
+      baseInss,
+      inssCompetencia,
+      inssFerias,
       inss,
-      baseIR,
+      baseIR: ir.base,
       irpf: ir.tax,
       irRed: ir.red,
       salFam,
@@ -482,7 +589,12 @@ export function createEngine(S: State) {
       ref: c.faltaMin ? min2hm(c.faltaMin) : '',
       db: c.vFaltas
     })
-    l.push({ k: 'inss', d: 'INSS', ref: 'tab. progressiva', db: c.inss })
+    l.push({
+      k: 'inss',
+      d: c.inssFerias ? 'INSS (saldo da folha)' : 'INSS',
+      ref: c.inssFerias ? `competência ${brl(c.inssCompetencia)}; férias ${brl(c.inssFerias)}` : 'tab. progressiva',
+      db: c.inss
+    })
     l.push({
       k: 'irpf',
       d: 'IRPF',
